@@ -23,8 +23,8 @@ from django.urls import path, include
 urlpatterns = [
     # Uncomment the next line to enable the admin:
     path('admin/', admin.site.urls),
-    path('account/', include('account.urls')),
-    path('task/', include('account.urls')),
-    path('notification/', include('account.urls')),
-    path('task/', include('account.urls')),
+    #path('account/', include('account.urls')),
+    #path('task/', include('account.urls')),
+    #path('notification/', include('account.urls')),
+    #path('task/', include('account.urls')),
 ]

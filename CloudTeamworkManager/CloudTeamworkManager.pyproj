@@ -35,6 +35,9 @@
     <Compile Include="account\migrations\__init__.py" />
     <Compile Include="account\models.py" />
     <Compile Include="account\tests.py" />
+    <Compile Include="account\urls.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="account\views.py" />
     <Compile Include="account\__init__.py" />
     <Compile Include="file\admin.py" />
@@ -42,6 +45,7 @@
     <Compile Include="file\migrations\__init__.py" />
     <Compile Include="file\models.py" />
     <Compile Include="file\tests.py" />
+    <Compile Include="file\urls.py" />
     <Compile Include="file\views.py" />
     <Compile Include="file\__init__.py" />
     <Compile Include="manage.py" />
@@ -54,6 +58,7 @@
     <Compile Include="notification\migrations\__init__.py" />
     <Compile Include="notification\models.py" />
     <Compile Include="notification\tests.py" />
+    <Compile Include="notification\urls.py" />
     <Compile Include="notification\views.py" />
     <Compile Include="notification\__init__.py" />
     <Compile Include="task\admin.py" />
@@ -61,6 +66,7 @@
     <Compile Include="task\migrations\__init__.py" />
     <Compile Include="task\models.py" />
     <Compile Include="task\tests.py" />
+    <Compile Include="task\urls.py" />
     <Compile Include="task\views.py" />
     <Compile Include="task\__init__.py" />
   </ItemGroup>

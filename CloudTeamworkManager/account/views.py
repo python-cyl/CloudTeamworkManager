@@ -3,7 +3,8 @@ from django.contrib import auth
 from django.contrib.auth.models import User
 from django.forms.models import model_to_dict
 from django.contrib.auth.decorators import login_required
-from .forms import RegisterForm, LoginForm, extend_info
+from django.contrib.auth.hashers import make_password
+from .forms import RegisterForm, LoginForm, extend_info, GetPasswordForm
 from .models import UserProfile
 from .msgcode import sendcode, verifycode
 
@@ -36,7 +37,7 @@ def register_submit(request):
     if forms.is_valid():
         code = verifycode(forms.cleaned_data['phone_number'], forms.cleaned_data['msgcode'])
         if code:
-            user = User.objects.create_user(forms.cleaned_data['user_name'], password = forms.cleaned_data['password'])
+            
             user_info = UserProfile.objects.create(user_id = user.id, phone_number = forms.cleaned_data['phone_number'])
             return HttpResponse("200")
         else:
@@ -44,8 +45,20 @@ def register_submit(request):
     else:
         return HttpResponse("403")
 
-def get_password(request):
-    pass
+def get_password_submit(request):
+    forms = GetPasswordForm(request.POST)
+
+    if forms.is_valid():
+        code = verifycode(forms.cleaned_data['phone_number'], forms.cleaned_data['msgcode'])
+        if code:
+            user = User.objects.get(username = forms.cleaned_data["user_name"])
+            user.set_password(forms.cleaned_data["password"])
+            user.save()
+            return HttpResponse("200")
+        else:
+            return HttpResponse("417")
+    else:
+        return HttpResponse("403")
 
 def data_is_valid(data_class, data_instance):
     attribute = list(data_class.base_fields)
@@ -75,11 +88,6 @@ def extend_info_submit(request):
     user_info = get_object_or_404(UserProfile, user_id = request.user.id)
     form = extend_info(request.POST, instance=user_info)
     if form.is_valid():
-        #form = form.save(commit = False)
-        #form.involved_projects = user_info.involved_projects
-        #form.read_notifications = user_info.read_notifications
-        #form.unread_notifications = user_info.unread_notifications
-        #form.user_id = user_info.user_id
         form.save()
         return HttpResponse("200")
     else:

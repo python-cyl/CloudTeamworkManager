@@ -12,7 +12,7 @@ class UserProfile(models.Model):
     magor = models.CharField(max_length = 10, verbose_name='方向')
     grade = models.CharField(max_length = 4, verbose_name='年级')
     room = models.CharField(max_length = 8, verbose_name='宿舍号')
-    home_address = models.CharField(max_length = 300, verbose_name='家庭住址')
+    home_address = models.CharField(max_length = 100, verbose_name='家庭住址')
     guardian_phone = models.CharField(max_length = 11, verbose_name='家长手机号')
     introduction = models.CharField(max_length = 350, verbose_name='个人介绍')
     involved_projects = models.TextField()

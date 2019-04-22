@@ -7,4 +7,5 @@ urlpatterns = [
     path('register/submit/', views.register_submit),
     path('login/submit/', views.login_submit),
     path('space/', views.space_page),
+    path('perfect_infomation/submit/', views.extend_info_submit),
 ]

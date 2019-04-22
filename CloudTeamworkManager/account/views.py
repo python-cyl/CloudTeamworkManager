@@ -72,8 +72,14 @@ def space_page(request):
 
 @login_required
 def extend_info_submit(request):
-    form = extend_info(request.POST)
+    user_info = get_object_or_404(UserProfile, user_id = request.user.id)
+    form = extend_info(request.POST, instance=user_info)
     if form.is_valid():
+        #form = form.save(commit = False)
+        #form.involved_projects = user_info.involved_projects
+        #form.read_notifications = user_info.read_notifications
+        #form.unread_notifications = user_info.unread_notifications
+        #form.user_id = user_info.user_id
         form.save()
         return HttpResponse("200")
     else:

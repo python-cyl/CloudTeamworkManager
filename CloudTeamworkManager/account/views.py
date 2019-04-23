@@ -27,9 +27,21 @@ def login_submit(request):
             auth.login(request, user)
             return render(request, 'space.html')
         else:
-            return HttpResponse(401.1)
+            return HttpResponse("用户名或密码错误")
     else:
-        return HttpResponse(401.7)
+        return HttpResponse("输入内容有误")
+
+def check_username(request):
+    forms = UsernameForm(request.POST)
+
+    if forms.is_valid():
+        user = User.objects.get(username = forms.cleaned_data['user_name'])
+        if user:
+            return HttpResponse("用户名可用")
+        else:
+            return HttpResponse("用户名已被使用")
+    else:
+        return HttpResponse("输入内容有误")
 
 def register_submit(request):
     forms = RegisterForm(request.POST)
@@ -37,13 +49,17 @@ def register_submit(request):
     if forms.is_valid():
         code = verifycode(forms.cleaned_data['phone_number'], forms.cleaned_data['msgcode'])
         if code:
-            
-            user_info = UserProfile.objects.create(user_id = user.id, phone_number = forms.cleaned_data['phone_number'])
-            return HttpResponse("200")
+            user = User.objects.get(username = forms.cleaned_data['user_name'])
+            if user:
+                User.objects.create_user(username = forms.cleaned_data['user_name'], password=forms.cleaned_data['password'])
+                UserProfile.objects.create(user_id = user.id, phone_number = forms.cleaned_data['phone_number'])
+                return HttpResponse("200")
+            else:
+                return HttpResponse("用户已存在")
         else:
-            return HttpResponse("417")
+            return HttpResponse("短信验证码错误")
     else:
-        return HttpResponse("403")
+        return HttpResponse("输入内容有误")
 
 def get_password_submit(request):
     forms = GetPasswordForm(request.POST)
@@ -56,23 +72,9 @@ def get_password_submit(request):
             user.save()
             return HttpResponse("200")
         else:
-            return HttpResponse("417")
+            return HttpResponse("短信验证码错误")
     else:
-        return HttpResponse("403")
-
-def data_is_valid(data_class, data_instance):
-    attribute = list(data_class.base_fields)
-    check_list = {each_attr: [getattr(data_class.base_fields[each_attr],"max_length", 9999), getattr(data_class.base_fields[each_attr],"min_length", -1)] for each_attr in attribute}
-    for (each_key, each_value) in check_list.items():
-        try:
-            if each_value[0] <= len(getattr(data_instance, each_key, None)) < each_value[0]:
-                continue
-            break
-        except:
-            continue
-    else:
-        return True
-    return False
+        return HttpResponse("输入内容有误")
 
 @login_required
 def space_page(request):
@@ -91,4 +93,4 @@ def extend_info_submit(request):
         form.save()
         return HttpResponse("200")
     else:
-        return HttpResponse("403")
+        return HttpResponse("输入内容有误")

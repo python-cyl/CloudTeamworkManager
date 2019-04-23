@@ -50,7 +50,7 @@ def register_submit(request):
         code = verifycode(forms.cleaned_data['phone_number'], forms.cleaned_data['msgcode'])
         if code:
             user = User.objects.get(username = forms.cleaned_data['user_name'])
-            if user:
+            if not user:
                 User.objects.create_user(username = forms.cleaned_data['user_name'], password=forms.cleaned_data['password'])
                 UserProfile.objects.create(user_id = user.id, phone_number = forms.cleaned_data['phone_number'])
                 return HttpResponse("200")
@@ -94,10 +94,14 @@ def sendmsgcode(request):
         # 验证图形验证码
         phone_number = request.POST.get("phone_number")
         # 读取手机号
-        result = sendcode(phone_number)
-        # 发送验证码
-        return HttpResponse(result)
-        # 发送回执
+        phone_number = UserProfile.objects.get(phone_number = forms.cleaned_data['phone_number'])
+        if phone_number:
+            return HttpResponse("手机号已注册")
+        else:
+            result = sendcode(phone_number)
+            # 发送验证码
+            return HttpResponse(result)
+            # 发送回执
     else:
         # 验证码校验失败
         return HttpResponse('412')

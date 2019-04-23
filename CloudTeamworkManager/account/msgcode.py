@@ -39,29 +39,3 @@ def verifycode(mobile, code):
     result = json.loads(response.read().decode("utf-8"))
 
     return result["code"]
-
-def sendmsgcode(request):
-    # 发送短信验证码
-    def check_piccode():
-        # 校验图形验证码
-        answer = request.session.get('verify').upper()
-        code = request.POST.get('picode').upper()
-        # 把验证码答案和用户输入的内容都转为大写
-
-        if code == answer:
-            remove_session(request)
-            return 1
-        else:
-            return 0
-
-    if check_piccode():
-        # 验证图形验证码
-        phone_number = request.POST.get("phone_number")
-        # 读取手机号
-        result = sendcode(phone_number)
-        # 发送验证码
-        return HttpResponse(result)
-        # 发送回执
-    else:
-        # 验证码校验失败
-        return HttpResponse('412')

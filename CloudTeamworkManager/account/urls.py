@@ -12,4 +12,5 @@ urlpatterns = [
     path('sendmsgcode/', views.sendmsgcode),
     path('space/', views.space_page),
     path('perfect_infomation/submit/', views.extend_info_submit),
+    path('change_infomation/submit/', views.extend_info_submit),
 ]

@@ -1,15 +1,17 @@
-from django.shortcuts import render, HttpResponse, get_object_or_404
+from django.shortcuts import render, HttpResponse, HttpResponseRedirect
 from django.contrib import auth
 from django.contrib.auth.models import User
 from django.forms.models import model_to_dict
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
-from .forms import RegisterForm, LoginForm, extend_info, GetPasswordForm
+from .forms import RegisterForm, LoginForm, extend_info, GetPasswordForm, change_info
 from .models import UserProfile
 from .msgcode import sendcode, verifycode
 
 
 def login_page(request):
+    if request.user.is_authenticated:
+        return HttpResponseRedirect("/account/space/")
     return render(request, 'login_page.html')
 
 def register_page(request):
@@ -108,19 +110,35 @@ def sendmsgcode(request):
 
 @login_required
 def space_page(request):
-    user_info = get_object_or_404(UserProfile, user_id = request.user.id)
-    form = extend_info(instance = user_info)
-    if form.is_valid():
+    user_info = UserProfile.objects.get(user_id = request.user.id)
+    if user_info.name:
         return render(request, 'space.html')
     else:
+        form = extend_info(instance = user_info)
         return render(request, 'perfect_infomation.html', {'form': form})
 
 @login_required
 def extend_info_submit(request):
-    user_info = get_object_or_404(UserProfile, user_id = request.user.id)
+    user_info = UserProfile.objects.get(UserProfile, user_id = request.user.id)
     form = extend_info(request.POST, instance=user_info)
     if form.is_valid():
         form.save()
         return HttpResponse("200")
     else:
         return HttpResponse("输入内容有误")
+
+@login_required
+def change_info_submit(request):
+    user_info = UserProfile.objects.get(user_id = request.user.id)
+    form = change_info(request.POST, instance=user_info)
+    if form.is_valid():
+        form.save()
+        return HttpResponse("200")
+    else:
+        return HttpResponse("输入内容有误")
+
+@login_required
+def change_info_page(request):
+    user_info = UserProfile.objects.get(user_id = request.user.id)
+    form = change_info(request.POST, instance=user_info)
+    return render(request, 'perfect_infomation.html', {'form': form})

@@ -11,6 +11,7 @@ urlpatterns = [
     path('get_password/submit/', views.get_password_submit),
     path('sendmsgcode/', views.sendmsgcode),
     path('space/', views.space_page),
-    path('perfect_infomation/submit/', views.extend_info_submit),
-    path('change_infomation/submit/', views.extend_info_submit),
+    path('perfect_information/submit/', views.extend_info_submit),
+    path('change_information/submit/', views.change_info_submit),
+    path('change_information/', views.change_info_page),
 ]

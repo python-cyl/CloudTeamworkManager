@@ -139,6 +139,7 @@ def change_info_submit(request):
 
 @login_required
 def change_info_page(request):
+    123
     user_info = UserProfile.objects.get(user_id = request.user.id)
     form = change_info(request.POST, instance=user_info)
     return render(request, 'perfect_infomation.html', {'form': form})

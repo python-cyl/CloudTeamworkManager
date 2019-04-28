@@ -7,6 +7,7 @@ urlpatterns = [
     path('register/', views.register_page),
     path('register/submit/', views.register_submit),
     path('check_username/submit/', views.check_username),
+    path('check_phone_number/submit/', views.check_phone_number),
     path('get_password/', views.get_password_page),
     path('get_password/submit/', views.get_password_submit),
     path('sendmsgcode/', views.sendmsgcode),

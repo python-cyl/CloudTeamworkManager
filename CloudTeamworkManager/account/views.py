@@ -45,6 +45,18 @@ def check_username(request):
     else:
         return HttpResponse("输入内容有误")
 
+def check_phone_number(request):
+    forms = UsernameForm(request.POST)
+
+    if forms.is_valid():
+        phone_number = User.objects.get(phone_number = forms.cleaned_data['phone_number'])
+        if phone_number:
+            return HttpResponse("手机号可用")
+        else:
+            return HttpResponse("手机号已被注册")
+    else:
+        return HttpResponse("输入内容有误")
+
 def register_submit(request):
     forms = RegisterForm(request.POST)
 
@@ -106,7 +118,7 @@ def sendmsgcode(request):
             # 发送回执
     else:
         # 验证码校验失败
-        return HttpResponse('412')
+        return HttpResponse('图形验证码校验失败')
 
 @login_required
 def space_page(request):
@@ -115,11 +127,11 @@ def space_page(request):
         return render(request, 'space.html')
     else:
         form = extend_info(instance = user_info)
-        return render(request, 'perfect_infomation.html', {'form': form})
+        return render(request, 'perfect_information.html', {'form': form})
 
 @login_required
 def extend_info_submit(request):
-    user_info = UserProfile.objects.get(UserProfile, user_id = request.user.id)
+    user_info = UserProfile.objects.get(user_id = request.user.id)
     form = extend_info(request.POST, instance=user_info)
     if form.is_valid():
         form.save()
@@ -139,7 +151,6 @@ def change_info_submit(request):
 
 @login_required
 def change_info_page(request):
-    123
     user_info = UserProfile.objects.get(user_id = request.user.id)
     form = change_info(request.POST, instance=user_info)
-    return render(request, 'perfect_infomation.html', {'form': form})
+    return render(request, 'perfect_information.html', {'form': form})

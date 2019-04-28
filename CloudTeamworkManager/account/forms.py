@@ -12,6 +12,9 @@ class RegisterForm(forms.Form):
 class UsernameForm(forms.Form):
     user_name = forms.CharField(max_length=20, min_length=6)
 
+class PhoneNumberForm(forms.Form):
+    phone_number = forms.CharField(max_length=11, min_length=11)
+
 class LoginForm(forms.Form):
     password = forms.CharField(max_length=16, min_length=6)
     user_name = forms.CharField(max_length=20, min_length=6)

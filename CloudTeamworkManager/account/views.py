@@ -1,7 +1,7 @@
 from django.shortcuts import render, HttpResponse, HttpResponseRedirect
+from django.forms.models import model_to_dict
 from django.contrib import auth
 from django.contrib.auth.models import User
-from django.forms.models import model_to_dict
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from .forms import RegisterForm, LoginForm, extend_info, GetPasswordForm, change_info
@@ -12,13 +12,16 @@ from .msgcode import sendcode, verifycode
 def login_page(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect("/account/space/")
-    return render(request, 'login_page.html')
+    forms = LoginForm()
+    return render(request, 'login_page.html', {"form": forms})
 
 def register_page(request):
-    return render(request, 'register_page.html')
+    forms = RegisterForm()
+    return render(request, 'register_page.html', {"form": forms})
 
 def get_password_page(request):
-    return render(request, 'get_password_page.html')
+    forms = GetPasswordForm()
+    return render(request, 'get_password_page.html', {"form": forms})
 
 def login_submit(request):
     forms = LoginForm(request.POST)
@@ -27,11 +30,48 @@ def login_submit(request):
         user = auth.authenticate(request, username = forms.cleaned_data['user_name'], password = forms.cleaned_data['password'])
         if user:
             auth.login(request, user)
-            return render(request, 'space.html')
+            return render(request, 'login_page.html')
         else:
-            return HttpResponse("用户名或密码错误")
+            return render(request, 'login_page.html', {"form": forms, "tip": "用户名或密码错误"})
     else:
-        return HttpResponse("输入内容有误")
+        return render(request, 'login_page.html', {"form": forms, "tip": "输入内容有误"})
+
+def register_submit(request):
+    forms = RegisterForm(request.POST)
+
+    if forms.is_valid():
+        code = verifycode(forms.cleaned_data['phone_number'], forms.cleaned_data['msgcode'])
+        if code:
+            user = User.objects.get(username = forms.cleaned_data['user_name'])
+            phone_number = UserProfile.objects.get(phone_number = forms.cleaned_data['phone_number'])
+            if not user:
+                if not phone_number:
+                    User.objects.create_user(username = forms.cleaned_data['user_name'], password=forms.cleaned_data['password'])
+                    UserProfile.objects.create(user_id = user.id, phone_number = forms.cleaned_data['phone_number'])
+                    return HttpResponse("200")
+                else:
+                    return render(request, 'register_page.html', {"form": forms, "tip": "手机号已被注册"})
+            else:
+                return render(request, 'register_page.html', {"form": forms, "tip": "用户已存在"})
+        else:
+            return render(request, 'register_page.html', {"form": forms, "tip": "短信验证码有误"})
+    else:
+        return render(request, 'register_page.html', {"form": forms, "tip": "输入内容有误"})
+
+def get_password_submit(request):
+    forms = GetPasswordForm(request.POST)
+
+    if forms.is_valid():
+        code = verifycode(forms.cleaned_data['phone_number'], forms.cleaned_data['msgcode'])
+        if code:
+            user = User.objects.get(username = forms.cleaned_data["user_name"])
+            user.set_password(forms.cleaned_data["password"])
+            user.save()
+            return HttpResponse("200")
+        else:
+            return render(request, 'get_password.html', {"form": forms, "tip": "短信验证码有误"})
+    else:
+        return render(request, 'get_password.html', {"form": forms, "tip": "输入内容有误"})
 
 def check_username(request):
     forms = UsernameForm(request.POST)
@@ -49,44 +89,11 @@ def check_phone_number(request):
     forms = UsernameForm(request.POST)
 
     if forms.is_valid():
-        phone_number = User.objects.get(phone_number = forms.cleaned_data['phone_number'])
+        phone_number = UserProfile.objects.get(phone_number = forms.cleaned_data['phone_number'])
         if phone_number:
             return HttpResponse("手机号可用")
         else:
             return HttpResponse("手机号已被注册")
-    else:
-        return HttpResponse("输入内容有误")
-
-def register_submit(request):
-    forms = RegisterForm(request.POST)
-
-    if forms.is_valid():
-        code = verifycode(forms.cleaned_data['phone_number'], forms.cleaned_data['msgcode'])
-        if code:
-            user = User.objects.get(username = forms.cleaned_data['user_name'])
-            if not user:
-                User.objects.create_user(username = forms.cleaned_data['user_name'], password=forms.cleaned_data['password'])
-                UserProfile.objects.create(user_id = user.id, phone_number = forms.cleaned_data['phone_number'])
-                return HttpResponse("200")
-            else:
-                return HttpResponse("用户已存在")
-        else:
-            return HttpResponse("短信验证码错误")
-    else:
-        return HttpResponse("输入内容有误")
-
-def get_password_submit(request):
-    forms = GetPasswordForm(request.POST)
-
-    if forms.is_valid():
-        code = verifycode(forms.cleaned_data['phone_number'], forms.cleaned_data['msgcode'])
-        if code:
-            user = User.objects.get(username = forms.cleaned_data["user_name"])
-            user.set_password(forms.cleaned_data["password"])
-            user.save()
-            return HttpResponse("200")
-        else:
-            return HttpResponse("短信验证码错误")
     else:
         return HttpResponse("输入内容有误")
 

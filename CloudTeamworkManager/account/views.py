@@ -144,7 +144,7 @@ def extend_info_submit(request):
         form.save()
         return HttpResponse("200")
     else:
-        return HttpResponse("输入内容有误")
+        return render(request, 'perfect_information.html', {"form": form})
 
 @login_required
 def change_info_submit(request):
@@ -154,10 +154,10 @@ def change_info_submit(request):
         form.save()
         return HttpResponse("200")
     else:
-        return HttpResponse("输入内容有误")
+        return render(request, 'perfect_information.html', {"form": form})
 
 @login_required
 def change_info_page(request):
     user_info = UserProfile.objects.get(user_id = request.user.id)
-    form = change_info(request.POST, instance=user_info)
+    form = change_info(instance=user_info)
     return render(request, 'perfect_information.html', {'form': form})

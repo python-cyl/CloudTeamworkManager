@@ -12,7 +12,7 @@
     <div class="center">
         <div class="register">
             <div id="title">账号注册</div>
-            <form id="form" autocomplete="off", method="POST", action="/account/register/submit/">
+            <form id="form" autocomplete="off", method="POST", action="/account/register/">
                 {%csrf_token%}
                 {{  form  }}
                 <div id="tip">{{  tip  }}</div>

@@ -1,30 +1,98 @@
 import re
 from django.forms import ModelForm, ValidationError
+from django.contrib.auth.models import User
 from django import forms
 from .models import UserProfile
+from .msgcode import verifycode
 
 
 class RegisterForm(forms.Form):
-    user_name = forms.CharField(max_length=20, min_length=6)
-    password = forms.CharField(max_length=16, min_length=6)
-    msgcode = forms.CharField(max_length=4, min_length=4)
-    phone_number = forms.CharField(max_length=11, min_length=11)
+    user_name = forms.CharField(max_length=20, min_length=6, label="用户名")
+    password = forms.CharField(max_length=16, min_length=6, label="密码")
+    phone_number = forms.CharField(max_length=11, min_length=11, label="手机号")
+    msgcode = forms.CharField(max_length=4, min_length=4, label="短信验证码")
 
-class UsernameForm(forms.Form):
-    user_name = forms.CharField(max_length=20, min_length=6)
+    def clean_user_name(self):
+        user_name = self.cleaned_data["user_name"]
 
-class PhoneNumberForm(forms.Form):
-    phone_number = forms.CharField(max_length=11, min_length=11)
+        try:
+            User.objects.get(username=self.cleaned_data["user_name"])
+            raise ValidationError("用户已存在")
+        except User.DoesNotExist:
+            return user_name
+
+    def clean_phone_number(self):
+        phone_number = self.cleaned_data.get("phone_number")
+
+        if re.match("^1[34578]\d{9}$", phone_number):
+            try:
+                UserProfile.objects.get(phone_number = phone_number)
+                raise ValidationError("手机号码已被注册")
+            except UserProfile.DoesNotExist:
+                return phone_number
+        else:
+            raise ValidationError("手机号码不正确")
+
+    def clean_msgcode(self):
+        msgcode = self.cleaned_data["msgcode"]
+
+        if re.match("\d{4}", msgcode):
+            if verifycode(self.cleaned_data.get("phone_number", "11111111111"), msgcode) == 200:
+                return msgcode
+            raise ValidationError("验证码校验失败")
+        else:
+            raise ValidationError("验证码格式错误")
+
+class UsernameForm(RegisterForm):
+    msgcode = "0000"
+    phone_number = "00000000000"
+
+    def clean_msgcode(self):
+        pass
+
+    def clean_phone_number(self):
+        pass
+
+class PhoneNumberForm(RegisterForm):
+    msgcode = "1234"
+    user_name = "xxxxxx"
+
+    def clean_user_name(self):
+        pass
+
+    def clean_msgcode(self):
+        pass
 
 class LoginForm(forms.Form):
-    password = forms.CharField(max_length=16, min_length=6)
-    user_name = forms.CharField(max_length=20, min_length=6)
+    user_name = forms.CharField(max_length=20, min_length=6, label="用户名")
+    password = forms.CharField(max_length=16, min_length=6, label="密码")
 
 class GetPasswordForm(forms.Form):
-    user_name = forms.CharField(max_length=20, min_length=6)
-    password = forms.CharField(max_length=16, min_length=6)
-    msgcode = forms.CharField(max_length=4, min_length=4)
-    phone_number = forms.CharField(max_length=11, min_length=11)
+    phone_number = forms.CharField(max_length=11, min_length=11, label="手机号")
+    msgcode = forms.CharField(max_length=4, min_length=4, label="短信验证码")
+    password = forms.CharField(max_length=16, min_length=6, label="新密码")
+
+    def clean_phone_number(self):
+        phone_number = self.cleaned_data.get("phone_number")
+
+        if re.match("^1[34578]\d{9}$", phone_number):
+            try:
+                UserProfile.objects.get(phone_number = phone_number)
+                return phone_number
+            except UserProfile.DoesNotExist:
+                raise ValidationError("手机号码未注册")
+        else:
+            raise ValidationError("手机号码不正确")
+
+    def clean_msgcode(self):
+        msgcode = self.cleaned_data["msgcode"]
+
+        if re.match("\d{4}", msgcode):
+            if verifycode(self.cleaned_data.get("phone_number", "11111111111"), msgcode) == 200:
+                return msgcode
+            raise ValidationError("验证码校验失败")
+        else:
+            raise ValidationError("验证码格式错误")
 
 class extend_info(ModelForm):
     class Meta:

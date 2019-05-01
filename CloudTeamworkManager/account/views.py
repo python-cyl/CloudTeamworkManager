@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from .forms import RegisterForm, LoginForm, GetPasswordForm, change_info, extend_info
 from .models import UserProfile
-from .msgcode import sendcode, verifycode
+from .msgcode import sendcode
 
 
 def login_page(request):
@@ -24,10 +24,8 @@ def login_page(request):
             if user:
                 auth.login(request, user)
                 return render(request, 'login_page.html')
-            else:
-                return render(request, 'login_page.html', {"form": forms, "tip": "用户名或密码错误"})
-        else:
-            return render(request, 'login_page.html', {"form": forms, "tip": "输入内容有误"})
+            return render(request, 'login_page.html', {"form": forms, "tip": "用户名或密码错误"})
+        return render(request, 'login_page.html', {"form": forms, "tip": "输入内容有误"})
 
     if request.method == "DELETE":
          logout(request)
@@ -42,23 +40,10 @@ def register_page(request):
         forms = RegisterForm(request.POST)
 
         if forms.is_valid():
-            code = verifycode(forms.cleaned_data['phone_number'], forms.cleaned_data['msgcode'])
-            if code:
-                user = User.objects.get(username = forms.cleaned_data['user_name'])
-                phone_number = UserProfile.objects.get(phone_number = forms.cleaned_data['phone_number'])
-                if not user:
-                    if not phone_number:
-                        User.objects.create_user(username = forms.cleaned_data['user_name'], password=forms.cleaned_data['password'])
-                        UserProfile.objects.create(user_id = user.id, phone_number = forms.cleaned_data['phone_number'])
-                        return HttpResponse("200")
-                    else:
-                        return render(request, 'register_page.html', {"form": forms, "tip": "手机号已被注册"})
-                else:
-                    return render(request, 'register_page.html', {"form": forms, "tip": "用户已存在"})
-            else:
-                return render(request, 'register_page.html', {"form": forms, "tip": "短信验证码有误"})
-        else:
-            return render(request, 'register_page.html', {"form": forms, "tip": "输入内容有误"})
+            User.objects.create_user(username = forms.cleaned_data['user_name'], password=forms.cleaned_data['password'])
+            UserProfile.objects.create(user_id = user.id, phone_number = forms.cleaned_data['phone_number'])
+            return HttpResponse("200")
+        return render(request, 'register_page.html', {"form": forms})
 
 def get_password_page(request):
     if request.method == "GET":
@@ -68,40 +53,25 @@ def get_password_page(request):
     if request.method == "POST":
         forms = GetPasswordForm(request.POST)
         if forms.is_valid():
-            code = verifycode(forms.cleaned_data['phone_number'], forms.cleaned_data['msgcode'])
-            if code:
-                user = User.objects.get(username = forms.cleaned_data["user_name"])
-                user.set_password(forms.cleaned_data["password"])
-                user.save()
-                return HttpResponse("200")
-            else:
-                return render(request, 'get_password.html', {"form": forms, "tip": "短信验证码有误"})
-        else:
-            return render(request, 'get_password.html', {"form": forms, "tip": "输入内容有误"})
+            user = User.objects.get(username = forms.cleaned_data["user_name"])
+            user.set_password(forms.cleaned_data["password"])
+            user.save()
+            return HttpResponse("200")
+        return render(request, 'get_password_page.html', {"form": forms})
 
 def check_username(request):
     forms = UsernameForm(request.POST)
 
     if forms.is_valid():
-        user = User.objects.get(username = forms.cleaned_data['user_name'])
-        if user:
-            return HttpResponse("用户名可用")
-        else:
-            return HttpResponse("用户名已被使用")
-    else:
-        return HttpResponse("输入内容有误")
+        return HttpResponse("用户名可用")
+    return HttpResponse("用户名不可用")
 
 def check_phone_number(request):
     forms = UsernameForm(request.POST)
 
     if forms.is_valid():
-        phone_number = UserProfile.objects.get(phone_number = forms.cleaned_data['phone_number'])
-        if phone_number:
-            return HttpResponse("手机号可用")
-        else:
-            return HttpResponse("手机号已被注册")
-    else:
-        return HttpResponse("输入内容有误")
+        return HttpResponse("手机号可用")
+    return HttpResponse("手机号不可用")
 
 def sendmsgcode(request):
     def check_piccode():
@@ -111,15 +81,11 @@ def sendmsgcode(request):
         if code == answer:
             remove_session(request)
             return 1
-        else:
-            return 0
+        return 0
 
     if check_piccode():
-        phone_number = request.POST.get("phone_number")
-        result = sendcode(phone_number)
-        return HttpResponse(result)
-    else:
-        return HttpResponse('图形验证码校验失败')
+        return HttpResponse("200")
+    return HttpResponse('图形验证码校验失败')
 
 @login_required
 def space_page(request):
@@ -141,8 +107,7 @@ def perfect_info(request):
         if form.is_valid():
             form.save()
             return HttpResponse("200")
-        else:
-            return render(request, 'perfect_information.html', {"form": form, "target_url": "/account/perfect_information/"})
+        return render(request, 'perfect_information.html', {"form": form, "target_url": "/account/perfect_information/"})
 
 @login_required
 def change_info_page(request):
@@ -156,8 +121,7 @@ def change_info_page(request):
         if form.is_valid():
             form.save()
             return HttpResponse("200")
-        else:
-            return render(request, 'perfect_information.html', {"form": form, "target_url": "/account/change_information/"})
+        return render(request, 'perfect_information.html', {"form": form, "target_url": "/account/change_information/"})
 
 #def login_submit(request):
 #    forms = LoginForm(request.POST)

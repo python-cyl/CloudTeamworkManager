@@ -7,7 +7,6 @@ class UserProfile(models.Model):
     name = models.CharField(max_length = 5, verbose_name='姓名')
     student_id = models.CharField(max_length = 11, verbose_name='学号')
     cloud_id = models.CharField(max_length = 20, verbose_name='云顶号')
-    phone_number = models.CharField(max_length = 11, verbose_name='手机号')
     email = models.CharField(max_length = 30, verbose_name='邮箱')
     magor = models.CharField(max_length = 1, choices=(('M','机电创新团队'), ('P','Python'),('N','Node.js'), 
                                                       ('J','Java'), ('F','前端'), ('D','设计')), verbose_name='方向')

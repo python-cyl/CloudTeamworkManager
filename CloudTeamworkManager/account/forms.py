@@ -7,64 +7,40 @@ from .msgcode import verifycode
 
 
 class RegisterForm(forms.Form):
-    user_name = forms.CharField(max_length=20, min_length=6, label="用户名")
-    password = forms.CharField(max_length=16, min_length=6, label="密码")
     phone_number = forms.CharField(max_length=11, min_length=11, label="手机号")
+    password = forms.CharField(max_length=16, min_length=6, label="密码")
     msgcode = forms.CharField(max_length=4, min_length=4, label="短信验证码")
 
-    def clean_user_name(self):
-        user_name = self.cleaned_data["user_name"]
-
-        try:
-            User.objects.get(username=self.cleaned_data["user_name"])
-            raise ValidationError("用户已存在")
-        except User.DoesNotExist:
-            return user_name
-
     def clean_phone_number(self):
-        phone_number = self.cleaned_data.get("phone_number")
+        phone_number = self.cleaned_data["phone_number"]
 
         if re.match("^1[34578]\d{9}$", phone_number):
             try:
-                UserProfile.objects.get(phone_number = phone_number)
+                User.objects.get(username = self.cleaned_data["phone_number"])
                 raise ValidationError("手机号码已被注册")
-            except UserProfile.DoesNotExist:
+            except User.DoesNotExist:
                 return phone_number
-        else:
-            raise ValidationError("手机号码不正确")
+        raise ValidationError("手机号码不正确")
 
     def clean_msgcode(self):
         msgcode = self.cleaned_data["msgcode"]
 
         if re.match("\d{4}", msgcode):
-            if verifycode(self.cleaned_data.get("phone_number", "11111111111"), msgcode) == 200:
+            if verifycode(self.cleaned_data.get("phone_number", "11111111111"), msgcode):
                 return msgcode
             raise ValidationError("验证码校验失败")
         else:
             raise ValidationError("验证码格式错误")
 
-class UsernameForm(RegisterForm):
-    msgcode = "0000"
-    phone_number = "00000000000"
-
-    def clean_msgcode(self):
-        pass
-
-    def clean_phone_number(self):
-        pass
-
 class PhoneNumberForm(RegisterForm):
     msgcode = "1234"
-    user_name = "xxxxxx"
-
-    def clean_user_name(self):
-        pass
+    password = "0000000000"
 
     def clean_msgcode(self):
         pass
 
 class LoginForm(forms.Form):
-    user_name = forms.CharField(max_length=20, min_length=6, label="用户名")
+    phone_number = forms.CharField(max_length=11, min_length=11, label="手机号")
     password = forms.CharField(max_length=16, min_length=6, label="密码")
 
 class GetPasswordForm(forms.Form):
@@ -77,12 +53,11 @@ class GetPasswordForm(forms.Form):
 
         if re.match("^1[34578]\d{9}$", phone_number):
             try:
-                UserProfile.objects.get(phone_number = phone_number)
+                User.objects.get(phone_number = phone_number)
                 return phone_number
             except UserProfile.DoesNotExist:
                 raise ValidationError("手机号码未注册")
-        else:
-            raise ValidationError("手机号码不正确")
+        raise ValidationError("手机号码不正确")
 
     def clean_msgcode(self):
         msgcode = self.cleaned_data["msgcode"]
@@ -91,8 +66,7 @@ class GetPasswordForm(forms.Form):
             if verifycode(self.cleaned_data.get("phone_number", "11111111111"), msgcode) == 200:
                 return msgcode
             raise ValidationError("验证码校验失败")
-        else:
-            raise ValidationError("验证码格式错误")
+        raise ValidationError("验证码格式错误")
 
 class extend_info(ModelForm):
     class Meta:
@@ -104,14 +78,6 @@ class extend_info(ModelForm):
         self.fields["home_address"].required = False
         self.fields["guardian_phone"].required = False
         self.fields["introduction"].required = False
-
-    def clean_phone_number(self):
-        phone_number = self.cleaned_data.get("phone_number")
-
-        if re.match("^1[34578]\d{9}$", phone_number):
-            return phone_number
-        else:
-            raise ValidationError("手机号码不正确")
 
     def clean_email(self):
         email = self.cleaned_data.get("email")

@@ -32,8 +32,12 @@
   <ItemGroup>
     <Compile Include="account\admin.py" />
     <Compile Include="account\apps.py" />
+    <Compile Include="account\forms.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="account\migrations\__init__.py" />
     <Compile Include="account\models.py" />
+    <Compile Include="account\msgcode.py" />
     <Compile Include="account\tests.py" />
     <Compile Include="account\urls.py">
       <SubType>Code</SubType>
@@ -71,7 +75,11 @@
     <Compile Include="task\__init__.py" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="account\templates\account\index.html" />
+    <Content Include="account\templates\get_password_page.html" />
+    <Content Include="account\templates\login_page.html" />
+    <Content Include="account\templates\perfect_infomation.html" />
+    <Content Include="account\templates\register_page.html" />
+    <Content Include="account\templates\space.html" />
     <Content Include="file\templates\file\index.html" />
     <Content Include="notification\templates\notification\index.html" />
     <Content Include="requirements.txt" />
@@ -81,7 +89,6 @@
     <Folder Include="account\" />
     <Folder Include="account\migrations\" />
     <Folder Include="account\templates\" />
-    <Folder Include="account\templates\account\" />
     <Folder Include="CloudTeamworkManager\" />
     <Folder Include="file\" />
     <Folder Include="file\migrations\" />

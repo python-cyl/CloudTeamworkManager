@@ -50,6 +50,7 @@
     <Compile Include="file\models.py" />
     <Compile Include="file\tests.py" />
     <Compile Include="file\urls.py" />
+    <Compile Include="file\verification_code.py" />
     <Compile Include="file\views.py" />
     <Compile Include="file\__init__.py" />
     <Compile Include="manage.py" />
@@ -67,6 +68,9 @@
     <Compile Include="notification\__init__.py" />
     <Compile Include="task\admin.py" />
     <Compile Include="task\apps.py" />
+    <Compile Include="task\forms.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="task\migrations\__init__.py" />
     <Compile Include="task\models.py" />
     <Compile Include="task\tests.py" />

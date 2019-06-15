@@ -4,10 +4,19 @@ from django.contrib import auth
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
+from django.forms import ValidationError
 from .forms import RegisterForm, LoginForm, GetPasswordForm, change_info, extend_info
 from .models import UserProfile
 from .msgcode import sendcode
+from task.models import task
+from .forms import my_clean_phone_number
+import json
+import traceback
 
+
+def logoutAccount(request):
+    auth.logout(request)
+    return HttpResponseRedirect("/account/login/")
 
 def login_page(request):
     if request.method == "GET":
@@ -38,6 +47,7 @@ def register_page(request):
 
     if request.method == "POST":
         forms = RegisterForm(request.POST)
+        forms.answer = request.session.get("verify")
 
         if forms.is_valid():
             user = User.objects.create_user(username = forms.cleaned_data['phone_number'], password=forms.cleaned_data['password'])
@@ -52,6 +62,8 @@ def get_password_page(request):
 
     if request.method == "POST":
         forms = GetPasswordForm(request.POST)
+        forms.answer = request.session.get("verify")
+
         if forms.is_valid():
             user = User.objects.get(username = forms.cleaned_data["phone_number"])
             user.set_password(forms.cleaned_data["password"])
@@ -60,23 +72,25 @@ def get_password_page(request):
         return render(request, 'get_password_page.html', {"form": forms})
 
 def check_phone_number(request):
-    forms = UsernameForm(request.POST)
+    phone_number = request.POST.get("phone_number")
 
-    if forms.is_valid():
-        return HttpResponse("手机号可用")
-    return HttpResponse("手机号不可用")
+    try:
+        my_clean_phone_number(phone_number)
+    except ValidationError as e:
+        return HttpResponse(e.message)
+    return HttpResponse("手机号可用")
 
 def sendmsgcode(request):
-    def check_piccode():
+    def check_picode():
         answer = request.session.get('verify').upper()
         code = request.POST.get('picode').upper()
 
         if code == answer:
             remove_session(request)
-            return 1
-        return 0
+            return True
+        return False
 
-    if check_piccode():
+    if check_picode():
         sendcode(request.POST.get("phone_number"))
         return HttpResponse("200")
     return HttpResponse('图形验证码校验失败')
@@ -87,6 +101,20 @@ def space_page(request):
     if user_info.name:
         return render(request, 'space.html')
     return HttpResponseRedirect("/account/perfect_information/")
+
+@login_required
+def personal_page(request):
+    user_info = UserProfile.objects.get(user_id = request.user.id)
+    involved_projects = json.loads(user_info["involved_projects"])
+    projects_temp = []
+    each_project_temp = {}
+    for each_projects in involved_projects:
+        task_id = each_projects
+        task_status = task.objects.get(id = each_projects)["task_status"]
+        each_project_temp["task_id"] = task_id
+        each_project_temp["task_status"] = task_status
+        projects_temp.append(each_project_temp)
+    return render(request, "personal_page", {"user_info": user_info, "projects": projects_temp})
 
 @login_required
 def perfect_info(request):

@@ -24,7 +24,8 @@ urlpatterns = [
     # Uncomment the next line to enable the admin:
     path('admin/', admin.site.urls),
     path('account/', include('account.urls')),
-    #path('task/', include('account.urls')),
+    path('task/', include('task.urls')),
+    path('file/', include('file.urls')),
     #path('notification/', include('account.urls')),
     #path('task/', include('account.urls')),
 ]

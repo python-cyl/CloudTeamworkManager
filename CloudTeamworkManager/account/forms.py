@@ -98,7 +98,7 @@ class GetPasswordForm(forms.Form):
 class extend_info(ModelForm):
     class Meta:
         model = UserProfile
-        exclude = ("management_projects", "unread_notifications", "read_notifications", "involved_projects", "user")
+        exclude = ("involved_projects_number", "management_projects", "unread_notifications", "read_notifications", "involved_projects", "user")
         
     def __init__(self, *args, **kwargs):
         super(extend_info, self).__init__(*args, **kwargs)

@@ -6,58 +6,101 @@ from guardian.decorators import permission_required
 from .models import task
 from .forms import task as form_task
 from account.models import UserProfile
+import re
+import json
+
+def delete_task(request):
+    task.objects.get(id = request.GET.get("task_id")).delete()
+    return HttpResponse("200")
 
 # 检查权限
 def create_task(request):
-    form = form_task()
-    pass
+    if request.method == "GET":
+        return render(request, "create_task.html", {"form": form_task()})
+
+    if request.method == "POST":
+        form = form_task(request.POST)
+
+        if form.is_valid():
+            # 给创建者赋予权限
+            form.instance.all_members = form.instance.members
+            form.save()
+            # 通知新增的同学
+            for i in json.loads(form.instance.members):
+                user = UserProfile.objects.get(id = i)
+                user.involved_projects_number += 1
+                user.save()
+            return HttpResponse("200")
+        return HttpResponse("出现错误")
 
 # 检查权限
-def change_task(request):
-    form = form_task()
-    pass
+def edit_task(request):
+    if request.method == 'GET':
+        target_task = task.objects.get(id = request.GET.get("task_id"))
+        return render(request, "create_task.html", {"form": form_task(instance = target_task)})
+
+    if request.method == "POST":
+        target_task = task.objects.get(id = request.POST.get("task_id"))
+        form = form_task(request.POST, instance = target_task)
+
+        if form.is_valid():
+            past_members = set(json.loads(target_task.members))
+            current_members = set(json.loads(request.POST.get("members")))
+            removed_members = past_members - current_members
+            new_members = current_members - past_members
+            form.instance.all_members = json.dumps(list(set(json.loads(form.instance.all_members)) + current_members))
+            form.save()
+
+            for i in removed_members:
+                user = UserProfile.objects.get(id = i)
+                user.involved_projects_number -= 1
+                user.save()
+                # 这里需要给removed_members发送通知
+
+            for i in new_members:
+                user = UserProfile.objects.get(id = i)
+                user.involved_projects_number += 1
+                user.save()
+                # 这里需要给new_members发送通知
+
+            return HttpResponse("200")
+        return HttpResponse("出现错误")
 
 # 检查权限
 def get_members(request):
-    members = list(UserProfile.objects.get(magor = request.GET.get("magor")))
-    return HttpResponse(member)
-
-# 检查权限
-def search_member(request):
-    members = list(UserProfile.objects.get(name = request.GET.get("name")))
-    return HttpResponse(members)
-
-# 检查权限
-def change_task_status(request):
-    task_id = request.POST.get("task_id")
-    task.objects.filter(id = task_id).update(task_status = request.POST.get("task_status"))
-    return HttpResponse('200')
-
-# 检查权限 和comment库有关
-def show_comment(request):
-    pass
-
-# 检查权限 和comment库有关
-def change_comment(request):
-    pass
+    members = UserProfile.objects.filter(magor=request.GET.get("key")) | UserProfile.objects.filter(name = request.GET.get("key"))
+    members = members.values("name", "magor", "id", "involved_projects_number")
+    return HttpResponse(json.dumps(list(members)))
 
 def task_page(request):
     target_task = task.objects.get(id = request.GET.get("task_id"))
     return HttpResponse(task)
 
-def show_appendixes(request):
-    target_task = task.objects.get(id = request.POST.get("task_id"))
-    appendixes = target_task["target_task"]
-    return HttpResponse(appendixes)
-
 # 检查权限
 def upgrade_process(request):
-    target_task = task.objects.get(id = request.POST.get("task_id"))
-    target_task = form_task(request.POST, instance = target_task)
-    if target_task.is_valid():
-        target_task.save()
-        return HttpResponse('200')
-    return HttpResponse('表单有误!')
+    # 更新项目进度,修改项目进度
+    if request.method == "GET":
+        target_task = task.objects.get(id = request.GET.get("task_id"))
+        progress = target_task.task_progress
+        return HttpResponse(progress)
+
+    if request.method == "POST":
+        if request.POST.get("action") == "upgrade":
+            target_task = task.objects.get(id = request.POST.get("task_id"))
+            target_task.task_progress = "%s|%s"%(target_task.task_progress, request.POST.get("task_progress"))
+            target_task = form_task(target_task)
+            if target_task.is_valid():
+                target_task.save()
+                return HttpResponse('200')
+            return HttpResponse('出现了一些错误!')
+        elif request.POST.get("action") == "edit":
+            target_task = task.objects.get(id = request.POST.get("task_id"))
+            target_task.task_progress = "%s%s"%(re.match("^.*\|", target_task.task_progress).group(), request.POST.get("task_progress"))
+            target_task = form_task(target_task)
+            if target_task.is_valid():
+                target_task.save()
+                return HttpResponse('200')
+            return HttpResponse('出现了一些错误!')
 
 
 #@login_required

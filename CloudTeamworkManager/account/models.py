@@ -16,6 +16,7 @@ class UserProfile(models.Model):
     guardian_phone = models.CharField(max_length = 11, verbose_name='家长手机号')
     introduction = models.CharField(max_length = 350, verbose_name='个人介绍')
     involved_projects = models.TextField()
+    involved_projects_number = models.IntegerField(default=0)
     management_projects = models.TextField()
     read_notifications = models.TextField()
     unread_notifications = models.TextField()

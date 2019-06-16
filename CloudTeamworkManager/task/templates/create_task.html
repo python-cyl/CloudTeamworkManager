@@ -1,0 +1,12 @@
+<html>
+<head><title></title></head>
+
+<body>
+    <form id="form" autocomplete="off" method="post" action="/task/create_task/">
+        {%csrf_token%}
+        {{  form  }}
+        <div id="tip">&nbsp;</div>
+        <button>提交</button>
+    </form>
+</body>
+</html>

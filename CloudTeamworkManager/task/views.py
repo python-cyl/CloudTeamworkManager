@@ -9,6 +9,8 @@ from account.models import UserProfile
 import re
 import json
 
+
+# 检查权限
 def delete_task(request):
     task.objects.get(id = request.GET.get("task_id")).delete()
     return HttpResponse("200")
@@ -22,14 +24,24 @@ def create_task(request):
         form = form_task(request.POST)
 
         if form.is_valid():
-            # 给创建者赋予权限
+            # 赋予创建者编辑任务的权限
             form.instance.all_members = form.instance.members
-            form.save()
+            task = form.save()
+            assign_perm('edit_tasks', request.user, task)
+            assign_perm('glance_over_task_details', request.user, task)
             # 通知新增的同学
+
+            # 组内成员参与任务的个数加一，并赋予其浏览该任务的权限
             for i in json.loads(form.instance.members):
-                user = UserProfile.objects.get(id = i)
+                try:
+                    user = UserProfile.objects.get(id = i)
+                except UserProfile.DoesNotExist:
+                    continue
                 user.involved_projects_number += 1
+                user.involved_projects = json.dumps(json.loads(user.involved_projects).append(task.id))
                 user.save()
+                user = User.objects.get(id = user.user_id)
+                assign_perm('glance_over_task_details', user, task)
             return HttpResponse("200")
         return HttpResponse("出现错误")
 
@@ -54,12 +66,14 @@ def edit_task(request):
             for i in removed_members:
                 user = UserProfile.objects.get(id = i)
                 user.involved_projects_number -= 1
+                user.involved_projects = json.dumps(json.loads(user.involved_projects).remove(task.id))
                 user.save()
                 # 这里需要给removed_members发送通知
 
             for i in new_members:
                 user = UserProfile.objects.get(id = i)
                 user.involved_projects_number += 1
+                user.involved_projects = json.dumps(json.loads(user.involved_projects).append(task.id))
                 user.save()
                 # 这里需要给new_members发送通知
 
@@ -72,6 +86,7 @@ def get_members(request):
     members = members.values("name", "magor", "id", "involved_projects_number")
     return HttpResponse(json.dumps(list(members)))
 
+# 检查权限
 def task_page(request):
     target_task = task.objects.get(id = request.GET.get("task_id"))
     return HttpResponse(task)

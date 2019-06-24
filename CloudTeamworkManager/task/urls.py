@@ -8,6 +8,6 @@ urlpatterns = [
     #path("check_permission_page/<need>/", views.check_permission_page),
     path("create_task/", views.create_task),
     path('get_members/', views.get_members),
-    path('upgrade_process/', views.upgrade_process),
+    path('process/', views.upgrade_process),
     path('edit_task/', views.edit_task),
 ]

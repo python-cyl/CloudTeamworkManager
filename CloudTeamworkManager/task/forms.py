@@ -3,6 +3,7 @@ from django.forms import ModelForm, ValidationError
 from django.contrib.auth.models import User
 from django import forms
 from .models import task as models_task
+from .models import comment as models_comment
 
 class task(ModelForm):
 
@@ -18,3 +19,6 @@ class task(ModelForm):
         self.fields["task_need"].required = False
         self.fields["appendixes"].required = False
         self.fields["leader"].required = False
+
+class comment(forms):
+    pass

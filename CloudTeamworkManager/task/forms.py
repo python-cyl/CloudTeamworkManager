@@ -18,7 +18,7 @@ class task(ModelForm):
         self.fields["task_description"].required = False
         self.fields["task_need"].required = False
         self.fields["appendixes"].required = False
-        self.fields["leader"].required = False
+        self.fields["leaders"].required = False
 
-class comment(forms):
-    pass
+class comment(forms.Form):
+    content = forms.CharField(max_length = 200)

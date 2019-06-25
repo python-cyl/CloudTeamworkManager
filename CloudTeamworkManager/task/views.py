@@ -2,7 +2,7 @@ from django.shortcuts import render, HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, Permission, Group
 from guardian.shortcuts import assign_perm, remove_perm
-from guardian.decorators import permission_required
+from guardian.decorators import permission_required_or_403
 from .models import task as models_task
 from .models import comment as models_comment
 from .forms import task as forms_task
@@ -26,7 +26,7 @@ def add_user(target_user, target_group, target_task, position = 0):
     user = User.objects.get(id = target_user.user_id)
     user.groups.add(target_group)
 
-# 检查权限
+@permission_required_or_403("task.create_tasks")
 def create_task(request):
     if request.method == "GET":
         return render(request, "create_task.html", {"form": forms_task()})
@@ -35,15 +35,17 @@ def create_task(request):
         form = forms_task(request.POST)
 
         if form.is_valid():
-            form.instance.all_members = json.loads(form.instance.members).append(request.user.id)
+            form.instance.all_members = json.dumps(json.loads(form.instance.members).append(request.user.id))
             form.instance.creator = request.user.id
 
             target_task = form.save()
 
+            # 配置组权限
             group = Group.objects.create(name=str(target_task.id))
             assign_perm('glance_over_task_details', group, target_task)
 
             # 配置创建者权限
+            assign_perm('edit_tasks', request.user, target_task)
             assign_perm('view_comments', request.user, target_task)
             
             # 配置组长权限
@@ -70,14 +72,14 @@ def create_task(request):
             return HttpResponse("200")
         return HttpResponse("出现错误")
 
-# 检查权限
-def edit_task(request):
+@permission_required_or_403("task.edit_tasks", (models_task, "id", "task_id"))
+def edit_task(request, task_id):
     if request.method == 'GET':
-        target_task = models_task.objects.get(id = request.GET.get("task_id"))
+        target_task = models_task.objects.get(id = task_id)
         return render(request, "create_task.html", {"form": forms_task(instance = target_task)})
 
     if request.method == "POST":
-        target_task = models_task.objects.get(id = request.POST.get("task_id"))
+        target_task = models_task.objects.get(id = task_id)
         form = forms_task(request.POST, instance = target_task)
 
         if form.is_valid():
@@ -150,9 +152,9 @@ def edit_task(request):
             return HttpResponse("200")
         return HttpResponse("出现错误")
 
-# 检查权限
-def delete_task(request):
-    target_task = models_task.objects.get(id = request.GET.get("task_id"))
+@permission_required_or_403("task.edit_tasks", (models_task, "id", "task_id"))
+def delete_task(request, task_id):
+    target_task = models_task.objects.get(id = task_id)
     members = json.loads(target_task.members)
     
     # 撤销权限
@@ -178,65 +180,62 @@ def delete_task(request):
 
     return HttpResponse("200")
 
-# 检查权限
+@permission_required_or_403("task.create_tasks")
 def get_members(request):
     members = UserProfile.objects.filter(magor=request.GET.get("key")) | UserProfile.objects.filter(name = request.GET.get("key"))
     members = members.values("name", "magor", "user_id", "involved_projects_number")
     return HttpResponse(json.dumps(list(members)))
 
-# 检查权限
-def task_page(request):
-    target_task = models_task.objects.get(id = request.GET.get("task_id"))
+@permission_required_or_403("task.glance_over_task_details", (models_task, "id", "task_id"))
+def task_page(request, task_id):
+    target_task = models_task.objects.get(id = task_id)
     return HttpResponse(target_task)
 
-# 检查权限
-def process(request):
+def process(request, task_id):
+    target_task = models_task.objects.get(id = task_id)
     # 更新项目进度,修改项目进度
     if request.method == "GET":
-        target_task = models_task.objects.get(id = request.GET.get("task_id"))
-        progress = target_task.task_progress
-        return HttpResponse(progress)
+        if request.user.has_perm("comment.view_comments", target_task):
+            progress = target_task.task_progress
+            return HttpResponse(progress)
+        return HttpResponse(status=403)
 
     if request.method == "POST":
-        if request.POST.get("action") == "upgrade":
-            target_task = models_task.objects.get(id = request.POST.get("task_id"))
-            target_task.task_progress = "%s|%s"%(target_task.task_progress, request.POST.get("task_progress"))
-            target_task = forms_task(target_task)
+        if request.user.has_perm("comment.edit_comments", target_task):
+            if request.POST.get("action") == "upgrade":
+                target_task.task_progress = "%s|%s"%(target_task.task_progress, request.POST.get("task_progress"))
+                target_task = forms_task(target_task)
+            elif request.POST.get("action") == "edit":
+                target_task.task_progress = "%s%s"%(re.match("^.*\|", target_task.task_progress).group(), request.POST.get("task_progress"))
+                target_task = forms_task(target_task)
             if target_task.is_valid():
                 target_task.save()
                 return HttpResponse('200')
             return HttpResponse('出现了一些错误!')
-        elif request.POST.get("action") == "edit":
-            target_task = models_task.objects.get(id = request.POST.get("task_id"))
-            target_task.task_progress = "%s%s"%(re.match("^.*\|", target_task.task_progress).group(), request.POST.get("task_progress"))
-            target_task = forms_task(target_task)
-            if target_task.is_valid():
-                target_task.save()
-                return HttpResponse('200')
-            return HttpResponse('出现了一些错误!')
+        return HttpResponse(status=403)
 
-# 检查权限
-def comment(request):
-    if request.method == "GET":
-        return HttpResponse(json.dumps(list(models_comment.objects.get(id = request.GET.get("comment_id")).values("content"))))
+#@permission_required_or_403("comment.edit_comments")
+#def comment(request):
+#    if request.method == "GET":
+#        return HttpResponse(json.dumps(list(models_comment.objects.get(id = request.GET.get("comment_id")).values("content"))))
 
-    #if request.method == "POST":
-    #    if request.POST.get("action") == "upgrade":
-    #        target_comment = models_task.objects.get(id = request.POST.get("comment_id"))
-    #        if not target_comment.previous:
-    #            target_comment.content = request.POST.get("content")
-    #            target_comment = forms_comment(target_comment)
-    #            if target_comment.is_valid():
-    #                target_comment.save()
-    #                return HttpResponse('200')
-    #            return HttpResponse('出现了一些错误!')
-    #        return HttpResponse('不允许修改以往的评价!')
-    #    elif request.POST.get("action") == "create":
-    #        target_comment = forms_comment(request.POST.get("content"))
-    #        target_comment.instance.creator = UserProfile.objects.get(user_id = request.User.id)
-    #        target_comment.instance.user_id = request.POST.get("user_id")            target_task.task_progress = "%s%s"%(re.match("^.*\|", target_task.task_progress).group(), request.POST.get("task_progress"))
-    #        target_task = forms_task(target_task)
-    #        if target_task.is_valid():
-    #            target_task.save()
-    #            return HttpResponse('200')
-    #        return HttpResponse('出现了一些错误!')
+#    if request.method == "POST":
+#        if request.POST.get("action") == "upgrade":
+#            target_comment = models_task.objects.get(id = request.POST.get("comment_id"))
+#            if not target_comment.previous:
+#                target_comment.content = request.POST.get("content")
+#                target_comment = forms_comment(target_comment)
+#                if target_comment.is_valid():
+#                    target_comment.save()
+#                    return HttpResponse('200')
+#                return HttpResponse('出现了一些错误!')
+#            return HttpResponse('不允许修改以往的评价!')
+#        elif request.POST.get("action") == "create":
+#            target_comment = forms_comment(request.POST.get("content"))
+#            target_comment.instance.creator = UserProfile.objects.get(user_id = request.user.id)
+#            target_comment.instance.user_id = request.POST.get("user_id")            target_task.task_progress = "%s%s"%(re.match("^.*\|", target_task.task_progress).group(), request.POST.get("task_progress"))
+#            target_task = forms_task(target_task)
+#            if target_task.is_valid():
+#                target_task.save()
+#                return HttpResponse('200')
+#            return HttpResponse('出现了一些错误!')

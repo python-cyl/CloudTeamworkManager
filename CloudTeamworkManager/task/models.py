@@ -19,15 +19,11 @@ class task(models.Model):
         permissions = {
             ('create_tasks','新建任务'),
             ('edit_tasks','编辑任务'),  # 面向实例
-            ('glance_over_task_details', '浏览任务详情')  # 面向实例
+            ('glance_over_task_details', '浏览任务详情'),  # 面向实例
+            ('view_comments','查看评价'),  # 面向实例
+            ('edit_comments','编辑评价'),  # 面向实例
         }
 
 class comment(models.Model):
     content = models.CharField(max_length = 200, verbose_name = '内容')
-    id = models.CharField(max_length = 15)
-
-    class Meta:
-        permissions = {
-            ('view_comments','查看任务'),  # 面向实例
-            ('edit_comments','编辑任务'),  # 面向实例
-        }
+    id = models.CharField(max_length = 15, primary_key=True)

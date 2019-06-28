@@ -214,10 +214,10 @@ def process(request, task_id):
             return HttpResponse("表单校验失败", status = 400)
         return HttpResponse(status=403)
 
-def get_timenow():
-    return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-
 def comment(request, task_id, member_id):
+    def get_timenow():
+        return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+
     target_task = models_task.objects.get_object_or_404(id = task_id)
 
     if request.method == "GET":

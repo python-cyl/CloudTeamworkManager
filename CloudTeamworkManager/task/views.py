@@ -1,6 +1,5 @@
-from django.shortcuts import render, HttpResponse, HttpResponseRedirect
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User, Permission, Group
+from django.shortcuts import render, HttpResponse
+from django.contrib.auth.models import User, Group, Permission
 from guardian.shortcuts import assign_perm, remove_perm
 from guardian.decorators import permission_required_or_403
 from .models import task as models_task
@@ -10,6 +9,7 @@ from .forms import comment as forms_comment
 from account.models import UserProfile
 import re
 import json
+import time
 
 
 # 请注意，这个函数不会修改target_user的权限
@@ -214,28 +214,31 @@ def process(request, task_id):
             return HttpResponse('出现了一些错误!')
         return HttpResponse(status=403)
 
-#@permission_required_or_403("comment.edit_comments")
-#def comment(request):
-#    if request.method == "GET":
-#        return HttpResponse(json.dumps(list(models_comment.objects.get(id = request.GET.get("comment_id")).values("content"))))
+def get_timenow():
+    return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
-#    if request.method == "POST":
-#        if request.POST.get("action") == "upgrade":
-#            target_comment = models_task.objects.get(id = request.POST.get("comment_id"))
-#            if not target_comment.previous:
-#                target_comment.content = request.POST.get("content")
-#                target_comment = forms_comment(target_comment)
-#                if target_comment.is_valid():
-#                    target_comment.save()
-#                    return HttpResponse('200')
-#                return HttpResponse('出现了一些错误!')
-#            return HttpResponse('不允许修改以往的评价!')
-#        elif request.POST.get("action") == "create":
-#            target_comment = forms_comment(request.POST.get("content"))
-#            target_comment.instance.creator = UserProfile.objects.get(user_id = request.user.id)
-#            target_comment.instance.user_id = request.POST.get("user_id")            target_task.task_progress = "%s%s"%(re.match("^.*\|", target_task.task_progress).group(), request.POST.get("task_progress"))
-#            target_task = forms_task(target_task)
-#            if target_task.is_valid():
-#                target_task.save()
-#                return HttpResponse('200')
-#            return HttpResponse('出现了一些错误!')
+def comment(request, task_id, member_id):
+    target_task = models_task.objects.get(id = task_id)
+
+    if request.method == "GET":
+        if request.user.has_perm("comment.view_comments", target_task):
+            return HttpResponse(models_comment.objects.get(id = "%s&%s"%(task_id, member_id)).values("comments"))
+        return HttpResponse(status=403)
+
+    if request.method == "POST":
+        if request.user.has_perm("comment.edit_comments", target_task):
+            if request.POST.get("action") == "upgrade":
+                comment = models_comment.objects.update(id = "%s&%s"%(task_id, member_id))
+                contents = json.loads(comment.contents)
+                lastest_comment = contents.pop()
+                lastest_comment["upgrade_date"] = get_timenow()
+                lastest_comment["content"] = request.POST.get("content")
+                contents.append(lastest_coment)
+                comment.comments = json.dumps(contents)
+                comment.save()
+                return HttpResponse('200')
+            elif request.POST.get("action") == "create":
+                comment = {"publish_date": get_timenow(), "upgrade_date": get_timenow(), "content": request.POST.get("content"), "creater": UserProfile.objects.get(user_id = request.user.id)}
+                models_comment.objects.create(id = "%s&%s"%(task_id, member_id), comments = json.dumps([].append(comment)))
+                return HttpResponse('200')
+        return HttpResponse(status=403)

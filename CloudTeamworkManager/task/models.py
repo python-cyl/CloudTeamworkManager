@@ -25,5 +25,5 @@ class task(models.Model):
         }
 
 class comment(models.Model):
-    content = models.CharField(max_length = 200, verbose_name = '内容')
+    comments = models.CharField(max_length = 200, verbose_name = '内容')
     id = models.CharField(max_length = 15, primary_key=True)

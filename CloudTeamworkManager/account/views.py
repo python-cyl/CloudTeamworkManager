@@ -2,6 +2,7 @@ from django.shortcuts import render, HttpResponse, HttpResponseRedirect
 from django.forms.models import model_to_dict
 from django.contrib import auth
 from django.contrib.auth.models import User
+from django.contrib.auth import logout as remove_session
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from django.forms import ValidationError
@@ -37,7 +38,7 @@ def login_page(request):
         return render(request, 'login_page.html', {"form": forms, "tip": "输入内容有误"})
 
     if request.method == "DELETE":
-         logout(request)
+         auth.logout(request)
          return HttpResponseRedirect("/account/login/")
 
 def register_page(request):

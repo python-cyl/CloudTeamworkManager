@@ -1,4 +1,4 @@
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render, HttpResponse, get_object_or_404 
 from django.contrib.auth.models import User, Group, Permission
 from guardian.shortcuts import assign_perm, remove_perm
 from guardian.decorators import permission_required_or_403
@@ -20,7 +20,7 @@ def remove_user(target_user, target_task):
 
 def add_user(target_user, target_group, target_task, position = 0):
     target_user.involved_projects_number += 1
-    target_user.involved_projects = json.dumps(json.loads(user.involved_projects).append(target_task.id))
+    target_user.involved_projects = json.dumps(json.loads(target_user.involved_projects).append(target_task.id))
     target_user.save()
 
     user = User.objects.get(id = target_user.user_id)
@@ -70,16 +70,16 @@ def create_task(request):
             # 通知
 
             return HttpResponse("200")
-        return HttpResponse("出现错误")
+        return HttpResponse("表单校验失败", status = 400)
 
 @permission_required_or_403("task.edit_tasks", (models_task, "id", "task_id"))
 def edit_task(request, task_id):
     if request.method == 'GET':
-        target_task = models_task.objects.get(id = task_id)
+        target_task = models_task.objects.get_object_or_404(id = task_id)
         return render(request, "create_task.html", {"form": forms_task(instance = target_task)})
 
     if request.method == "POST":
-        target_task = models_task.objects.get(id = task_id)
+        target_task = models_task.objects.get_object_or_404(id = task_id)
         form = forms_task(request.POST, instance = target_task)
 
         if form.is_valid():
@@ -97,13 +97,13 @@ def edit_task(request, task_id):
             group = Group.objects.get(name=str(target_task.id))
 
             # 在组中删除该成员，该成员参与过的任务列表更新
-            for i in removed_members:
+            for each in removed_members:
                 try:
-                    user = UserProfile.objects.get(id = i)
+                    user = UserProfile.objects.get(id = each)
                 except UserProfile.DoesNotExist:
                     continue
 
-                remove_user(user, group, target_task)
+                remove_user(user, target_task)
                 User.objects.get(id = user.user_id).groups.remove(group)
 
                 # 通知
@@ -115,9 +115,9 @@ def edit_task(request, task_id):
             new_leaders = current_leaders - past_leaders
 
             # 配置被移除的组长的权限
-            for i in removed_leaders:
+            for each in removed_leaders:
                 try:
-                    user = UserProfile.objects.get(id = i)
+                    user = UserProfile.objects.get(id = each)
                 except UserProfile.DoesNotExist:
                     continue
 
@@ -127,34 +127,34 @@ def edit_task(request, task_id):
                 # 通知
 
             # 配置新增组员
-            for i in new_members:
+            for each in new_members:
                 try:
-                    user = UserProfile.objects.get(id = i)
+                    user = UserProfile.objects.get(id = each)
                 except UserProfile.DoesNotExist:
                     continue
 
-                add_user(user, target_task)
+                add_user(user, group, target_task)
 
                 # 通知
 
             # 配置新增组长的权限
-            for i in new_leaders:
+            for each in new_leaders:
                 try:
-                    user = UserProfile.objects.get(id = i)
+                    user = UserProfile.objects.get(id = each)
                 except UserProfile.DoesNotExist:
                     continue
 
-                add_perm('view_comments', User.objects.get(id = user.user_id), target_task)
-                add_perm('edit_comments', User.objects.get(id = user.user_id), target_task)
+                assign_perm('view_comments', User.objects.get(id = user.user_id), target_task)
+                assign_perm('edit_comments', User.objects.get(id = user.user_id), target_task)
 
                 # 通知
 
             return HttpResponse("200")
-        return HttpResponse("出现错误")
+        return HttpResponse("表单校验失败", status = 400)
 
 @permission_required_or_403("task.edit_tasks", (models_task, "id", "task_id"))
 def delete_task(request, task_id):
-    target_task = models_task.objects.get(id = task_id)
+    target_task = models_task.objects.get_object_or_404(id = task_id)
     members = json.loads(target_task.members)
     
     # 撤销权限
@@ -188,11 +188,11 @@ def get_members(request):
 
 @permission_required_or_403("task.glance_over_task_details", (models_task, "id", "task_id"))
 def task_page(request, task_id):
-    target_task = models_task.objects.get(id = task_id)
+    target_task = models_task.objects.get_object_or_404(id = task_id)
     return HttpResponse(target_task)
 
 def process(request, task_id):
-    target_task = models_task.objects.get(id = task_id)
+    target_task = models_task.objects.get_object_or_404(id = task_id)
     # 更新项目进度,修改项目进度
     if request.method == "GET":
         if request.user.has_perm("comment.view_comments", target_task):
@@ -211,18 +211,18 @@ def process(request, task_id):
             if target_task.is_valid():
                 target_task.save()
                 return HttpResponse('200')
-            return HttpResponse('出现了一些错误!')
+            return HttpResponse("表单校验失败", status = 400)
         return HttpResponse(status=403)
 
 def get_timenow():
     return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
 def comment(request, task_id, member_id):
-    target_task = models_task.objects.get(id = task_id)
+    target_task = models_task.objects.get_object_or_404(id = task_id)
 
     if request.method == "GET":
         if request.user.has_perm("comment.view_comments", target_task):
-            return HttpResponse(models_comment.objects.get(id = "%s&%s"%(task_id, member_id)).values("comments"))
+            return HttpResponse(models_comment.objects.get_object_or_404(id = "%s&%s"%(task_id, member_id)).values("comments"))
         return HttpResponse(status=403)
 
     if request.method == "POST":
@@ -233,7 +233,7 @@ def comment(request, task_id, member_id):
                 lastest_comment = contents.pop()
                 lastest_comment["upgrade_date"] = get_timenow()
                 lastest_comment["content"] = request.POST.get("content")
-                contents.append(lastest_coment)
+                contents.append(lastest_comment)
                 comment.comments = json.dumps(contents)
                 comment.save()
                 return HttpResponse('200')

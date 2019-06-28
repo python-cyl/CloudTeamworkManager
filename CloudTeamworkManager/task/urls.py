@@ -9,4 +9,5 @@ urlpatterns = [
     path('get_members/', views.get_members),
     path('process/<int:task_id>', views.process),
     path('task_page/<int:task_id>', views.delete_task),
+    path('comment/<int:task_id>/<int:member_id>', views.delete_task),
 ]

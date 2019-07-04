@@ -26,6 +26,7 @@ def add_user(target_user, target_group, target_task, position = 0):
     user = User.objects.get(id = target_user.user_id)
     user.groups.add(target_group)
 
+# 检查权限或返回403错误，需要拥有的权限是"task.create_tasks"（应用名.权限名）
 @permission_required_or_403("task.create_tasks")
 def create_task(request):
     if request.method == "GET":
@@ -41,10 +42,14 @@ def create_task(request):
             target_task = form.save()
 
             # 配置组权限
+            # 创建一个用户组，将来会为这个组分配权限，再把用户加入到这个组
             target_group = Group.objects.create(name=str(target_task.id))
+
+            # 为一个组对一个对象分配权限
             assign_perm('glance_over_task_details', target_group, target_task)
 
             # 配置创建者权限
+            # 这是分配权限
             assign_perm('edit_tasks', request.user, target_task)
             assign_perm('view_comments', request.user, target_task)
             
@@ -72,6 +77,10 @@ def create_task(request):
             return HttpResponse("200")
         return HttpResponse("表单校验失败", status = 400)
 
+# 这里是检测当前用户对某个对象的权限
+# 第一个参数是权限名，后面的元组中，models_task是对象的类，意为要检测的权限是对于哪一种对象的
+# 元组中的id意思是要找到models_task对象的实例，这里通过id搜索这个对象
+# 元组中的task_id意为读取被装饰函数的task_id参数，用id = task_id查找对象
 @permission_required_or_403("task.edit_tasks", (models_task, "id", "task_id"))
 def edit_task(request, task_id):
     if request.method == 'GET':
@@ -159,6 +168,8 @@ def delete_task(request, task_id):
     
     # 撤销权限
     Group.objects.get(name=str(target_task.id)).delete()
+
+    # 撤销对某个用户对某个对象的特定权限
     remove_perm('edit_tasks', request.user, target_task)
     remove_perm('view_comments', request.user, target_task)
 

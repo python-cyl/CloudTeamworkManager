@@ -15,6 +15,7 @@ class task(models.Model):
     creator = models.IntegerField(verbose_name = '创建者')
     leaders = models.CharField(max_length = 20, verbose_name = '组长')
 
+    # 这里对权限进行定义
     class Meta:
         permissions = {
             ('create_tasks','新建任务'),

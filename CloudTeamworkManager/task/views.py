@@ -41,8 +41,8 @@ def create_task(request):
             target_task = form.save()
 
             # 配置组权限
-            group = Group.objects.create(name=str(target_task.id))
-            assign_perm('glance_over_task_details', group, target_task)
+            target_group = Group.objects.create(name=str(target_task.id))
+            assign_perm('glance_over_task_details', target_group, target_task)
 
             # 配置创建者权限
             assign_perm('edit_tasks', request.user, target_task)
@@ -65,7 +65,7 @@ def create_task(request):
                 except UserProfile.DoesNotExist:
                     continue
 
-                add_user(target_user, group, target_task)
+                add_user(target_user, target_group, target_task)
 
             # 通知
 

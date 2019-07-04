@@ -134,15 +134,34 @@ def perfect_info(request):
             return HttpResponseRedirect("/account/space/")
         return render(request, 'perfect_information.html', {"form": form, "target_url": "/account/perfect_information/"})
 
+# 处理用户修改个人信息的请求
+# 要求用户登录，若没有登录，返回登录页面
 @login_required
 def change_info_page(request):
+
+    # 从数据库中查找当前用户的个人信息
     user_info = UserProfile.objects.get(user_id = request.user.id)
+
+    # 如果是get请求，则是打开页面的请求
     if request.method == "GET":
+
+        # 将该用户的信息作为实例传入change_info表单的实例化函数，将会返回一个change_info表单的实例。
+        # 这个实例中的字段将使用user_info中的信息填充
         form = change_info(instance=user_info)
+
         return render(request, 'perfect_information.html', {'form': form, "target_url": "/account/change_information/"})
 
+    # 如果是post请求，则该请求希望修改一个用户的信息
     if request.method == "POST":
+
+        # 将该用户的信息作为实例传入change_info表单的实例化函数，同时传入请求的post表单，将会返回一个change_info表单的实例。
+        # 这个实例中的字段将先使用user_info中的信息填充，再使用post表单的信息填充。
+        # 把user_info作为实例传入表单，一方面，可以指定需要修改的信息是user_info这个用户的信息
+        # 另一方面，可以填充post表单中被隐藏的字段，例如name
+        # 这样，用户的新信息完美覆盖到了旧信息上
         form = change_info(request.POST, instance=user_info)
+
+        # 验证表单合法性
         if form.is_valid():
             form.save()
             return HttpResponse("200")

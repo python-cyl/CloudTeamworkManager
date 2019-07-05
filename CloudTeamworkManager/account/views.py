@@ -6,7 +6,7 @@ from django.contrib.auth import logout as remove_session
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from django.forms import ValidationError
-from .forms import RegisterForm, LoginForm, GetPasswordForm, change_info, extend_info
+from .forms import RegisterForm, LoginForm, GetPasswordForm, change_info, extend_info, ResetPasswordForm
 from .models import UserProfile
 from .msgcode import sendcode
 from task.models import task
@@ -71,6 +71,22 @@ def get_password_page(request):
             user.save()
             return HttpResponseRedirect("/account/login/")
         return render(request, 'get_password_page.html', {"form": forms})
+
+def reset_password(request):
+    if request.method == "GET":
+        forms = ResetPasswordForm()
+        return render(request, 'reset_password_page.html', {"form": forms})
+
+    if request.method == "POST":
+        forms = ResetPasswordForm()
+        forms.answer = request.session.get("verify")
+        user = request.user
+        forms.user = user
+
+        if forms.is_valid():
+            user.set_password(forms.cleaned_data["new_password"])
+            return HttpResponse("200")
+        return render(request, 'reset_password_page.html', {"form": forms})
 
 def check_phone_number(request):
     phone_number = request.POST.get("phone_number")

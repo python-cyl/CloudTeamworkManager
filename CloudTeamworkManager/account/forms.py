@@ -77,6 +77,39 @@ class LoginForm(forms.Form):
     phone_number = forms.CharField(max_length=11, min_length=11, label="手机号")
     password = forms.CharField(max_length=16, min_length=6, label="密码")
 
+class ResetPasswordForm(forms.Form):
+    phone_number = forms.CharField(max_length=11, min_length=11, label="手机号")
+    old_password = forms.CharField(max_length=16, min_length=6, label="当前密码")
+    new_password = forms.CharField(max_length=16, min_length=6, label="新密码")
+    re_password = forms.CharField(max_length=16, min_length=6, label="重新输入新密码")
+    picode = forms.CharField(max_length=4, min_length=4, label="图形验证码")
+    answer = ""
+    user = null
+
+    def clean_phone_number(self):
+        phone_number = self.cleaned_data.get("phone_number")
+
+        if re.match("^1[34578]\d{9}$", phone_number):
+            try:
+                User.objects.get(username = phone_number)
+            except User.DoesNotExist:
+                raise ValidationError("手机号码未注册")
+            return phone_number
+        raise ValidationError("手机号码不正确")
+
+    def clean_picode(self):
+        picode = self.cleaned_data["picode"]
+
+        return my_clean_picode(picode, self.answer)
+
+    def clean_old_password(self):
+        old_password = self.cleaned_data["old_password"]
+
+        if user.check_password(old_password):
+            return old_password
+        raise ValidationError("当前密码不正确")
+        
+
 class GetPasswordForm(forms.Form):
     phone_number = forms.CharField(max_length=11, min_length=11, label="手机号")
     password = forms.CharField(max_length=16, min_length=6, label="新密码")

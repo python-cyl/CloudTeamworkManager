@@ -8,7 +8,7 @@ class UserProfile(models.Model):
     student_id = models.CharField(max_length = 11, verbose_name='学号')
     cloud_id = models.CharField(max_length = 20, verbose_name='云顶号')
     email = models.CharField(max_length = 30, verbose_name='邮箱')
-    magor = models.CharField(max_length = 1, choices=(('M','机电创新团队'), ('P','Python'),('N','Node.js'), 
+    major = models.CharField(max_length = 1, choices=(('M','机电创新团队'), ('P','Python'),('N','Node.js'), 
                                                       ('J','Java'), ('F','前端'), ('D','设计')), verbose_name='方向')
     grade = models.CharField(max_length = 4, verbose_name='年级')
     room = models.CharField(max_length = 8, verbose_name='宿舍号')

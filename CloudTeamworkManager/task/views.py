@@ -209,8 +209,8 @@ def delete_task(request, task_id):
 
 @permission_required_or_403("task.create_tasks")
 def get_members(request):
-    members = UserProfile.objects.filter(magor=request.GET.get("key")) | UserProfile.objects.filter(name = request.GET.get("key"))
-    members = members.values("name", "magor", "user_id", "involved_projects_number", "managed_projects_number")
+    members = UserProfile.objects.filter(major=request.GET.get("key")) | UserProfile.objects.filter(name = request.GET.get("key"))
+    members = members.values("name", "major", "user_id", "involved_projects_number", "managed_projects_number")
     return HttpResponse(json.dumps(list(members)))
 
 @permission_required_or_403("task.glance_over_task_details", (models_task, "id", "task_id"))

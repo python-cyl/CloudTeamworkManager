@@ -15,10 +15,10 @@ def my_clean_phone_number(phone_number):
     if re.match("^1[34578]\d{9}$", phone_number):
         try:
             User.objects.get(username = phone_number)
-            raise ValidationError("手机号码已被注册")
+            raise ValidationError("手机号码已被注册", code=401)
         except User.DoesNotExist:
             return phone_number
-    raise ValidationError("手机号码不正确")
+    raise ValidationError("手机号码不正确", code=402)
 
 def my_clean_picode(picode, answer):
         if re.match("\\w{4}", picode):
@@ -84,7 +84,7 @@ class ResetPasswordForm(forms.Form):
     re_password = forms.CharField(max_length=16, min_length=6, label="重新输入新密码")
     picode = forms.CharField(max_length=4, min_length=4, label="图形验证码")
     answer = ""
-    user = null
+    user = None
 
     def clean_phone_number(self):
         phone_number = self.cleaned_data.get("phone_number")
@@ -154,7 +154,7 @@ class extend_info(ModelForm):
         model = UserProfile
 
         # 这一行排除了模型中指定的几个字段
-        exclude = ("involved_projects_number", "management_projects", "unread_notifications", "read_notifications", "involved_projects", "user")
+        exclude = ("involved_projects_number", "managed_projects", "unread_notifications", "read_notifications", "involved_projects", "user")
         
         #除了排除模型中的指定字段，还可以指定仅包含模型中的指定字段，指定label等
         
@@ -223,4 +223,4 @@ class extend_info(ModelForm):
 class change_info(extend_info):
     class Meta:
         model = UserProfile
-        exclude = ("name", "student_id", "cloud_id", "magor", "grade", "sex", "management_projects", "unread_notifications", "read_notifications", "involved_projects", "user")
+        exclude = ("name", "student_id", "cloud_id", "magor", "grade", "sex", "managed_projects", "unread_notifications", "read_notifications", "involved_projects", "user")

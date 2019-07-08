@@ -44,7 +44,7 @@ def login_page(request):
 def register_page(request):
     if request.method == "GET":
         forms = RegisterForm()
-        return render(request, 'register_page.html', {"form": forms})
+        return render(request, 'register_page.html', {"form": forms, "tip": ""})
 
     if request.method == "POST":
         forms = RegisterForm(request.POST)
@@ -95,7 +95,7 @@ def check_phone_number(request):
         my_clean_phone_number(phone_number)
     except ValidationError as e:
         return HttpResponse(e.message)
-    return HttpResponse("手机号可用")
+    return HttpResponse("手机号码可用")
 
 def sendmsgcode(request):
     def check_picode():
@@ -150,8 +150,8 @@ def perfect_info(request):
             return HttpResponseRedirect("/account/space/")
         return render(request, 'perfect_information.html', {"form": form, "target_url": "/account/perfect_information/"})
 
-# 处理用户修改个人信息的请求
-# 要求用户登录，若没有登录，返回登录页面
+'''处理用户修改个人信息的请求
+要求用户登录，若没有登录，返回登录页面'''
 @login_required
 def change_info_page(request):
 

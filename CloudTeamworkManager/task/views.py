@@ -12,7 +12,7 @@ import json
 import time
 
 
-# 请注意，这个函数不会修改target_user的权限
+'''请注意，这个函数不会修改target_user的权限'''
 def remove_user(target_user, target_task):
     target_user.involved_projects_number -= 1
     target_user.involved_projects = json.dumps(json.loads(target_user.involved_projects).remove(target_task.id))
@@ -26,7 +26,7 @@ def add_user(target_user, target_group, target_task, position = 0):
     user = User.objects.get(id = target_user.user_id)
     user.groups.add(target_group)
 
-# 检查权限或返回403错误，需要拥有的权限是"task.create_tasks"（应用名.权限名）
+'''检查权限或返回403错误，需要拥有的权限是"task.create_tasks"（应用名.权限名）'''
 @permission_required_or_403("task.create_tasks")
 def create_task(request):
     if request.method == "GET":
@@ -63,6 +63,10 @@ def create_task(request):
                 assign_perm('edit_comments', target_user, target_task)
                 assign_perm('view_comments', target_user, target_task)
 
+                target_user.managed_project = json.dumps(json.loads(target_user.managed_project).append(target_task.id))
+                target_user.managed_project += 1
+                target_user.save()
+
             # 配置组员权限
             for each in json.loads(form.instance.members):
                 try:
@@ -77,10 +81,10 @@ def create_task(request):
             return HttpResponse("200")
         return HttpResponse("表单校验失败", status = 400)
 
-# 这里是检测当前用户对某个对象的权限
-# 第一个参数是权限名，后面的元组中，models_task是对象的类，意为要检测的权限是对于哪一种对象的
-# 元组中的id意思是要找到models_task对象的实例，这里通过id搜索这个对象
-# 元组中的task_id意为读取被装饰函数的task_id参数，用id = task_id查找对象
+'''这里是检测当前用户对某个对象的权限
+第一个参数是权限名，后面的元组中，models_task是对象的类，意为要检测的权限是对于哪一种对象的
+元组中的id意思是要找到models_task对象的实例，这里通过id搜索这个对象
+元组中的task_id意为读取被装饰函数的task_id参数，用id = task_id查找对象'''
 @permission_required_or_403("task.edit_tasks", (models_task, "id", "task_id"))
 def edit_task(request, task_id):
     if request.method == 'GET':
@@ -108,12 +112,12 @@ def edit_task(request, task_id):
             # 在组中删除该成员，该成员参与过的任务列表更新
             for each in removed_members:
                 try:
-                    user = UserProfile.objects.get(id = each)
+                    target_user = UserProfile.objects.get(id = each)
                 except UserProfile.DoesNotExist:
                     continue
 
-                remove_user(user, target_task)
-                User.objects.get(id = user.user_id).groups.remove(group)
+                remove_user(target_user, target_task)
+                User.objects.get(id = target_user.user_id).groups.remove(group)
 
                 # 通知
 
@@ -126,35 +130,43 @@ def edit_task(request, task_id):
             # 配置被移除的组长的权限
             for each in removed_leaders:
                 try:
-                    user = UserProfile.objects.get(id = each)
+                    target_user = UserProfile.objects.get(id = each)
                 except UserProfile.DoesNotExist:
                     continue
 
-                remove_perm('view_comments', User.objects.get(id = user.user_id), target_task)
-                remove_perm('edit_comments', User.objects.get(id = user.user_id), target_task)
+                remove_perm('view_comments', User.objects.get(id = target_user.user_id), target_task)
+                remove_perm('edit_comments', User.objects.get(id = target_user.user_id), target_task)
+
+                target_user.managed_project = json.dumps(json.loads(target_user.managed_project).remove(target_task.id))
+                target_user.managed_project -= 1
+                target_user.save()
 
                 # 通知
 
             # 配置新增组员
             for each in new_members:
                 try:
-                    user = UserProfile.objects.get(id = each)
+                    target_user = UserProfile.objects.get(id = each)
                 except UserProfile.DoesNotExist:
                     continue
 
-                add_user(user, group, target_task)
+                add_user(target_user, group, target_task)
 
                 # 通知
 
             # 配置新增组长的权限
             for each in new_leaders:
                 try:
-                    user = UserProfile.objects.get(id = each)
+                    target_user = UserProfile.objects.get(id = each)
                 except UserProfile.DoesNotExist:
                     continue
 
-                assign_perm('view_comments', User.objects.get(id = user.user_id), target_task)
-                assign_perm('edit_comments', User.objects.get(id = user.user_id), target_task)
+                assign_perm('view_comments', User.objects.get(id = target_user.user_id), target_task)
+                assign_perm('edit_comments', User.objects.get(id = target_user.user_id), target_task)
+
+                target_user.managed_project = json.dumps(json.loads(target_user.managed_project).append(target_task.id))
+                target_user.managed_project += 1
+                target_user.save()
 
                 # 通知
 
@@ -178,6 +190,10 @@ def delete_task(request, task_id):
         remove_perm('view_comments', target_user, target_task)
         remove_perm('edit_comments', target_user, target_task)
 
+        target_user.managed_project = json.dumps(json.loads(target_user.managed_project).remove(target_task.id))
+        target_user.managed_project -= 1
+        target_user.save()
+
     # 组内成员参与任务的个数减一，删除参与该任务的记录
     for each in members:
         try:
@@ -194,7 +210,7 @@ def delete_task(request, task_id):
 @permission_required_or_403("task.create_tasks")
 def get_members(request):
     members = UserProfile.objects.filter(magor=request.GET.get("key")) | UserProfile.objects.filter(name = request.GET.get("key"))
-    members = members.values("name", "magor", "user_id", "involved_projects_number")
+    members = members.values("name", "magor", "user_id", "involved_projects_number", "managed_projects_number")
     return HttpResponse(json.dumps(list(members)))
 
 @permission_required_or_403("task.glance_over_task_details", (models_task, "id", "task_id"))

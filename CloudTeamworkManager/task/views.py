@@ -3,30 +3,172 @@ from django.contrib.auth.models import User, Group, Permission
 from guardian.shortcuts import assign_perm, remove_perm
 from guardian.decorators import permission_required_or_403
 from .models import task as models_task
-from .models import comment as models_comment
 from .forms import task as forms_task
-from .forms import comment as forms_comment
+from publisher.models import personal_comment as models_comment
+from publisher.forms import comment as forms_comment
 from account.models import UserProfile
 import re
 import json
 import time
 
 
-'''请注意，这个函数不会修改target_user的权限'''
-def remove_user(target_user, target_task):
-    target_user.involved_projects_number -= 1
-    target_user.involved_projects = json.dumps(json.loads(target_user.involved_projects).remove(target_task.id))
-    target_user.save()
+class user(object):
+    user = None
+    user_profile = None
 
-def add_user(target_user, target_group, target_task, position = 0):
-    target_user.involved_projects_number += 1
-    target_user.involved_projects = json.dumps(json.loads(target_user.involved_projects).append(target_task.id))
-    target_user.save()
+    def __init__(self, user_id):
+        self.user = User.objects.get_object_or_404(id = user_id)
+        self.user_profile = UserProfile.objects.get_object_or_404(user_id = user_id)
 
-    user = User.objects.get(id = target_user.user_id)
-    user.groups.add(target_group)
+    def join_task(self, **kw):
+        if "task_id" in kw:
+            target_task = models_task.objects.get_object_or_404(id = kw["task_id"])
+        elif "target_task" in kw:
+            target_task = kw["target_task"]
+        else:
+            pass
+            # 这里需要抛出异常，缺少定位task的条件
 
-'''检查权限或返回403错误，需要拥有的权限是"task.create_tasks"（应用名.权限名）'''
+        if "target_group" in kw:
+            target_group = kw["target_group"]
+        else:
+            targer_group = Group.objects.get(name = str(target_task.id))
+        
+        if not self.user.id in json.loads(target_task.members):
+            self.user_profile.involved_projects_number += 1
+            self.user_profile.involved_projects = json.dumps(json.loads(self.user_profile.involved_projects).append(target_task.id))
+            self.user_profile.save()
+
+            self.task.all_members = json.dumps(json.loads(self.task.all_members).append(self.user.user_id))
+            self.task.members = json.dumps(json.loads(self.task.all_members).append(self.user.user_id))
+            
+            self.user.groups.add(target_group)
+        else:
+            pass
+            # 这里需要抛出异常，用户已在项目组中
+
+class member(user):
+    task = None
+
+    def __init__(self, user_id, **kw):
+        super(self, user_id)
+        if "target_task" in kw:
+            self.task = kw["target_task"]
+        elif "task_id" in kw:
+            self.task = models_task.objects.get_object_or_404(id = kw["target_id"])
+        else:
+            pass
+            # 这里需要抛出异常，缺少定位task的条件
+
+        if not self.user.id in json.loads(self.task.members):
+            pass
+            # 这里需要抛出异常，用户不是该项目组的成员
+
+        def view_personal_comments():
+            pass
+
+        def edit_personal_comments():
+            pass
+
+        def view_personal_shedule():
+            pass
+
+        def edit_personal_shedule():
+            pass
+
+        def view_personal_progress():
+            pass
+
+        def edit_personal_progress():
+            pass
+
+class leader(member):
+    def __init__(self, user_id, **kw):
+        super(self, user_id)
+
+        if not self.user.id in json.loads(self.task.leaders):
+            pass
+            # 这里需要抛出异常，用户不是该项目组的组长
+
+    def cancel_leader(self):
+        self.task.leaders = json.dumps(json.loads(self.task.leaders).remove(self.user.id))
+        self.task.save()
+
+        self.user.managed_project = json.dumps(json.loads(self.user.managed_project).remove(self.task.id))
+        self.user.managed_project -= 1
+        self.user.save()
+
+        remove_perm('view_comments', self.user, self.task)
+        remove_perm('edit_comments', self.user, self.task)
+
+class crew(member):
+    def __init__(self, user_id, **kw):
+        super(self, user_id)
+
+        if not self.user.id in json.loads(self.task.members):
+            pass
+            # 这里需要抛出异常，用户不是该项目组的成员
+
+    def set_leader(self):
+        self.task.leaders = json.dumps(json.loads(self.task.leaders).append(self.user.id))
+        self.task.save()
+
+        self.user.managed_project = json.dumps(json.loads(self.task.managed_project).append(self.user.id))
+        self.user.managed_project += 1
+        self.user.save()
+
+        assign_perm('edit_comments', self.user, self.task)
+        assign_perm('view_comments', self.user, self.task)
+
+    def quit_task(self, **kw):
+        if "target_group" in kw:
+            target_group = kw["target_group"]
+        else:
+            target_group =  Group.objects.get(name=str(self.task.id))
+
+        self.task.members = json.dumps(json.loads(self.task.members).remove(self.user.id))
+        self.task.save()
+
+        self.user_profile.involved_projects = json.dumps(json.loads(self.user_profile.involved_projects).remove(self.task.id))
+        self.user_profile.involved_projects_num -= 1;
+        self.user_profile.save()
+
+        self.user.groups.remove(target_group)
+
+class task(object):
+    task = None
+
+    def set_comment(self, request):
+        pass
+
+    def get_comment(self, request):
+        pass
+
+    def get_process(self, request):
+        pass
+
+    def set_process(self, request):
+        pass
+
+    def create_page(request):
+        pass
+
+    def create_task(request):
+        pass
+
+    def edit_page(request):
+        pass
+
+    def edit_task(request):
+        pass
+
+    def delete_task(request):
+        pass
+
+    def task_page(request):
+        pass
+
+# 检查权限或返回403错误，需要拥有的权限是"task.create_tasks"（应用名.权限名）
 @permission_required_or_403("task.create_tasks")
 def create_task(request):
     if request.method == "GET":
@@ -81,10 +223,10 @@ def create_task(request):
             return HttpResponse("200")
         return HttpResponse("表单校验失败", status = 400)
 
-'''这里是检测当前用户对某个对象的权限
-第一个参数是权限名，后面的元组中，models_task是对象的类，意为要检测的权限是对于哪一种对象的
-元组中的id意思是要找到models_task对象的实例，这里通过id搜索这个对象
-元组中的task_id意为读取被装饰函数的task_id参数，用id = task_id查找对象'''
+# 这里是检测当前用户对某个对象的权限
+# 第一个参数是权限名，后面的元组中，models_task是对象的类，意为要检测的权限是对于哪一种对象的
+# 元组中的id意思是要找到models_task对象的实例，这里通过id搜索这个对象
+# 元组中的task_id意为读取被装饰函数的task_id参数，用id = task_id查找对象
 @permission_required_or_403("task.edit_tasks", (models_task, "id", "task_id"))
 def edit_task(request, task_id):
     if request.method == 'GET':
@@ -242,7 +384,7 @@ def process(request, task_id):
         return HttpResponse(status=403)
 
 def comment(request, task_id, member_id):
-    def get_timenow():
+    def get_time():
         return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
     target_task = models_task.objects.get_object_or_404(id = task_id)
@@ -258,14 +400,14 @@ def comment(request, task_id, member_id):
                 comment = models_comment.objects.update(id = "%s&%s"%(task_id, member_id))
                 contents = json.loads(comment.contents)
                 lastest_comment = contents.pop()
-                lastest_comment["upgrade_date"] = get_timenow()
+                lastest_comment["upgrade_date"] = get_time()
                 lastest_comment["content"] = request.POST.get("content")
                 contents.append(lastest_comment)
                 comment.comments = json.dumps(contents)
                 comment.save()
                 return HttpResponse('200')
             elif request.POST.get("action") == "create":
-                comment = {"publish_date": get_timenow(), "upgrade_date": get_timenow(), "content": request.POST.get("content"), "creater": UserProfile.objects.get(user_id = request.user.id)}
+                comment = {"publish_date": get_time(), "upgrade_date": get_time(), "content": request.POST.get("content"), "creater": UserProfile.objects.get(user_id = request.user.id)}
                 models_comment.objects.create(id = "%s&%s"%(task_id, member_id), comments = json.dumps([].append(comment)))
                 return HttpResponse('200')
         return HttpResponse(status=403)

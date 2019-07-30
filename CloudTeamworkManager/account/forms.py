@@ -108,7 +108,6 @@ class ResetPasswordForm(forms.Form):
         if user.check_password(old_password):
             return old_password
         raise ValidationError("当前密码不正确")
-        
 
 class GetPasswordForm(forms.Form):
     phone_number = forms.CharField(max_length=11, min_length=11, label="手机号")
@@ -149,41 +148,24 @@ class GetPasswordForm(forms.Form):
 # 这是典型的继承ModelForm的form表单
 class extend_info(ModelForm):
     class Meta:
-
-        # 这一行指定这个form表单来自UserProfile模型
         model = UserProfile
-
-        # 这一行排除了模型中指定的几个字段
         exclude = ("involved_projects_number", "managed_projects", "unread_notifications", "read_notifications", "involved_projects", "user")
-        
-        #除了排除模型中的指定字段，还可以指定仅包含模型中的指定字段，指定label等
-        
-    # __init__()函数是类的初始化函数。在此用于初始化表单
-    def __init__(self, *args, **kwargs):
 
-        # 这一行实例化父类对象
+    def __init__(self, *args, **kwargs):
         super(extend_info, self).__init__(*args, **kwargs)
 
-        # 这三行将该表单的三个字段设置为非必填项目
-        # 非必填项目对应必填项目，不填写必填项目，表单无法提交
         self.fields["home_address"].required = False
         self.fields["guardian_phone"].required = False
         self.fields["introduction"].required = False
 
-    # 这是自定义表单校验函数，函数名为"clean_" + "字段名"
     def clean_email(self):
-
-        # form表单的内容会先使用内置的校验函数校验，然后将结果存储在 self.cleaned_data 中。
-        # 这里获取内置校验函数校验的结果，对结果进行自定义校验
         email = self.cleaned_data.get("email")
 
         if re.match("^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$", email):
             
-            # 如果校验成功，直接返回校验后的结果（或整理后的结果）
             return email
         else:
             
-            # 如果电子邮箱校验失败，抛出错误："电子邮箱不正确"，这个错误可以被用户看到
             raise ValidationError("电子邮箱不正确")
 
     def clean_room(self):
@@ -218,8 +200,6 @@ class extend_info(ModelForm):
         else:
             raise ValidationError("年级不正确")
 
-# 这个类继承上一个类，仅修改了排除的字段，其他内容没有更改
-# 继承extend_info是因为用户变更信息的表单与第一次填写信息的表单的唯一区别是：变更信息的表单缺少姓名等不允许修改的字段
 class change_info(extend_info):
     class Meta:
         model = UserProfile

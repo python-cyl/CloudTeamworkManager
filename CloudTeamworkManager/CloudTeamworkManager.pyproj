@@ -66,6 +66,16 @@
     <Compile Include="notification\urls.py" />
     <Compile Include="notification\views.py" />
     <Compile Include="notification\__init__.py" />
+    <Compile Include="publisher\admin.py" />
+    <Compile Include="publisher\apps.py" />
+    <Compile Include="publisher\forms.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="publisher\migrations\__init__.py" />
+    <Compile Include="publisher\models.py" />
+    <Compile Include="publisher\tests.py" />
+    <Compile Include="publisher\views.py" />
+    <Compile Include="publisher\__init__.py" />
     <Compile Include="task\admin.py" />
     <Compile Include="task\apps.py" />
     <Compile Include="task\forms.py">
@@ -86,6 +96,7 @@
     <Content Include="account\templates\space.html" />
     <Content Include="file\templates\file\index.html" />
     <Content Include="notification\templates\notification\index.html" />
+    <Content Include="publisher\templates\publisher\index.html" />
     <Content Include="requirements.txt" />
     <Content Include="task\templates\task\index.html" />
   </ItemGroup>
@@ -102,6 +113,10 @@
     <Folder Include="notification\migrations\" />
     <Folder Include="notification\templates\" />
     <Folder Include="notification\templates\notification\" />
+    <Folder Include="publisher\" />
+    <Folder Include="publisher\migrations\" />
+    <Folder Include="publisher\templates\" />
+    <Folder Include="publisher\templates\publisher\" />
     <Folder Include="task\" />
     <Folder Include="task\migrations\" />
     <Folder Include="task\templates\" />

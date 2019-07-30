@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'task',
     'notification',
     'file',
+    'publisher',
 ]
 
 # Middleware framework

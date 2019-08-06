@@ -28,6 +28,10 @@ class user(object):
             assign_perm('publisher.edit_personal_shedule', self.user_buildin, temp)
             assign_perm('publisher.view_personal_shedule', self.user_buildin, temp)
 
+        def recover_archive_edit_perm():
+            assign_perm('publisher.edit_personal_progress', self.user_buildin, personal_progress.objects.get(id = "%s&%s"%(target_task.id, self.user_buildin.id)))
+            assign_perm('publisher.edit_personal_shedule', self.user_buildin, personal_shedule.objects.get(id = "%s&%s"%(target_task.id, self.user_buildin.id)))
+
         if "task_id" in kw:
             target_task = models_task.objects.get(id = kw["task_id"])
         elif "target_task" in kw:
@@ -59,7 +63,10 @@ class user(object):
             
         self.user_buildin.groups.add(target_group)
 
-        create_archive and create_personal_archive()
+        if create_archive:
+            create_personal_archive()
+        else:
+            recover_archive_edit_perm()
 
 class member(user):
     task = None
@@ -71,7 +78,7 @@ class member(user):
         if "target_task" in kw:
             self.task = kw["target_task"]
         elif "task_id" in kw:
-            self.task = models_task.objects.get_object_or_404(id = kw["target_id"])
+            self.task = models_task.objects.get(id = kw["target_id"])
         else:
             pass
             # 这里需要抛出异常，缺少定位task的条件
@@ -85,8 +92,8 @@ class member(user):
 
     def quit_task(self, **kw):
         # 如果这个人是组长，先取消组长职位。
-        # 不建议批量使用此方法，因为获取组长用户组会增加数据库负担
-        if self.user_buildin.id in json.loads(self.task.leaders):
+        # 不建议批量使用此方法移除组长，因为获取组长用户组会增加数据库负担
+        if self.is_leader:
             self.cancel_leader(Group.objects.get(name = "%s%s"%(str(self.task.id), "leaders")))
 
         if "target_group" in kw:
@@ -102,9 +109,10 @@ class member(user):
         self.user_profile.save()
 
         self.user_buildin.groups.remove(target_group)
+        remove_perm('publisher.edit_personal_progress', self.user, personal_progress.objects.get(id = "%s&%s"%(self.task.id, self.user_buildin.id)))
+        remove_perm('publisher.edit_personal_shedule', self.user, personal_shedule.objects.get(id = "%s&%s"%(self.task.id, self.user_buildin.id)))
 
     def view_personal_comments(self, request):
-
         if request.user.has_perm("task.view_personal_comments", self.task):
             comment = personal_comment.objects.get(id = "%s&%s"%(self.task.id, self.user_buildin.id))
 
@@ -112,7 +120,6 @@ class member(user):
         return HttpResponse(status=403)
     
     def edit_personal_comments(self, request):
-
         if request.user.has_perm("task.edit_personal_comments", self.task):
             comment = personal_comment.objects.update(id = "%s&%s"%(self.task.id, self.user_buildin.id))
             
@@ -210,7 +217,7 @@ class creater(member):
             # 这里需要抛出异常，用户不是该项目组的创建者
 
     def remove_permissions(self):
-        remove_perm('task.edit_tasks', request.user, target_task)
+        remove_perm('task.edit_task', request.user, target_task)
         remove_perm('task.edit_task_comments', request.user, target_task)
         remove_perm('task.view_personal_comments', request.user, target_task)
         remove_perm('task.view_personal_progress', request.user, target_task)
@@ -373,6 +380,8 @@ class task(object):
                     target_member = member(user_id = each, target_task = self.task)
                 except UserProfile.DoesNotExist:
                     continue
+                except User.DoesNotExist:
+                    continue
 
                 target_member.cancel_leader(target_group_leader)
 
@@ -384,7 +393,9 @@ class task(object):
                     target_member = member(user_id = each, target_task = self.task)
                 except UserProfile.DoesNotExist:
                     continue
-    
+                except User.DoesNotExist:
+                    continue
+
                 target_member.quit_task(target_group = target_group)
 
                 # 通知
@@ -395,8 +406,13 @@ class task(object):
                     target_user = user(user_id = each)
                 except UserProfile.DoesNotExist:
                     continue
+                except User.DoesNotExist:
+                    continue
 
-                target_user.join_task(create_archive = False, target_task = self.task, target_group = target_group)
+                if each in json.loads(self.task.all_members):
+                    target_user.join_task(create_archive = False, target_task = self.task, target_group = target_group)
+                else:
+                    target_user.join_task(create_archive = True, target_task = self.task, target_group = target_group)
 
                 # 通知
 
@@ -405,6 +421,8 @@ class task(object):
                 try:
                     target_member = member(user_id = each, target_task = self.task)
                 except UserProfile.DoesNotExist:
+                    continue
+                except User.DoesNotExist:
                     continue
 
                 target_member.set_leader(target_group_leader)
@@ -416,31 +434,22 @@ class task(object):
 
     def delete_task(self, request):
         members = json.loads(self.task.members)
-        
+        leaders = json.loads(self.task.leaders)
+
         # 撤销权限
-        Group.objects.get(name=str(self.task.id)).delete()
+        target_group = Group.objects.get(name = str(self.task.id))
+        target_group_leader = Group.objects.get(name = "%s%s"%(str(self.task.id), "leaders"))
 
         # 撤销创建者的相关权限
-        remove_perm('edit_tasks', request.user, self.task)
-        remove_perm('view_comments', request.user, self.task)
+        creater(user_id = self.task.creater, target_task = self.task).remove_permissions()
 
-        for each in json.loads(self.task.leaders):
-            target_user = User.objects.get(id = each)
-            remove_perm('view_comments', target_user, self.task)
-            remove_perm('edit_task_comments', target_user, self.task)
+        # 撤销组长
+        for each in leaders:
+            member(user_id = each, target_task = self.task).cancel_leader(target_group = target_group_leader)
 
-            target_user.managed_projects = json.dumps(json.loads(target_user.managed_projects).remove(self.task.id))
-            target_user.managed_projects_number -= 1
-            target_user.save()
-
-        # 组内成员参与任务的个数减一，删除参与该任务的记录
+        # 组员退出
         for each in members:
-            try:
-                user = UserProfile.objects.get(id = each)
-            except UserProfile.DoesNotExist:
-                continue
-        
-            remove_user(user, self.task)
+            member(user_id = each, target_task = self.task).quit_task(target_group = target_group)
 
         # 通知
 

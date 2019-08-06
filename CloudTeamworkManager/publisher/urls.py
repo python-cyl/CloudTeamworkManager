@@ -8,4 +8,5 @@ urlpatterns = [
     path('personal_shedule/<int:task_id>/<int:member_id>', views.personal_shedule),
     path('personal_comments/<int:task_id>/<int:member_id>', views.personal_comments),
     path('personal_process/<int:task_id>/<int:member_id>', views.personal_progress),
+    path('publisher/', views.publisher),
     ]

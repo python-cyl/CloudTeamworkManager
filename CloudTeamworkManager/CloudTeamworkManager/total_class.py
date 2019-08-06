@@ -121,12 +121,12 @@ class member(user):
     
     def edit_personal_comments(self, request):
         if request.user.has_perm("task.edit_personal_comments", self.task):
-            comment = personal_comment.objects.update(id = "%s&%s"%(self.task.id, self.user_buildin.id))
+            comment = personal_comment.objects.get(id = "%s&%s"%(self.task.id, self.user_buildin.id))
             
             if request.POST.get("action") == "upgrade":
                 comment.detail = _publisher(comment.detail).upgrade(request.POST.get("content"))
             elif request.POST.get("action") == "create":
-                comment.detail = _publisher(comment.detail).create(request.POST.get("content"), user_id = request.user.id)
+                comment.detail = _publisher(comment.detail).create(request.POST.get("content"), editor_id = request.user.id)
             comment.save()
                 
             return HttpResponse('200')
@@ -140,13 +140,13 @@ class member(user):
         return HttpResponse(status=403)
 
     def edit_personal_shedule(self, request):
-        shedule = personal_shedule.objects.update(id = "%s&%s"%(self.task.id, self.user_buildin.id))
+        shedule = personal_shedule.objects.get(id = "%s&%s"%(self.task.id, self.user_buildin.id))
 
         if request.user.has_perm("publisher.edit_personal_shedule", shedule):
             if request.POST.get("action") == "upgrade":
-                shedule.detail = _publisher(comment.detail).upgrade(request.POST.get("content"))
+                shedule.detail = _publisher(shedule.detail).upgrade(request.POST.get("content"))
             elif request.POST.get("action") == "create":
-                shedule.detail = _publisher(comment.detail).create(request.POST.get("content"))
+                shedule.detail = _publisher(shedule.detail).create(request.POST.get("content"))
             shedule.save()
                 
             return HttpResponse('200')
@@ -160,13 +160,13 @@ class member(user):
         return HttpResponse(status=403)
 
     def edit_personal_progress(self, request):
-        progress = personal_progress.objects.update(id = "%s&%s"%(self.task.id, self.user_buildin.id))
+        progress = personal_progress.objects.get(id = "%s&%s"%(self.task.id, self.user_buildin.id))
 
         if request.user.has_perm("publisher.edit_personal_progress", progress):
             if request.POST.get("action") == "upgrade":
-                progress.detail = _publisher(comment.detail).upgrade(request.POST.get("content"))
+                progress.detail = _publisher(progress.detail).upgrade(request.POST.get("content"))
             elif request.POST.get("action") == "create":
-                progress.detail = _publisher(comment.detail).create(request.POST.get("content"))
+                progress.detail = _publisher(progress.detail).create(request.POST.get("content"))
             progress.save()
                 
             return HttpResponse('200')
@@ -239,9 +239,9 @@ class task(object):
     def edit_task_comment(self, request):
         if request.user.has_perm("task.edit_task_comments", self.task):
             if request.POST.get("action") == "upgrade":
-                self.task.task_comment = _publisher(self.task.task_comment).upgrade(request.POST.get("content"))
+                self.task.task_comment = _publisher(self.task.task_comment).upgrade(request.POST.get("content"), editor_id = request.user.id)
             elif request.POST.get("action") == "create":
-                self.task.task_comment = _publisher(self.task.task_comment).create(request.POST.get("content"))
+                self.task.task_comment = _publisher(self.task.task_comment).create(request.POST.get("content"), editor_id = request.user.id)
             self.task.save()
                 
             return HttpResponse('200')
@@ -255,9 +255,9 @@ class task(object):
     def edit_task_progress(self, request):
         if request.user.has_perm("task.edit_task_progress", self.task):
             if request.POST.get("action") == "upgrade":
-                self.task.task_progress = _publisher(self.task.task_progress).upgrade(request.POST.get("content"))
+                self.task.task_progress = _publisher(self.task.task_progress).upgrade(request.POST.get("content"), editor_id = request.user.id)
             elif request.POST.get("action") == "create":
-                self.task.task_progress = _publisher(self.task.task_progress).create(request.POST.get("content"))
+                self.task.task_progress = _publisher(self.task.task_progress).create(request.POST.get("content"), editor_id = request.user.id)
             self.task.save()
                 
             return HttpResponse('200')
@@ -271,9 +271,9 @@ class task(object):
     def edit_task_shedule(self, request):
         if request.user.has_perm("task.edit_task_shedule", self.task):
             if request.POST.get("action") == "upgrade":
-                self.task.task_schedule = _publisher(self.task.task_schedule).upgrade(request.POST.get("content"))
+                self.task.task_schedule = _publisher(self.task.task_schedule).upgrade(request.POST.get("content"), editor_id = request.user.id)
             elif request.POST.get("action") == "create":
-                self.task.task_schedule = _publisher(self.task.task_schedule).create(request.POST.get("content"))
+                self.task.task_schedule = _publisher(self.task.task_schedule).create(request.POST.get("content"), editor_id = request.user.id)
             self.task.save()
                 
             return HttpResponse('200')
@@ -471,15 +471,16 @@ class _publisher(object):
     def __init__(self, detail):
         self.detail = json.loads(detail)
 
-    def upgrade(self, content):
+    def upgrade(self, content, editor_id = 0):
         lastest = self.detail.pop()
         lastest["upgrade_date"] = str(time.time())
         lastest["content"] = content
+        lastest["creater"] = editor_id
         self.detail.append(lastest)
 
         return json.dumps(self.detail)
 
-    def create(self, content, user_id = 0):
-        self.detail.append({"publish_date": str(time.time()), "upgrade_date": str(time.time()), "content": content, "creater": user_id})
+    def create(self, content, editor_id = 0):
+        self.detail.append({"publish_date": str(time.time()), "upgrade_date": str(time.time()), "content": content, "creater": editor_id})
         
         return json.dumps(self.detail)

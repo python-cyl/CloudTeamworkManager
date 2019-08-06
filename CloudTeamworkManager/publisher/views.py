@@ -1,4 +1,5 @@
 from CloudTeamworkManager.total_class import user, member, _publisher, task
+from django.shortcuts import render
 
 
 def task_progress(request, task_id):
@@ -57,3 +58,6 @@ def personal_progress(request, task_id, member_id):
 
     if request.method == "POST":
         return target_member.edit_personal_progress(request)
+
+def publisher(request):
+    return render(request, "publisher.html")

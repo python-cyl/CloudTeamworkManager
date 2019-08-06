@@ -5,10 +5,9 @@ from django import forms
 from .models import task as models_task
 
 class task(ModelForm):
-
     class Meta:
         model = models_task
-        exclude = ("creator", "publish_data", "task_schedule", "task_progress", "all_members")
+        exclude = ("task_comment", "creator", "publish_data", "task_schedule", "task_progress", "all_members")
 
     def __init__(self, *args, **kwargs):
         super(task, self).__init__(*args, **kwargs)
@@ -18,3 +17,7 @@ class task(ModelForm):
         self.fields["task_need"].required = False
         self.fields["appendixes"].required = False
         self.fields["leaders"].required = False
+
+        self.fields["members"].initial = ""
+        self.fields["leaders"].initial = ""
+        self.fields["appendixes"].initial = ""

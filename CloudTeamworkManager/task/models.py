@@ -23,10 +23,11 @@ class task(models.Model):
             ('create_tasks','新建任务'),
             ('edit_tasks','编辑任务'),  # 面向实例
             ('glance_over_task_details', '浏览任务详情'),  # 面向实例
+            ('edit_comments', '编辑任务评价'), # 面向实例
             ('view_personal_comments','查看个人评价'),  # 面向实例
             ('edit_personal_comments','编辑个人评价'),  # 面向实例
-            ('edit_progress', '编辑任务时间表'),  # 面向实例
-            ('edit_shedule', '编辑任务进度'),  # 面向实例
+            ('edit_progress', '编辑任务进度'),  # 面向实例
+            ('edit_shedule', '编辑任务时间表'),  # 面向实例
             ('view_personal_progress', '查看个人进度'),  # 面向实例
             ('view_personal_shedule', '查看个人时间表'),  # 面向实例
             ('edit_appendix', '编辑附件'),  # 面向实例

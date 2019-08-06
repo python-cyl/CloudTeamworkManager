@@ -44,6 +44,7 @@
     </Compile>
     <Compile Include="account\views.py" />
     <Compile Include="account\__init__.py" />
+    <Compile Include="CloudTeamworkManager\total_class.py" />
     <Compile Include="file\admin.py" />
     <Compile Include="file\apps.py" />
     <Compile Include="file\migrations\__init__.py" />
@@ -68,12 +69,12 @@
     <Compile Include="notification\__init__.py" />
     <Compile Include="publisher\admin.py" />
     <Compile Include="publisher\apps.py" />
-    <Compile Include="publisher\forms.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="publisher\migrations\__init__.py" />
     <Compile Include="publisher\models.py" />
     <Compile Include="publisher\tests.py" />
+    <Compile Include="publisher\urls.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="publisher\views.py" />
     <Compile Include="publisher\__init__.py" />
     <Compile Include="task\admin.py" />

@@ -149,7 +149,7 @@ class GetPasswordForm(forms.Form):
 class extend_info(ModelForm):
     class Meta:
         model = UserProfile
-        exclude = ("involved_projects_number", "managed_projects", "unread_notifications", "read_notifications", "involved_projects", "user")
+        exclude = ("managed_projects_number", "involved_projects_number", "managed_projects", "unread_notifications", "read_notifications", "involved_projects", "user")
 
     def __init__(self, *args, **kwargs):
         super(extend_info, self).__init__(*args, **kwargs)
@@ -203,4 +203,4 @@ class extend_info(ModelForm):
 class change_info(extend_info):
     class Meta:
         model = UserProfile
-        exclude = ("name", "student_id", "cloud_id", "major", "grade", "sex", "managed_projects", "unread_notifications", "read_notifications", "involved_projects", "user")
+        exclude = ("involved_projects_number", "managed_projects_number", "name", "student_id", "cloud_id", "major", "grade", "sex", "managed_projects", "unread_notifications", "read_notifications", "involved_projects", "user")

@@ -15,7 +15,7 @@
 			<form id="form" autocomplete="off" method="post" action="/account/login/">
 				{%csrf_token%}
 				{{  form  }}
-				<div id="tip">&nbsp;</div>
+				<div id="tip">{{  tip  }}</div>
 				<button>登录</button>
 			</form>
 			<li>没有账号? 去<a class="zhuce" href="../register/">注册</a></li>

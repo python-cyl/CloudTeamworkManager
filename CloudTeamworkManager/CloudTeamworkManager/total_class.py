@@ -51,14 +51,14 @@ class user(object):
         self.user_profile.involved_projects = json.dumps(temp)
         self.user_profile.save()
 
-        temp = json.loads(target_task.all_members)
+        temp = json.loads(target_task.members)
         temp.append(self.user_buildin.id)
         temp = list(set(temp))
-
-        target_task.all_members = json.dumps(temp)
-        temp = json.loads(target_task.all_members)
-        temp.append(self.user_buildin.id)
         target_task.members = json.dumps(temp)
+
+        temp.extend(json.loads(target_task.all_members))
+        target_task.all_members = json.dumps(list(set(temp)))
+        
         target_task.save()
             
         self.user_buildin.groups.add(target_group)

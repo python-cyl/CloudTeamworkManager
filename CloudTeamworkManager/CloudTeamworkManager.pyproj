@@ -95,7 +95,9 @@
     <Content Include="account\templates\perfect_infomation.html" />
     <Content Include="account\templates\register_page.html" />
     <Content Include="account\templates\space.html" />
+    <Content Include="file\templates\file\img_upload_for_user.html" />
     <Content Include="file\templates\file\index.html" />
+    <Content Include="file\templates\file\show_img.html" />
     <Content Include="notification\templates\notification\index.html" />
     <Content Include="publisher\templates\publisher\index.html" />
     <Content Include="requirements.txt" />

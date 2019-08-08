@@ -86,7 +86,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'cloudteamworkmanager',
         'USER': 'root',
-        'PASSWORD': '123456',
+        'PASSWORD': 'rootpassword',
         'HOST': '',
         'PORT': '3306',
     }

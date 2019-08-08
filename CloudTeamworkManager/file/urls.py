@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
 
-pass
+
 urlpatterns = [
     path(r'^picode/.*$', views.verify_code),
     path('image/<str:file_name>', views.show_image),

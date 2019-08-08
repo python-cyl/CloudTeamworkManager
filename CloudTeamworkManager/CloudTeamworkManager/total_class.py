@@ -18,7 +18,20 @@ class user(object):
         self.user_buildin = User.objects.get(id = user_id)
         self.user_profile = UserProfile.objects.get(user_id = user_id)
 
-    def join_task(self, **kw):
+    def join_task(self, create_archive = True, **kw):
+        def create_personal_archive():
+            personal_comment.objects.create(id = "%s&%s"%(target_task.id, self.user_buildin.id), detail = "[]")
+            temp = personal_progress.objects.create(id = "%s&%s"%(target_task.id, self.user_buildin.id), detail = "[]")
+            assign_perm('publisher.edit_personal_progress', self.user_buildin, temp)
+            assign_perm('publisher.view_personal_progress', self.user_buildin, temp)
+            temp = personal_shedule.objects.create(id = "%s&%s"%(target_task.id, self.user_buildin.id), detail = "[]")
+            assign_perm('publisher.edit_personal_shedule', self.user_buildin, temp)
+            assign_perm('publisher.view_personal_shedule', self.user_buildin, temp)
+
+        def recover_archive_edit_perm():
+            assign_perm('publisher.edit_personal_progress', self.user_buildin, personal_progress.objects.get(id = "%s&%s"%(target_task.id, self.user_buildin.id)))
+            assign_perm('publisher.edit_personal_shedule', self.user_buildin, personal_shedule.objects.get(id = "%s&%s"%(target_task.id, self.user_buildin.id)))
+
         if "task_id" in kw:
             target_task = models_task.objects.get(id = kw["task_id"])
         elif "target_task" in kw:
@@ -32,34 +45,32 @@ class user(object):
         else:
             targer_group = Group.objects.get(name = str(target_task.id))
         
-        if not self.user_buildin.id in json.loads(target_task.members):
-            self.user_profile.involved_projects_number += 1
-            temp = json.loads(self.user_profile.involved_projects)
-            temp.append(target_task.id)
-            self.user_profile.involved_projects = json.dumps(temp)
-            self.user_profile.save()
+        self.user_profile.involved_projects_number += 1
+        temp = json.loads(self.user_profile.involved_projects)
+        temp.append(target_task.id)
+        self.user_profile.involved_projects = json.dumps(temp)
+        self.user_profile.save()
 
-            temp = json.loads(self.task.all_members)
-            temp.append(self.user_buildin.user_id)
-            temp = list(set(temp))
+        temp = json.loads(target_task.members)
+        temp.append(self.user_buildin.id)
+        temp = list(set(temp))
+        target_task.members = json.dumps(temp)
 
-            self.task.all_members = json.dumps(temp)
-            temp = json.loads(self.task.all_members)
-            temp.append(self.user_buildin.user_id)
-            self.task.members = json.dumps(temp)
-            self.task.save()
+        temp.extend(json.loads(target_task.all_members))
+        target_task.all_members = json.dumps(list(set(temp)))
+        
+        target_task.save()
             
-            self.user_buildin.groups.add(target_group)
+        self.user_buildin.groups.add(target_group)
 
-            personal_comment.objects.create(id = "%s&%s"%(target_task.id, self.user_buildin.id))
-            personal_progress.objects.create(id = "%s&%s"%(target_task.id, self.user_buildin.id))
-            personal_shedule.objects.create(id = "%s&%s"%(target_task.id, self.user_buildin.id))
+        if create_archive:
+            create_personal_archive()
         else:
-            pass
-            # 这里需要抛出异常，用户已在项目组中
+            recover_archive_edit_perm()
 
 class member(user):
     task = None
+    is_leader = False
 
     def __init__(self, user_id, **kw):
         super(member, self).__init__(user_id, **kw)
@@ -67,7 +78,7 @@ class member(user):
         if "target_task" in kw:
             self.task = kw["target_task"]
         elif "task_id" in kw:
-            self.task = models_task.objects.get_object_or_404(id = kw["target_id"])
+            self.task = models_task.objects.get(id = kw["target_id"])
         else:
             pass
             # 这里需要抛出异常，缺少定位task的条件
@@ -76,11 +87,14 @@ class member(user):
             pass
             # 这里需要抛出异常，用户不是该项目组的成员
 
+        if self.user_buildin.id in json.loads(self.task.leaders):
+            self.is_leader = True
+
     def quit_task(self, **kw):
         # 如果这个人是组长，先取消组长职位。
-        # 不建议批量使用此方法，因为获取组长用户组会增加数据库负担
-        if self.user_buildin.id in json.loads(self.task.leaders):
-            leader(self.user_buildin.id).cancel_leader(Group.objects.get(name = "%s%s"%(str(self.task.id), "leaders")))
+        # 不建议批量使用此方法移除组长，因为获取组长用户组会增加数据库负担
+        if self.is_leader:
+            self.cancel_leader(Group.objects.get(name = "%s%s"%(str(self.task.id), "leaders")))
 
         if "target_group" in kw:
             target_group = kw["target_group"]
@@ -95,109 +109,104 @@ class member(user):
         self.user_profile.save()
 
         self.user_buildin.groups.remove(target_group)
+        remove_perm('publisher.edit_personal_progress', self.user, personal_progress.objects.get(id = "%s&%s"%(self.task.id, self.user_buildin.id)))
+        remove_perm('publisher.edit_personal_shedule', self.user, personal_shedule.objects.get(id = "%s&%s"%(self.task.id, self.user_buildin.id)))
 
-    def view_personal_comments():
-        comment = personal_comment.objects.get(id = "%s&%s"%(task_id, self.user_buildin.id))
+    def view_personal_comments(self, request):
+        if request.user.has_perm("task.view_personal_comments", self.task):
+            comment = personal_comment.objects.get(id = "%s&%s"%(self.task.id, self.user_buildin.id))
 
-        if request.user.has_perm("task.view_personal_comments", comment):
-            return HttpResponse(comment.details)
+            return HttpResponse(comment.detail)
         return HttpResponse(status=403)
-        
-    def edit_personal_comments(self, task_id):
-        comment = personal_comment.objects.update(id = "%s&%s"%(task_id, self.user_buildin.id))
-
-        if request.user.has_perm("task.edit_personal_comments", comment):
+    
+    def edit_personal_comments(self, request):
+        if request.user.has_perm("task.edit_personal_comments", self.task):
+            comment = personal_comment.objects.get(id = "%s&%s"%(self.task.id, self.user_buildin.id))
+            
             if request.POST.get("action") == "upgrade":
-                comment.details = _publisher(comment.details).upgrade(request.POST.get("content"))
+                comment.detail = _publisher(comment.detail).upgrade(request.POST.get("content"))
             elif request.POST.get("action") == "create":
-                comment.details = _publisher(comment.details).create(request.POST.get("content"), user_id = request.user.id)
+                comment.detail = _publisher(comment.detail).create(request.POST.get("content"), editor_id = request.user.id)
             comment.save()
                 
             return HttpResponse('200')
         return HttpResponse(status=403)
 
-    def view_personal_shedule():
-        shedule = personal_shedule.objects.get(id = "%s&%s"%(task_id, self.user_buildin.id))
+    def view_personal_shedule(self, request):
+        shedule = personal_shedule.objects.get(id = "%s&%s"%(self.task.id, self.user_buildin.id))
 
-        if request.user.has_perm("task.view_personal_comments", shedule):
-            return HttpResponse(shedule.details)
+        if request.user.has_perm("publisher.view_personal_shedule", shedule) or request.user.has_perm("task.view_personal_shedule", self.task):
+            return HttpResponse(shedule.detail)
         return HttpResponse(status=403)
 
-    def edit_personal_shedule():
-        shedule = personal_shedule.objects.update(id = "%s&%s"%(task_id, self.user_buildin.id))
+    def edit_personal_shedule(self, request):
+        shedule = personal_shedule.objects.get(id = "%s&%s"%(self.task.id, self.user_buildin.id))
 
-        if request.user.has_perm("personal_shedule.edit_personal_shedule", shedule):
+        if request.user.has_perm("publisher.edit_personal_shedule", shedule):
             if request.POST.get("action") == "upgrade":
-                shedule.details = _publisher(comment.details).upgrade(request.POST.get("content"))
+                shedule.detail = _publisher(shedule.detail).upgrade(request.POST.get("content"))
             elif request.POST.get("action") == "create":
-                shedule.details = _publisher(comment.details).create(request.POST.get("content"))
+                shedule.detail = _publisher(shedule.detail).create(request.POST.get("content"))
             shedule.save()
                 
             return HttpResponse('200')
         return HttpResponse(status=403)
 
-    def view_personal_progress():
-        progress = personal_progress.objects.get(id = "%s&%s"%(task_id, self.user_buildin.id))
+    def view_personal_progress(self, request):
+        progress = personal_progress.objects.get(id = "%s&%s"%(self.task.id, self.user_buildin.id))
 
-        if request.user.has_perm("personal_progress.view_personal_progress", progress):
-            return HttpResponse(progress.details)
+        if request.user.has_perm("publisher.view_personal_progress", progress) or request.user.has_perm("task.view_personal_progress", self.task):
+            return HttpResponse(progress.detail)
         return HttpResponse(status=403)
 
-    def edit_personal_progress():
-        progress = personal_progress.objects.update(id = "%s&%s"%(task_id, self.user_buildin.id))
+    def edit_personal_progress(self, request):
+        progress = personal_progress.objects.get(id = "%s&%s"%(self.task.id, self.user_buildin.id))
 
-        if request.user.has_perm("personal_progress.edit_personal_progress", progress):
+        if request.user.has_perm("publisher.edit_personal_progress", progress):
             if request.POST.get("action") == "upgrade":
-                progress.details = _publisher(comment.details).upgrade(request.POST.get("content"))
+                progress.detail = _publisher(progress.detail).upgrade(request.POST.get("content"))
             elif request.POST.get("action") == "create":
-                progress.details = _publisher(comment.details).create(request.POST.get("content"))
+                progress.detail = _publisher(progress.detail).create(request.POST.get("content"))
             progress.save()
                 
             return HttpResponse('200')
         return HttpResponse(status=403)
 
-class leader(member):
-    def __init__(self, user_id, **kw):
-        super(leader, self).__init__(user_id, **kw)
+    def cancel_leader(self, target_group):
+        if self.is_leader:
+            self.task.leaders = json.dumps(json.loads(self.task.leaders).remove(self.user_buildin.id))
+            self.task.save()
 
-        if not self.user_buildin.id in json.loads(self.task.leaders):
+            temp = json.loads(self.user_buildin.managed_projects)
+            temp.remove(self.task.id)
+            self.user_buildin.managed_projects = json.dumps(temp)
+            self.user_buildin.managed_projects_number -= 1
+            self.user_buildin.save()
+
+            self.user_buildin.groups.remove(target_group)
+        else:
             pass
             # 这里需要抛出异常，用户不是该项目组的组长
 
-    def cancel_leader(self, target_group):
-        self.task.leaders = json.dumps(json.loads(self.task.leaders).remove(self.user_buildin.id))
-        self.task.save()
-
-        temp = json.loads(self.user_buildin.managed_projects)
-        temp.remove(self.task.id)
-        self.user_buildin.managed_projects = json.dumps(temp)
-        self.user_buildin.managed_projects_number -= 1
-        self.user_buildin.save()
-
-        self.user_buildin.groups.remove(target_group)
-
-class crew(member):
-    def __init__(self, user_id, **kw):
-        super(crew, self).__init__(user_id, **kw)
-
-        if not self.user_buildin.id in json.loads(self.task.members):
-            pass
-            # 这里需要抛出异常，用户不是该项目组的成员
-
     def set_leader(self, target_group):
-        temp = json.loads(self.task.leaders)
-        if not self.user_buildin.id in temp:
-            temp.append(self.user_buildin.id)
-        self.task.leaders = json.dumps(temp)
-        self.task.save()
+        if not self.is_leader:
+            temp = json.loads(self.task.leaders)
+            if not self.user_buildin.id in temp:
+                temp.append(self.user_buildin.id)
 
-        temp = json.loads(self.user_profile.managed_projects)
-        temp.append(self.task.id)
-        self.user_profile.managed_projects = json.dumps(temp)
-        self.user_profile.managed_projects_number += 1
-        self.user_profile.save()
+            self.task.leaders = json.dumps(temp)
+            self.task.save()
 
-        self.user_buildin.groups.add(target_group)
+            temp = json.loads(self.user_profile.managed_projects)
+            temp.append(self.task.id)
+            self.user_profile.managed_projects = json.dumps(temp)
+            self.user_profile.managed_projects_number += 1
+            self.user_profile.save()
+
+            self.user_buildin.groups.add(target_group)
+        else:
+            pass
+            # 这里需要抛出异常，用户已是该项目组的组长
 
 class creater(member):
     def __init__(self, user_id, **kw):
@@ -208,8 +217,8 @@ class creater(member):
             # 这里需要抛出异常，用户不是该项目组的创建者
 
     def remove_permissions(self):
-        remove_perm('task.edit_tasks', request.user, target_task)
-        remove_perm('task.edit_comments', request.user, target_task)
+        remove_perm('task.edit_task', request.user, target_task)
+        remove_perm('task.edit_task_comments', request.user, target_task)
         remove_perm('task.view_personal_comments', request.user, target_task)
         remove_perm('task.view_personal_progress', request.user, target_task)
         remove_perm('task.view_personal_shedule', request.user, target_task)
@@ -222,49 +231,49 @@ class task(object):
     def __init__(self, task_id):
         self.task = models_task.objects.get(id = task_id)
 
-    def get_comment(self, request):
+    def view_task_comment(self, request):
         if request.user.has_perm("task.glance_over_task_details", self.task):
-            return HttpResponse(task.objects.get(id = self.task.id).values("task_comment"))
+            return HttpResponse(self.task.task_comment)
         return HttpResponse(status=403)
 
-    def edit_comment(self, request):
-        if request.user.has_perm("task.edit_comments", self.task):
+    def edit_task_comment(self, request):
+        if request.user.has_perm("task.edit_task_comments", self.task):
             if request.POST.get("action") == "upgrade":
-                self.task.task_comment = _publisher(self.task.task_comment).upgrade(request.POST.get("content"))
+                self.task.task_comment = _publisher(self.task.task_comment).upgrade(request.POST.get("content"), editor_id = request.user.id)
             elif request.POST.get("action") == "create":
-                self.task.task_comment = _publisher(self.task.task_comment).create(request.POST.get("content"))
+                self.task.task_comment = _publisher(self.task.task_comment).create(request.POST.get("content"), editor_id = request.user.id)
             self.task.save()
                 
             return HttpResponse('200')
         return HttpResponse(status=403)
 
-    def get_process(self, request):
+    def view_task_progress(self, request):
         if request.user.has_perm("task.glance_over_task_details", self.task):
             return HttpResponse(self.task.task_progress)
         return HttpResponse(status=403)
 
-    def edit_process(self, request):
-        if request.user.has_perm("task.edit_progress", self.task):
+    def edit_task_progress(self, request):
+        if request.user.has_perm("task.edit_task_progress", self.task):
             if request.POST.get("action") == "upgrade":
-                self.task.task_progress = _publisher(self.task.task_progress).upgrade(request.POST.get("content"))
+                self.task.task_progress = _publisher(self.task.task_progress).upgrade(request.POST.get("content"), editor_id = request.user.id)
             elif request.POST.get("action") == "create":
-                self.task.task_progress = _publisher(self.task.task_progress).create(request.POST.get("content"))
+                self.task.task_progress = _publisher(self.task.task_progress).create(request.POST.get("content"), editor_id = request.user.id)
             self.task.save()
                 
             return HttpResponse('200')
         return HttpResponse(status=403)
 
-    def get_shedule(self, request):
+    def view_task_shedule(self, request):
         if request.user.has_perm("task.glance_over_task_details", self.task):
             return HttpResponse(self.task.task_schedule)
         return HttpResponse(status=403)
 
-    def edit_shedule(self, request):
-        if request.user.has_perm("task.edit_shedule", self.task):
+    def edit_task_shedule(self, request):
+        if request.user.has_perm("task.edit_task_shedule", self.task):
             if request.POST.get("action") == "upgrade":
-                self.task.task_schedule = _publisher(self.task.task_schedule).upgrade(request.POST.get("content"))
+                self.task.task_schedule = _publisher(self.task.task_schedule).upgrade(request.POST.get("content"), editor_id = request.user.id)
             elif request.POST.get("action") == "create":
-                self.task.task_schedule = _publisher(self.task.task_schedule).create(request.POST.get("content"))
+                self.task.task_schedule = _publisher(self.task.task_schedule).create(request.POST.get("content"), editor_id = request.user.id)
             self.task.save()
                 
             return HttpResponse('200')
@@ -288,25 +297,25 @@ class task(object):
             target_group = Group.objects.create(name=str(target_task.id))
 
             # 为一个组对一个对象分配权限
-            assign_perm('glance_over_task_details', target_group, target_task)
+            assign_perm('task.glance_over_task_details', target_group, target_task)
 
             # 组长组
             target_group_leaders = Group.objects.create(name = "%s%s"%(str(target_task.id), "leaders"))
 
             # 为组长组分配权限
-            assign_perm('task.glance_over_task_details', target_group_leaders, target_task)
             assign_perm('task.view_personal_comments', target_group_leaders, target_task)
             assign_perm('task.edit_personal_comments', target_group_leaders, target_task)
-            assign_perm('task.edit_progress', target_group_leaders, target_task)
-            assign_perm('task.edit_shedule', target_group_leaders, target_task)
+            assign_perm('task.edit_task_progress', target_group_leaders, target_task)
+            assign_perm('task.edit_task_shedule', target_group_leaders, target_task)
             assign_perm('task.view_personal_progress', target_group_leaders, target_task)
             assign_perm('task.view_personal_shedule', target_group_leaders, target_task)
             assign_perm('task.edit_appendix', target_group_leaders, target_task)
             assign_perm('task.delete_appendix', target_group_leaders, target_task)
 
             # 配置创建者权限
-            assign_perm('task.edit_tasks', request.user, target_task)
-            assign_perm('task.edit_comments', request.user, target_task)
+            request.user.groups.add(target_group)
+            assign_perm('task.edit_task', request.user, target_task)
+            assign_perm('task.edit_task_comments', request.user, target_task)
             assign_perm('task.view_personal_comments', request.user, target_task)
             assign_perm('task.view_personal_progress', request.user, target_task)
             assign_perm('task.view_personal_shedule', request.user, target_task)
@@ -325,11 +334,11 @@ class task(object):
             # 配置组长相关
             for each in json.loads(form.instance.leaders):
                 try:
-                    target_leader = crew(user_id = each, target_task = target_task)
+                    target_member = member(user_id = each, target_task = target_task)
                 except UserProfile.DoesNotExist:
                     continue
 
-                target_leader.set_leader(target_group = target_group_leaders)
+                target_member.set_leader(target_group = target_group_leaders)
 
             # 通知
 
@@ -368,22 +377,26 @@ class task(object):
             # 撤销组长
             for each in removed_leaders:
                 try:
-                    target_leader = leader(user_id = each, target_task = self.task)
+                    target_member = member(user_id = each, target_task = self.task)
                 except UserProfile.DoesNotExist:
                     continue
+                except User.DoesNotExist:
+                    continue
 
-                target_leader.cancel_leader(target_group_leader)
+                target_member.cancel_leader(target_group_leader)
 
                 # 通知
 
             # 移除组员
             for each in removed_members:
                 try:
-                    target_user = member(user_id = each, target_task = self.task)
+                    target_member = member(user_id = each, target_task = self.task)
                 except UserProfile.DoesNotExist:
                     continue
-    
-                target_user.quit_task(target_group = target_group)
+                except User.DoesNotExist:
+                    continue
+
+                target_member.quit_task(target_group = target_group)
 
                 # 通知
 
@@ -393,19 +406,26 @@ class task(object):
                     target_user = user(user_id = each)
                 except UserProfile.DoesNotExist:
                     continue
+                except User.DoesNotExist:
+                    continue
 
-                target_user.join_task(target_task = self.task, target_group = target_group)
+                if each in json.loads(self.task.all_members):
+                    target_user.join_task(create_archive = False, target_task = self.task, target_group = target_group)
+                else:
+                    target_user.join_task(create_archive = True, target_task = self.task, target_group = target_group)
 
                 # 通知
 
             # 配置新增组长
             for each in new_leaders:
                 try:
-                    target_leader = crew(user_id = each, target_task = self.task)
+                    target_member = member(user_id = each, target_task = self.task)
                 except UserProfile.DoesNotExist:
                     continue
+                except User.DoesNotExist:
+                    continue
 
-                target_leader.set_leader(target_group_leader)
+                target_member.set_leader(target_group_leader)
 
                 # 通知
 
@@ -414,31 +434,22 @@ class task(object):
 
     def delete_task(self, request):
         members = json.loads(self.task.members)
-        
+        leaders = json.loads(self.task.leaders)
+
         # 撤销权限
-        Group.objects.get(name=str(self.task.id)).delete()
+        target_group = Group.objects.get(name = str(self.task.id))
+        target_group_leader = Group.objects.get(name = "%s%s"%(str(self.task.id), "leaders"))
 
         # 撤销创建者的相关权限
-        remove_perm('edit_tasks', request.user, self.task)
-        remove_perm('view_comments', request.user, self.task)
+        creater(user_id = self.task.creater, target_task = self.task).remove_permissions()
 
-        for each in json.loads(self.task.leaders):
-            target_user = User.objects.get(id = each)
-            remove_perm('view_comments', target_user, self.task)
-            remove_perm('edit_comments', target_user, self.task)
+        # 撤销组长
+        for each in leaders:
+            member(user_id = each, target_task = self.task).cancel_leader(target_group = target_group_leader)
 
-            target_user.managed_projects = json.dumps(json.loads(target_user.managed_projects).remove(self.task.id))
-            target_user.managed_projects_number -= 1
-            target_user.save()
-
-        # 组内成员参与任务的个数减一，删除参与该任务的记录
+        # 组员退出
         for each in members:
-            try:
-                user = UserProfile.objects.get(id = each)
-            except UserProfile.DoesNotExist:
-                continue
-        
-            remove_user(user, self.task)
+            member(user_id = each, target_task = self.task).quit_task(target_group = target_group)
 
         # 通知
 
@@ -455,20 +466,21 @@ class task(object):
         return HttpResponse(json.dumps(list(members)))
 
 class _publisher(object):
-    details = None
+    detail = None
 
-    def __init__(self, details):
-        self.details = json.loads(details)
+    def __init__(self, detail):
+        self.detail = json.loads(detail)
 
-    def upgrade(self, content):
-        lastest = self.details.pop()
+    def upgrade(self, content, editor_id = 0):
+        lastest = self.detail.pop()
         lastest["upgrade_date"] = str(time.time())
         lastest["content"] = content
-        self.details.append(lastest)
+        lastest["creater"] = editor_id
+        self.detail.append(lastest)
 
-        return json.dumps(self.details)
+        return json.dumps(self.detail)
 
-    def create(self, content, user_id = 0):
-        self.details.append({"publish_date": str(time.time()), "upgrade_date": str(time.time()), "content": content, "creater": user_id})
+    def create(self, content, editor_id = 0):
+        self.detail.append({"publish_date": str(time.time()), "upgrade_date": str(time.time()), "content": content, "creater": editor_id})
         
-        return json.dumps(self.details)
+        return json.dumps(self.detail)

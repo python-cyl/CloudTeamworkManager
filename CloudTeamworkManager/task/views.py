@@ -1,4 +1,4 @@
-from CloudTeamworkManager.total_class import user, member, crew, leader, creater, _publisher, task
+from CloudTeamworkManager.total_class import user, member, creater, _publisher, task
 from guardian.decorators import permission_required_or_403
 from task.models import task as models_task
 
@@ -11,7 +11,7 @@ def create_task(request):
     if request.method == "POST":
         return task.create_task(request)
 
-@permission_required_or_403("task.edit_tasks", (models_task, "id", "task_id"))
+@permission_required_or_403("task.edit_task", (models_task, "id", "task_id"))
 def edit_task(request, task_id):
     target_task = task(task_id = task_id)
 
@@ -21,7 +21,7 @@ def edit_task(request, task_id):
     if request.method == "POST": 
         return target_task.edit_task(request)
 
-@permission_required_or_403("task.edit_tasks", (models_task, "id", "task_id"))
+@permission_required_or_403("task.edit_task", (models_task, "id", "task_id"))
 def delete_task(request, task_id):
     return task(task_id = task_id).delete_task(request)
 

@@ -25,6 +25,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('account/', include('account.urls')),
     path('task/', include('task.urls')),
+    path('publisher/', include('publisher.urls')),
     path('file/', include('file.urls')),
     #path('notification/', include('account.urls')),
     #path('task/', include('account.urls')),

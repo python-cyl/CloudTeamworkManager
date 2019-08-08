@@ -1,9 +1,9 @@
-from django.urls import path
+from django.conf.urls import url
 from . import views
 
 
 urlpatterns = [
-    path(r'^picode/.*$', views.verify_code),
-    path('img_test/', views.show_image),
-    path('upload/', views.upload_image),
+    url(r'^picode/.*$', views.verify_code),
+    url('img_test/', views.show_image),
+    url(r'upload/', views.upload_image),
 ]

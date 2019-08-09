@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'notification',
     'file',
     'publisher',
+    'noti'
 ]
 
 # Middleware framework

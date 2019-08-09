@@ -11,7 +11,7 @@ from django.shortcuts import render
 from django.http import FileResponse
 from task.models import task
 from file.models import appendix
-import appendixes
+
 
 def verify_code(request):
     code = Code(4)
@@ -58,7 +58,7 @@ def appendix(request, task_id, file_name):
         # 如果存在，检查对该文件的编辑权限，或者对该任务附件的编辑权限
         # 如果不存在，上传
         _file = request.FILES.get("appendix")
-        for a,b,filename in os.walk(appendixes):
+        for a,b,filename in os.walk('./file/appendixes/%s'%task_id):
             if _file.name == filename:
                 if not request.user.has_perm('file.edit_appendix', appendix.objects.get(filename = filename)):
                     return HttpResponse("403")

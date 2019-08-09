@@ -5,57 +5,13 @@ from .verification_code import Code
 from django.contrib.auth import logout
 from PIL import Image, ImageFilter
 from io import BytesIO
-
-
-#def movie_info_pic(request, directory):
-#    movie_id = request.GET.get('movie_id')
-#    file_name = request.GET.get('file_name')
-#    file_name = re.sub(r'[*/\\:?<>|"]', '', file_name)
-#    base_path = os.path.abspath('.') + '\\resource\\movie_info\\%s\\%s\\%s' % (movie_id, directory, file_name)
-#    try:
-#        path = base_path + '.jpeg'
-#        file = open(path, 'rb')
-#        img = file.read()
-#        return HttpResponse(img, 'image/jpeg')
-#    except FileNotFoundError:
-#        try:
-#            path = base_path + '.png'
-#            file = open(path, 'rb')
-#            img = file.read()
-#            return HttpResponse(img, 'image/png')
-#        except FileNotFoundError:
-#            path = base_path + '.jpg'
-#            file = open(path, 'rb')
-#            img = file.read()
-#            return HttpResponse(img, 'image/jpg')
-
-
-#def total_and_avatar(request, directory):
-#    file_name = request.GET.get('file_name')
-#    file_name = re.sub(r'[*/\\:?<>|"]', '', file_name)
-#    base_path = os.path.abspath('.') + '\\resource\\%s\\' % directory
-#    try:
-#        path = base_path + file_name + '.jpeg'
-#        file = open(path, 'rb')
-#        img = file.read()
-#        return HttpResponse(img, 'image/jpeg')
-#    except FileNotFoundError:
-#        try:
-#            path = base_path + file_name + '.png'
-#            file = open(path, 'rb')
-#            img = file.read()
-#            return HttpResponse(img, 'image/png')
-#        except FileNotFoundError:
-#            try:
-#                path = base_path + file_name + '.jpg'
-#                file = open(path, 'rb')
-#                img = file.read()
-#                return HttpResponse(img, 'image/jpg')
-#            except FileNotFoundError:
-#                path = base_path + 'default.jpeg'
-#                file = open(path, 'rb')
-#                img = file.read()
-#                return HttpResponse(img, 'image/jpg')
+from guardian.decorators import permission_required_or_403
+from guardian.shortcuts import assign_perm, remove_perm
+from django.shortcuts import render
+from django.http import FileResponse
+from task.models import task
+from file.models import appendix
+import appendixes
 
 def verify_code(request):
     code = Code(4)
@@ -67,54 +23,94 @@ def verify_code(request):
     return HttpResponse(code.getvalue(), 'image/png')
 
 
-#def background(request):
-#    movie_id = request.GET.get('movie_id')
-#    base_path = os.path.abspath('.') + '\\resource\\movie_info\\%s\\poster\\%s' % (movie_id, movie_id)
-#    try:
-#        path = base_path + '.jpeg'
-#        img = Image.open(path)
-#    except FileNotFoundError:
-#        try:
-#            path = base_path + '.png'
-#            img = Image.open(path)
-#        except FileNotFoundError:
-#            path = base_path + '.jpg'
-#            img = Image.open(path)
-#    crop_img = img.crop((0, 117, img.width, 184))
-#    extend_img = crop_img.resize((1200, 300))
-#    darken_img = extend_img.point(lambda p: p * 0.7)
-#    blur_img = darken_img.filter(ImageFilter.GaussianBlur(radius=15))
-#    new_img = BytesIO()
-#    blur_img.save(new_img, 'jpeg')
-#    return HttpResponse(new_img.getvalue(), 'image/jpeg')
-
-def show_image(request):
-    context = {}
-    return render_to_response('show_img.html', context)
+def show_image(request, file_name):
+    img = open(os.path.join("static/total/" + file_name), 'rb')
+    return HttpResponse(img.read(), 'image/jpg')
 
 
-def upload_image(request):
+def avatar(request):
+    if not request.user.is_authenticated:
+        return HttpResponse(status="403")
+
+    if request.method == "GET":
+        ava = open(os.path.join("static/avatar/"+str(user_id)+'.jpg'), 'rb')
+        return HttpResponse(ava.read(), "image/jpg")
+
     if request.method == "POST":
-        user_id = request.POST.get('user_id')
-        myFile = request.FILES.get('avatar', None)
-        if not user_id:
-            return HttpResponse('upload failed')
+        user_id = request.user.id
+        myFile = request.FILES.get('avatar')
+
         if not myFile:
             return HttpResponse("no files for upload!")
-        destination = open(os.path.join("static/img_for_user/"+user_id+'.jpg'), 'wb+')
+
+        destination = open(os.path.join("static/img_for_user/"+str(user_id)+'.jpg'), 'wb+')
         for chunk in myFile.chunks():
             destination.write(chunk)
         destination.close()
+
         return HttpResponse("upload over!")
     return render(request, 'img_upload_for_user.html')
 
+@permission_required_or_403('task.glance_over_task_details', (task, ('id', 'task_id')))
+def appendix(request, task_id, file_name):
+    if request.method == 'POST':
+        # 检查是否已经存在
+        # 如果存在，检查对该文件的编辑权限，或者对该任务附件的编辑权限
+        # 如果不存在，上传
+        _file = request.FILES.get("appendix")
+        for a,b,filename in os.walk(appendixes):
+            if _file.name == filename:
+                if not request.user.has_perm('file.edit_appendix', appendix.objects.get(filename = filename)):
+                    return HttpResponse("403")
 
-def show_img(request):
-    if request.method == "GET":
-        user_id = request.user.id
-        if not user_id:
-            return HttpResponse('用户未登录')
-        else:
-            a = open(os.path.join("static/img_for_user/"+user_id+'.jpg'), 'wb+')
-            a.read()
-            return HttpResponse(a)
+        file = open("./file/appendixes/%s/%s"%(task_id, _file.name), 'wb')
+        file.write(_file.read())
+        file.close()
+        file = appendix.objects.create(filename='_file.name',task_id='task_id',publisher=request.user.id)
+        assign_perm('file.edit_appendix', request.user, file)
+        assign_perm('file.delete_appendix', request.user, file)
+
+        return HttpResponse("200")
+
+    if request.method == 'GET':
+        file = open("./file/appendixes/%s/%s" % (task_id, file_name), 'rb')
+        response = FileResponse(file)
+        response['Content-Type'] = 'application/octet-stream'
+        response['Content-Disposition'] = 'attachment;filename="%s"'%file_name
+        return response
+
+
+def upload(request):
+    return render(request, "upload.html")
+
+
+def rename_appendix(request, task_id, appendix_id):
+    target_task = task.objects.get(id = task_id)
+    target_appendix = appendix.objects.get(id = appendix_id)
+
+    if request.user.has_perm("task.edit_appendix", target_task) or request.user.has_perm("file.edit_appendix", target_appendix):
+        target_appendix_name = target_appendix.filename
+
+        target_appendix.filename = request.POST.get("filename")
+        target_appendix.save()
+
+        os.rename('./file/appendixes/%s/%s' % (task_id, target_appendix_name), './file/appendixes/%s/%s' % (task_id, target_appendix.filename))
+
+        return HttpResponse("200")
+    return HttpResponse(status=403)
+
+
+def delete(request,task_id,appendix_id):
+    target_task = task.objects.get(id=task_id)
+    target_appendix = appendix.objects.get(id=appendix_id)
+
+    if request.user.has_perm("task.delete_appendix", target_task) or request.user.has_perm("file.delete_appendix",target_appendix):
+        target_appendix_name = target_appendix.filename
+        appendix.objects.filter(id=appendix_id).delete()
+        path = './file/appendixes/%s/%s/'% (task_id,target_appendix_name)
+        if os.path.exists(path):
+            os.remove(path)
+
+            return HttpResponse("200")
+        return HttpResponse("file does not exist")
+    return HttpResponse(status=403)

@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'task',
     'notification',
     'file',
+    'noti',
 ]
 
 # Middleware framework
@@ -84,10 +85,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'cloudteamworkmanager',
-        'USER':'root',
-        'PASSWORD':'rootpassword',
-        'HOST':'',
-        'PORT':'3306',
+        'USER': 'root',
+        'PASSWORD': 'rootpassword',
+        'HOST': '',
+        'PORT': '3306',
     }
 }    
 
@@ -122,6 +123,6 @@ STATIC_URL = '/static/'
 STATIC_ROOT = posixpath.join(*(BASE_DIR.split(os.path.sep) + ['static']))
 
 AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend', # this is default
+    'django.contrib.auth.backends.ModelBackend',# this is default
     'guardian.backends.ObjectPermissionBackend',
 )

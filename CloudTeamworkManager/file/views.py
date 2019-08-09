@@ -51,6 +51,7 @@ def avatar(request):
         return HttpResponse("upload over!")
     return render(request, 'img_upload_for_user.html')
 
+  
 @permission_required_or_403('task.glance_over_task_details', (task, ('id', 'task_id')))
 def appendix(request, task_id, file_name):
     if request.method == 'POST':
@@ -114,3 +115,4 @@ def delete(request,task_id,appendix_id):
             return HttpResponse("200")
         return HttpResponse("file does not exist")
     return HttpResponse(status=403)
+

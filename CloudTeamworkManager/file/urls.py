@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-
+pass
 
 urlpatterns = [
     path(r'^picode/.*$', views.verify_code),

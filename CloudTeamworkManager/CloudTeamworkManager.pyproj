@@ -60,13 +60,17 @@
     <Compile Include="CloudTeamworkManager\urls.py" />
     <Compile Include="CloudTeamworkManager\wsgi.py" />
     <Compile Include="noti\admin.py" />
+    <Compile Include="noti\adminx.py" />
     <Compile Include="noti\apps.py" />
     <Compile Include="noti\migrations\0001_initial.py" />
+    <Compile Include="noti\migrations\0002_auto_20190810_1032.py" />
     <Compile Include="noti\migrations\__init__.py" />
     <Compile Include="noti\models.py" />
     <Compile Include="noti\signals.py" />
     <Compile Include="noti\tests.py" />
-    <Compile Include="noti\urls.py" />
+    <Compile Include="noti\urls.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="noti\views.py" />
     <Compile Include="noti\__init__.py" />
     <Compile Include="publisher\admin.py" />
@@ -97,7 +101,24 @@
     <Content Include="account\templates\perfect_infomation.html" />
     <Content Include="account\templates\register_page.html" />
     <Content Include="account\templates\space.html" />
+    <Content Include="file\templates\file\img_upload_for_user.html" />
     <Content Include="file\templates\file\index.html" />
+    <Content Include="file\templates\file\show_img.html" />
+    <Content Include="noti\migrations\__pycache__\0001_initial.cpython-36.pyc" />
+    <Content Include="noti\migrations\__pycache__\0001_initial.cpython-37.pyc" />
+    <Content Include="noti\migrations\__pycache__\0002_auto_20190810_1032.cpython-36.pyc" />
+    <Content Include="noti\migrations\__pycache__\0002_auto_20190810_1032.cpython-37.pyc" />
+    <Content Include="noti\migrations\__pycache__\__init__.cpython-36.pyc" />
+    <Content Include="noti\migrations\__pycache__\__init__.cpython-37.pyc" />
+    <Content Include="noti\__pycache__\admin.cpython-36.pyc" />
+    <Content Include="noti\__pycache__\admin.cpython-37.pyc" />
+    <Content Include="noti\__pycache__\adminx.cpython-36.pyc" />
+    <Content Include="noti\__pycache__\adminx.cpython-37.pyc" />
+    <Content Include="noti\__pycache__\apps.cpython-36.pyc" />
+    <Content Include="noti\__pycache__\apps.cpython-37.pyc" />
+    <Content Include="noti\__pycache__\models.cpython-36.pyc" />
+    <Content Include="noti\__pycache__\models.cpython-37.pyc" />
+    <Content Include="noti\__pycache__\__init__.cpython-36.pyc" />
     <Content Include="noti\__pycache__\__init__.cpython-37.pyc" />
     <Content Include="publisher\templates\publisher\index.html" />
     <Content Include="requirements.txt" />
@@ -114,6 +135,7 @@
     <Folder Include="file\templates\file\" />
     <Folder Include="noti\" />
     <Folder Include="noti\migrations\" />
+    <Folder Include="noti\migrations\__pycache__\" />
     <Folder Include="noti\__pycache__\" />
     <Folder Include="publisher\" />
     <Folder Include="publisher\migrations\" />

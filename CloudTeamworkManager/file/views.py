@@ -43,7 +43,7 @@ def avatar(request):
         if not myFile:
             return HttpResponse("no files for upload!")
 
-        destination = open(os.path.join("static/img_for_user/"+str(user_id)+'.jpg'), 'wb+')
+        destination = open(os.path.join("static/avatar/"+str(user_id)+'.jpg'), 'wb+')
         for chunk in myFile.chunks():
             destination.write(chunk)
         destination.close()

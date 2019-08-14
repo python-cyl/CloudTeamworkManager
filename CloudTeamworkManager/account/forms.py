@@ -40,7 +40,7 @@ class LoginForm(forms.Form):
     phone_number = forms.CharField(max_length=11, min_length=11, label="手机号")
     password = forms.CharField(max_length=16, min_length=6, label="密码")
 
-class ResetPasswordForm(forms.Form):
+class SetPasswordForm(forms.Form):
     phone_number = forms.CharField(max_length=11, min_length=11, label="手机号")
     old_password = forms.CharField(max_length=16, min_length=6, label="当前密码")
     new_password = forms.CharField(max_length=16, min_length=6, label="新密码")
@@ -70,7 +70,7 @@ class ResetPasswordForm(forms.Form):
             return old_password
         raise ValidationError("当前密码不正确")
 
-class GetPasswordForm(forms.Form):
+class ResetPasswordForm(forms.Form):
     phone_number = forms.CharField(max_length=11, min_length=11, label="手机号")
     password = forms.CharField(max_length=16, min_length=6, label="新密码")
     msgcode = forms.CharField(max_length=4, min_length=4, label="短信验证码")

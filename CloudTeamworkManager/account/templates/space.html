@@ -1,12 +1,362 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="zh-CN">
+
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-	<title>Document</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+    <title>个人资料</title>
+    <style>
+        li {
+            line-height: 3rem;
+            vertical-align: middle;
+        }
+
+        .table td,
+        .table th {
+            border-top: 0px;
+            vertical-align: middle;
+        }
+
+        .card {
+            margin: 1.2rem 0rem;
+            border-radius: 0px;
+        }
+
+        [readonly]:focus {
+            border: 0px solid !important;
+        }
+
+        [readonly] {
+            border: 0px solid !important;
+        }
+
+        input {
+            border-bottom: 1px #ced4da solid;
+            border-top: 0px;
+            border-left: 0px;
+            border-right: 0px;
+            width: 100%;
+        }
+
+        input:focus {
+            border-bottom: 1px #80bdff solid;
+        }
+
+        textarea {
+            border: 1px #ced4da solid;
+            width: 100%;
+        }
+
+        textarea:focus {
+            border: 1px #80bdff solid;
+        }
+
+        .task-card:hover .content {
+            left: 40% !important;
+        }
+
+        .task-card:hover .detail {
+            left: 80% !important;
+            display: block !important;
+        }
+
+        .edit-icon:hover {
+            opacity: 1 !important;
+        }
+
+        .modal.fade .modal-dialog {
+            transform: translate3d(100%, 0, 0);
+        }
+
+        .modal.show .modal-dialog {
+            transform: translate3d(0, 0, 0);
+        }
+
+        .toast {
+            padding: 0px 10%;
+        }
+    </style>
 </head>
+
 <body>
-    这是个人主页
+    <div class="modal fade" id="mymodal">
+        <div class="modal-dialog" style="margin: 0px; position: absolute; left: 75%; height: 100%; width: 25%;">
+            <div class="modal-content"
+                style="border-radius: 0px; border: 0px; height: 100%; background-color: rgba(255, 255, 255, 0.7)">
+                <div class="modal-body" style="padding: 0px">
+                    <div>
+                        <div class="clearfix" style="width: 80%; margin-left: 10%; margin-top: 5%">
+                            <div style="float: left; transform: translateY(16%); text-align: center">
+                                <div style="color: #333333; font-size: 26px">快乐的萝卜</div>
+                                <a style="color: #F44336; font-size: 18px" href="">退出登录</a>
+                            </div>
+                            <div class="float-right" style="width: 30%">
+                                <img class="rounded-circle" src="/static/pic/avatar.jpeg" width="100%">
+                            </div>
+                        </div>
+                        <div style="width: 100%; margin-top: 5%">
+                            <div class="toast fade" data-autohide="false" role="alert" aria-live="assertive"
+                                aria-atomic="true"
+                                style="box-shadow: 0px 0px 0px; border-top: 0px; border-left: 0px; border-right: 0px">
+                                <div class="toast-header"
+                                    style="border-bottom: 0px; padding: 0.75rem 0rem 0.75rem 0rem">
+                                    <strong class="mr-auto">已被设置为组长</strong> <small class="text-muted">11 mins
+                                        ago</small>
+                                    <button type="button" class="ml-2 mb-1 close" data-dismiss="toast"
+                                        aria-label="Close">
+                                        <span aria-hidden="true">×</span> </button>
+                                </div>
+                                <div class="toast-body" style="padding: 0rem 0rem 0.75rem 0rem">
+                                    您好! 您已被设置为任务管理系统项目组组长。
+                                </div>
+                            </div>
+                            <div class="toast fade" data-autohide="false" role="alert" aria-live="assertive"
+                                aria-atomic="true"
+                                style="box-shadow: 0px 0px 0px; border-top: 0px; border-left: 0px; border-right: 0px">
+                                <div class="toast-header"
+                                    style="border-bottom: 0px; padding: 0.75rem 0rem 0.75rem 0rem">
+                                    <strong class="mr-auto">已被设置为组长</strong>
+                                    <small class="text-muted">11 mins ago</small>
+                                    <button type="button" class="ml-2 mb-1 close" data-dismiss="toast"
+                                        aria-label="Close">
+                                        <span aria-hidden="true">×</span> </button>
+                                </div>
+                                <div class="toast-body" style="padding: 0rem 0rem 0.75rem 0rem">
+                                    您好! 您已被设置为任务管理系统项目组组长。
+                                </div>
+                            </div>
+                        </div>
+                        <a href=""
+                            style="position: fixed; top: 95%; color: #666666; font-size: 18px; text-align: center; width: 100%">进入消息中心</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" style="height: 100%;">
+        <div class="row">
+            <div class="col-10 offset-1">
+                <div class="card" style="border-left: 0.25rem solid #448AFF;">
+                    <div class="clearfix" style="width: 100%">
+                        <div style="float: right; height: 6rem; width: 22rem">
+                            <div class="text-uppercase lead font-weight-bold"
+                                style="font-size: 4rem; color: rgba(41, 98, 255, 0.05); z-index: -1">
+                                about&nbsp;me</div>
+                            <div
+                                style="font-size: 2rem; color: #999999; position: relative; top: -65%; left: 8%; z-index: 1;">
+                                基本资料
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row no-gutters">
+                        <div class="col-2 offset-1" style="text-align: center">
+                            <img src="/static/pic/avatar.jpeg" class="rounded-circle" style="width: 7.5rem">
+                            <div style="font-size: 1.8rem; margin: 1.5rem 0rem 3.0rem 0rem"><input
+                                    style="text-align: center" readonly value="宋叮咛"></div>
+                        </div>
+                        <div class="col-3 offset-1" style="position: relative; top: 50%; transform: translateY(-50%)">
+                            <ul class="list-unstyled" style="font-size: 1.5rem">
+                                <li>15698311360</li>
+                                <li>男</li>
+                                <li>1999年11月28日</li>
+                                <li>2018006797</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="border-left: 0.25rem solid #448AFF;">
+                    <div class="clearfix" style="width: 100%">
+                        <div style="float: right; height: 6rem; width: 22rem">
+                            <div class="text-uppercase lead font-weight-bold"
+                                style="font-size: 4rem; color: rgba(41, 98, 255, 0.05); z-index: -1">
+                                about&nbsp;me</div>
+                            <div
+                                style="font-size: 2rem; color: #999999; position: relative; top: -65%; left: 8%; z-index: 1;">
+                                详细资料
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row no-gutters">
+                        <table class="table col-10 offset-1" style="margin-bottom: 3rem">
+                            <tbody>
+                                <tr>
+                                    <th scope="row" style="width: 20%">邮箱</th>
+                                    <td><input readonly value="ssdyny@foxmail.com"></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">方向</th>
+                                    <td class="text-capitalize"><input readonly value="Python"></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">年级</th>
+                                    <td><input readonly value="2018"></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">宿舍</th>
+                                    <td><input readonly value="2#227"></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">家庭住址</th>
+                                    <td><input readonly value="山西省&nbsp;晋中市&nbsp;榆次区&nbsp;乌金山镇&nbsp;太原理工大学"></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">监护人电话</th>
+                                    <td><input readonly value="15698311360"></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">个人介绍</th>
+                                    <td>
+                                        <textarea readonly rows="1"
+                                            id="textarea">我还是一个正直忠诚、勤奋求实的人，会不断追求人格的自我完善；明显的特点是乐观自信、温和开朗、稳重宽厚，因此，我人际关系和谐，适应环境能力较强。爱好电脑、科普知识，喜欢钻研，正因为这些增强了我的实干精神，习惯事情或问题及早解决。</textarea>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <input class="edit-icon btn btn-primary" type="button" value="编辑" ;
+                            style="font-size: 0.9rem; padding: 0px; opacity: 0.3; width: 3rem; height: 1.5rem; position: absolute; left: 93%; bottom: 3%;">
+                    </div>
+                </div>
+
+                <div class="card" style="border-left: 0.25rem solid #448AFF;">
+                    <div class="clearfix" style="width: 100%">
+                        <div style="float: right; height: 6rem; width: 22rem">
+                            <div class="text-uppercase lead font-weight-bold"
+                                style="font-size: 4rem; color: rgba(41, 98, 255, 0.05); z-index: -1">
+                                about&nbsp;me</div>
+                            <div
+                                style="font-size: 2rem; color: #999999; position: relative; top: -65%; left: 8%; z-index: 1;">
+                                参加的任务
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row no-gutters">
+                        <div class="col-10 offset-1" style="margin-bottom: 3rem">
+                            <div class="row justify-content-between no-gutters">
+                                <div class="col-5 card task-card"
+                                    style="position: relative; height: 7rem; margin-bottom: 1.2rem;">
+                                    <div class="content"
+                                        style="position: absolute; left: 50%; top: 50%; transform: translateX(-50%) translateY(-50%); display: inline;">
+                                        <div class="lead">任务管理系统</div>
+                                        <div style="font-size: 0.7rem; display: contents">2019-1-1</div>
+                                    </div>
+                                    <a href="">
+                                        <div class="detail"
+                                            style="color: white; display: none; background-color: #448AFF; width: 20%; height: 100%; left: 100%; position: absolute">
+                                            <div
+                                                style="width: 2.3rem; margin-right: auto; margin-left: auto; position: relative; top: 50%; transform: translateY(-50%); text-align: center;">
+                                                查看详情
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col-5 card task-card"
+                                    style="position: relative; height: 7rem; margin-bottom: 1.2rem;">
+                                    <div class="content"
+                                        style="position: absolute; left: 50%; top: 50%; transform: translateX(-50%) translateY(-50%); display: inline;">
+                                        <div class="lead">任务管理系统</div>
+                                        <div style="font-size: 0.7rem; display: contents">2019-1-1</div>
+                                    </div>
+                                    <a href="">
+                                        <div class="detail"
+                                            style="color: white; display: none; background-color: #448AFF; width: 20%; height: 100%; left: 100%; position: absolute">
+                                            <div
+                                                style="width: 2.3rem; margin-right: auto; margin-left: auto; position: relative; top: 50%; transform: translateY(-50%); text-align: center;">
+                                                查看详情
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col-5 card task-card"
+                                    style="position: relative; height: 7rem; margin-bottom: 1.2rem;">
+                                    <div class="content"
+                                        style="position: absolute; left: 50%; top: 50%; transform: translateX(-50%) translateY(-50%); display: inline;">
+                                        <div class="lead">任务管理系统</div>
+                                        <div style="font-size: 0.7rem; display: contents">2019-1-1</div>
+                                    </div>
+                                    <a href="">
+                                        <div class="detail"
+                                            style="color: white; display: none; background-color: #448AFF; width: 20%; height: 100%; left: 100%; position: absolute">
+                                            <div
+                                                style="width: 2.3rem; margin-right: auto; margin-left: auto; position: relative; top: 50%; transform: translateY(-50%); text-align: center;">
+                                                查看详情
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col-5 card task-card"
+                                    style="position: relative; height: 7rem; margin-bottom: 1.2rem;">
+                                    <div class="content"
+                                        style="position: absolute; left: 50%; top: 50%; transform: translateX(-50%) translateY(-50%); display: inline;">
+                                        <div class="lead">任务管理系统</div>
+                                        <div style="font-size: 0.7rem; display: contents">2019-1-1</div>
+                                    </div>
+                                    <a href="">
+                                        <div class="detail"
+                                            style="color: white; display: none; background-color: #448AFF; width: 20%; height: 100%; left: 100%; position: absolute">
+                                            <div
+                                                style="width: 2.3rem; margin-right: auto; margin-left: auto; position: relative; top: 50%; transform: translateY(-50%); text-align: center;">
+                                                查看详情
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="w-100"></div>
+                                <div class="col-12 text-right">
+                                    <a href="">查看更多</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="border-left: 0.25rem solid #448AFF;">
+                    <div class="clearfix" style="width: 100%">
+                        <div style="float: right; height: 6rem; width: 22rem">
+                            <div class="text-uppercase lead font-weight-bold"
+                                style="font-size: 4rem; color: rgba(41, 98, 255, 0.05); z-index: -1">
+                                about&nbsp;me</div>
+                            <div
+                                style="font-size: 2rem; color: #999999; position: relative; top: -65%; left: 8%; z-index: 1;">
+                                参加的任务
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row no-gutters">
+                        <div class="col-10 offset-1"
+                            style="margin-bottom: 3rem; position: relative; height: 5rem; margin-bottom: 1.2rem;">
+                            <div
+                                style="position: absolute; left: 50%; top: 50%; transform: translateX(-50%) translateY(-50%); display: inline;">
+                                <div class="lead">暂无记录</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/bootstrap/js/jquery.min.js"></script>
+    <script src="/static/bootstrap/js/popper.min.js"></script>
+    <script src="/static/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/vue.js"></script>
+
+    <script>
+        var textarea = document.getElementById("textarea")
+        textarea.style.height = 'auto';
+        textarea.style.height = textarea.scrollHeight + 5 + "px";
+
+        $('.toast').toast('show')
+
+        $("#mymodal").modal("toggle");
+    </script>
 </body>
+
 </html>

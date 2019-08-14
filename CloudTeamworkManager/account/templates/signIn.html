@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+    <title>登录</title>
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+        }
+
+        .form-control:focus {
+            box-shadow: 0px 0px 0px;
+        }
+
+        .form-control {
+            border-top: 0px;
+            border-left: 0px;
+            border-right: 0px;
+            padding: 0px;
+        }
+
+        .modal.fade .modal-dialog {
+            transform: translate3d(100%, 0, 0);
+        }
+
+        .modal.show .modal-dialog {
+            transform: translate3d(0, 0, 0);
+        }
+
+        .toast {
+            padding: 0px 10%;
+        }
+    </style>
+</head>
+
+<body
+    style="background: url(/static/svg/leftUp.svg) left top no-repeat fixed, url(/static/svg/rightDown.svg) 150% -200% no-repeat fixed, url(/static/svg/rightUp.svg) right top no-repeat fixed; background-size: 800px">
+    <div class="container" style="height: 100%">
+        <div class="row no-gutters" style="height: 100%">
+            <div style="height: auto; display: inline-block; z-index: -1; background: #448AFF;" class="col-4 offset-1">
+                <div style="height: 100%; background: url(/static/svg/middle.svg); opacity:0.4"></div>
+            </div>
+
+            <div class="align-self-center col-5" style="margin-left: -12.5%;">
+                <div class="text-right clearfix">
+                    <div class="text-uppercase font-weight-light" style="color: #536DFE; font-size: 48px">sign&nbsp;in
+                    </div>
+                    <div style="font-size: 22px; color: #333333">登录你的云顶账号
+                    </div>
+                    <hr noshade=true style="width: 17%; height: 1px; background-color: #536DFE; float: right;">
+                </div>
+                <div class="row justify-content-center no-gutters shadow p-0 mb-5 bg-white rounded" id="mainFunc">
+                    <div class="col-10" style="margin-top: 10%; margin-bottom: 10%">
+                        <form action="" method="POST" class="clearfix">
+                            <label style="font-size: 14px; margin: 0.5rem 0rem 0.5rem 0rem">请输入您的手机号</label>
+                            <input v-model="phone_number" type="text" class="form-control" placeholder="请输入您的手机号"
+                                name="phone_number">
+                            <label style="font-size: 14px; margin: 0.5rem 0rem 0.5rem 0rem">请输入您的密码</label>
+                            <input v-model="password" type="password" class="form-control" placeholder="请输入您的密码"
+                                name="password">
+                            {% csrf_token %}
+                        </form>
+                        <a href="/account/reset_password"
+                            style="margin-top: 0.5rem; font-size: 14px; float: right;">忘记密码</a>
+                        <div class="tip" style="margin-top: 0.5rem; font-size: 14px; color: #E86263">[[ tip ]]</div>
+                        <input @click="submit" type="button" class="btn btn-primary col-6 offset-6" value="登录"
+                            style="float: right; font-size: 18px; margin-top: 10%">
+                    </div>
+                    <div class="text-center col-12 align-self-end rounded-bottom align-middle"
+                        style="height: 50px; background-color: rgba(130, 178, 255, 0.2); font-size: 16px">
+                        <div style="position: relative; top: 50%; transform: translateY(-50%); color: #999999">没有账号？<a
+                                href="/account/register">点击注册</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="/static/bootstrap/js/jquery.min.js"></script>
+        <script src="/static/bootstrap/js/popper.min.js"></script>
+        <script src="/static/bootstrap/js/bootstrap.bundle.min.js"></script>
+        <script src="/static/js/vue.js"></script>
+        <script src="/static/js/vue-resource.min.js"></script>
+
+        <script>
+            $('.toast').toast('show')
+
+            $("#mymodal").modal("toggle");
+        </script>
+
+        <script>
+            Vue.http.headers.common['X-CSRFToken'] = $("input[name='csrfmiddlewaretoken']").val()
+            var app = new Vue({
+                delimiters:['[[', ']]'],
+                el: '#mainFunc',
+                data: {
+                    tip: "",
+                    phone_number: "",
+                    password: "",
+                },
+                methods: {
+                    submit: function () {
+                        this.$http.post('/account/login/', { 'phone_number': this.phone_number, 'password': this.password }, { emulateJSON: true }).then(result => {
+                            if (result.body.status == 302){
+                                window.location.href=result.body.url;
+                            }
+                            else{
+                                this.tip = result.body.tip
+                            }
+                        })
+                    },
+                }
+            })
+        </script>
+</body>
+
+</html>

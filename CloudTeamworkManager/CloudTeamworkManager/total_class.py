@@ -343,7 +343,7 @@ class task(object):
 
             # 通知
 
-            return JsonResponse({"tip": "操作成功", "status": 200}, safe=False)
+            return JsonResponse({"url": "/task/%d"%target_task.id, "status": 302}, safe=False)
         return JsonResponse({"tip": "表单验证失败", "status": 400}, safe=False)
 
     # 需要修改
@@ -431,7 +431,7 @@ class task(object):
 
                 # 通知
 
-            return JsonResponse({"tip": "操作成功", "status": 200}, safe=False)
+            return JsonResponse({"url": "/task/%d"%self.task.id, "status": 302}, safe=False)
         return JsonResponse({"tip": "表单验证失败", "status": 400}, safe=False)
 
     def delete_task(self, request):

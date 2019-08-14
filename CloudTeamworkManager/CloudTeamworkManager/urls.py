@@ -29,4 +29,5 @@ urlpatterns = [
     path('publisher/', include('publisher.urls')),
     path('file/', include('file.urls')),
     path('noti/', include('noti.urls')),
+    path('', include('account.urls')),
 ]

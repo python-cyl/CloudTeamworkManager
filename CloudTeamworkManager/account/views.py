@@ -6,7 +6,7 @@ from django.contrib import auth
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
-from .forms import RegisterForm, LoginForm, GetPasswordForm, change_info, extend_info, ResetPasswordForm, my_clean_phone_number
+from .forms import RegisterForm, LoginForm, ResetPasswordForm, change_info, extend_info, SetPasswordForm, my_clean_phone_number
 from .models import UserProfile
 from .msgcode import sendcode
 from task.models import task
@@ -20,8 +20,8 @@ def logoutAccount(request):
 def login_page(request):
     if request.method == "GET":
         if request.user.is_authenticated:
-            return HttpResponseRedirect("/account/space/")
-        return render(request, 'login_page.html')
+            return HttpResponseRedirect("/")
+        return render(request, 'signIn.html')
 
     if request.method == "POST":
         forms = LoginForm(request.POST)
@@ -30,7 +30,7 @@ def login_page(request):
             user = auth.authenticate(request, username = forms.cleaned_data['phone_number'], password = forms.cleaned_data['password'])
             if user:
                 auth.login(request, user)
-                return HttpResponseRedirect("/account/space/")
+                return JsonResponse({"url": "/", "status": 302}, safe=False)
             return JsonResponse({"tip": "用户名或密码错误", "status": 400}, safe=False)
         return JsonResponse({"tip": "输入内容有误", "status": 400}, safe=False)
 
@@ -40,7 +40,7 @@ def login_page(request):
 
 def register_page(request):
     if request.method == "GET":
-        return render(request, 'register_page.html')
+        return render(request, 'signUp.html')
 
     if request.method == "POST":
         forms = RegisterForm(request.POST)
@@ -49,35 +49,35 @@ def register_page(request):
         if forms.is_valid():
             user = User.objects.create_user(username = forms.cleaned_data['phone_number'], password=forms.cleaned_data['password'])
             UserProfile.objects.create(user_id = user.id)
-            return HttpResponseRedirect("/account/login/")
+            return JsonResponse({"url": "/account/login", "status": 302}, safe=False)
         return JsonResponse({"tip": list(forms.errors.values())[0][0], "status": 400}, safe=False)
 
-def get_password_page(request):
+def reset_password_page(request):
     if request.method == "GET":
-        return render(request, 'get_password_page.html')
+        return render(request, 'resetPassword.html')
 
     if request.method == "POST":
-        forms = GetPasswordForm(request.POST)
+        forms = ResetPasswordForm(request.POST)
 
         if forms.is_valid():
             user = User.objects.get(username = forms.cleaned_data["phone_number"])
             user.set_password(forms.cleaned_data["password"])
             user.save()
-            return HttpResponseRedirect("/account/login/")
+            return JsonResponse({"url": "/account/login", "status": 302}, safe=False)
         return JsonResponse({"tip": list(forms.errors.values())[0][0], "status": 400}, safe=False)
 
-def reset_password(request):
+def set_password(request):
     if request.method == "GET":
-        return render(request, 'reset_password_page.html')
+        return render(request, 'resetPassword.html')
 
     if request.method == "POST":
-        forms = ResetPasswordForm()
+        forms = SetPasswordForm()
         user = request.user
         forms.user = user
 
         if forms.is_valid():
             user.set_password(forms.cleaned_data["new_password"])
-            return HttpResponseRedirect("/account/login/")
+            return JsonResponse({"url": "/account/login", "status": 302}, safe=False)
         return JsonResponse({"tip": list(forms.errors.values())[0][0], "status": 400}, safe=False)
 
 def check_phone_number(request):
@@ -108,9 +108,16 @@ def sendmsgcode(request):
 def space_page(request):
     user_info = UserProfile.objects.get(user_id = request.user.id)
 
-    if user_info.name:
-        return render(request, 'space.html')
-    return HttpResponseRedirect("/account/perfect_information/")
+    return render(request, 'space.html')
+
+def home(request):
+    if request.user.is_authenticated:
+        user_info = UserProfile.objects.get(user_id = request.user.id)
+
+        if user_info.name:
+            return render(request, 'home.html')
+        return JsonResponse({"url": "/account/perfect_information/", "status": 302}, safe=False)
+    return render(request, 'home.html')
 
 @login_required
 def personal_page(request):
@@ -133,7 +140,7 @@ def perfect_info(request):
 
     if forms.is_valid():
         forms.save()
-        return HttpResponseRedirect("/account/space/")
+        return JsonResponse({"url": "/account/space/", "status": 302}, safe=False)
     return JsonResponse({"tip": list(forms.errors.values())[0][0], "status": 400}, safe=False)
 
 @login_required

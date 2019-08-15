@@ -39,6 +39,9 @@ def login_page(request):
          return HttpResponseRedirect("/account/login/")
 
 def register_page(request):
+    if request.user.is_authenticated:
+        return HttpResponseRedirect("/")
+
     if request.method == "GET":
         return render(request, 'signUp.html')
 
@@ -47,9 +50,13 @@ def register_page(request):
         forms.answer = request.session.get("verify")
 
         if forms.is_valid():
-            user = User.objects.create_user(username = forms.cleaned_data['phone_number'], password=forms.cleaned_data['password'])
-            UserProfile.objects.create(user_id = user.id)
-            return JsonResponse({"url": "/account/login", "status": 302}, safe=False)
+            try:
+                user = User.objects.get(username = forms.cleaned_data['phone_number'])
+            except:
+                user = User.objects.create_user(username = forms.cleaned_data['phone_number'], password=forms.cleaned_data['password'])
+                UserProfile.objects.create(user_id = user.id)
+                return JsonResponse({"url": "/account/login", "status": 302}, safe=False)
+            return JsonResponse({"tip": "手机号已被注册", "status": 400}, safe=False)
         return JsonResponse({"tip": list(forms.errors.values())[0][0], "status": 400}, safe=False)
 
 def reset_password_page(request):
@@ -66,6 +73,7 @@ def reset_password_page(request):
             return JsonResponse({"url": "/account/login", "status": 302}, safe=False)
         return JsonResponse({"tip": list(forms.errors.values())[0][0], "status": 400}, safe=False)
 
+@login_required
 def set_password(request):
     if request.method == "GET":
         return render(request, 'resetPassword.html')
@@ -116,7 +124,7 @@ def home(request):
 
         if user_info.name:
             return render(request, 'home.html')
-        return JsonResponse({"url": "/account/perfect_information/", "status": 302}, safe=False)
+        return HttpResponseRedirect("/account/perfect_information/")
     return render(request, 'home.html')
 
 @login_required

@@ -135,20 +135,37 @@ def personal_page(request):
 
 @login_required
 def perfect_info(request):
-    user_info = UserProfile.objects.get(user_id = request.user.id)
-    forms = extend_info(request.POST, instance=user_info)
+    if request.method == "GET":
+        return render(request, "space.html", {"model": "perfect_info"})
 
-    if forms.is_valid():
-        forms.save()
-        return JsonResponse({"url": "/account/space/", "status": 302}, safe=False)
-    return JsonResponse({"tip": list(forms.errors.values())[0][0], "status": 400}, safe=False)
+    if request.method == "POST":
+        user_info = UserProfile.objects.get(user_id = request.user.id)
+        if user_info.name:
+            forms = extend_info(request.POST, instance=user_info)
+
+            if forms.is_valid():
+                forms.save()
+                return JsonResponse({"url": "/account/space/", "status": 302}, safe=False)
+            return JsonResponse({"tip": list(forms.errors.values())[0][0], "status": 400}, safe=False)
+        return JsonResponse({"tip": "权限不足", "status": 400}, safe=False)
 
 @login_required
 def change_info(request):
-    user_info = UserProfile.objects.get(user_id = request.user.id)
-    forms = change_info(request.POST, instance=user_info)
+    if request.method == "GET":
+        return render(request, "space.html", {"model": "change_info"})
 
-    if forms.is_valid():
-        forms.save()
-        return JsonResponse({"tip": "操作成功", "status": 200}, safe=False)
-    return JsonResponse({"tip": list(forms.errors.values())[0][0], "status": 400}, safe=False)
+    if request.method == "POST":
+        user_info = UserProfile.objects.get(user_id = request.user.id)
+        forms = change_info(request.POST, instance=user_info)
+
+        if forms.is_valid():
+            forms.save()
+            return JsonResponse({"tip": "操作成功", "status": 200}, safe=False)
+        return JsonResponse({"tip": list(forms.errors.values())[0][0], "status": 400}, safe=False)
+
+@login_required
+def task_list(request):
+    user = UserProfile.objects.get(user_id = request.user.id)
+    task_list = json.loads(user.involved_projects)
+    
+    return json.dumps([task.objects.get(id = each).values(["id", "task_name", "members", "task_status"]) for each in task_list])

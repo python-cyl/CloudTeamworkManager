@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="/static/css/bootstrap/bootstrap.min.css">
+    <link href="/static/css/animation/component.css" rel="stylesheet">
+    <title>任务详情</title>
+    <style>
+        li {
+            line-height: 3rem;
+            vertical-align: middle;
+        }
+
+        .table td,
+        .table th {
+            border-top: 0px;
+        }
+
+        .card {
+            margin: 1.2rem 0rem;
+            border-radius: 0px;
+            border-bottom: 0px;
+            border-left: 0px;
+            border-right: 0px;
+        }
+    </style>
+</head>
+
+<body style="background-color: #F7F8FA;">
+    {%csrf_token%}
+    <div class="container">
+        <div class="row no-gutters">
+            <div class="col-10 offset-1">
+                <div class="card" style="border-top: 0.25rem solid #448AFF">
+                    <div class="clearfix" style="width: 100%">
+                        <div style="float: right; height: 6rem; width: 22rem">
+                            <div class="text-uppercase lead font-weight-bold"
+                                style="font-size: 4rem; color: rgba(41, 98, 255, 0.05); z-index: -1">
+                                the&nbsp;task
+                            </div>
+                            <div
+                                style="font-size: 2rem; color: #999999; position: relative; top: -65%; left: 8%; z-index: 1;">
+                                基本资料
+                            </div>
+                        </div>
+                    </div>
+                    <div class="offset-1">
+                        <p class="card-text" style="font-size: 1.6rem; color: #040505; padding: 0.75rem">任务管理系统</p>
+                    </div>
+                    <div class="row no-gutters">
+                        <table class="table col-10 offset-1 " style="margin-bottom: 3rem;">
+                            <tbody>
+                                <tr>
+                                    <th scope="row" style="width: 20%">任务详情</th>
+                                    <td>
+                                        <div style="max-height: 200px; overflow-y: auto">
+                                            这是任务详情这是任务详情这是任务详情这是任务详情这是任务详情这是任务详情这
+                                        </div>
+                                        <small id="emailHelp" class="form-text text-muted"
+                                            style="margin-top: 10px;height: 40px;text-align: center;float: left;letter-spacing: 5px">
+                                            <a href="javascript:;" class="md-trigger" data-modal="modal-3"
+                                                style="text-decoration: none">
+                                                <img src="/static/pic/href_active.png">&nbsp;添加附件
+                                            </a>
+                                        </small>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row" style="width: 20%">任务评价</th>
+                                    <td>
+                                        <div style="max-height: 200px; overflow-y: auto">
+                                            近期工作表现不错，值得肯定。各位继续加油！
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card" style="border-top: 0.25rem solid #448AFF">
+                    <div class="clearfix" style="width: 100%">
+                        <div style="float: right; height: 6rem; width: 22rem">
+                            <div class="text-uppercase lead font-weight-bold"
+                                style="font-size: 4rem; color: rgba(41, 98, 255, 0.05); z-index: -1">
+                                THE&nbsp;TASK
+                            </div>
+                            <div
+                                style="font-size: 2rem; color: #999999; position: relative; top: -65%; left: 8%; z-index: 1;">
+                                任务进度
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row no-gutters">
+                        <table class="table col-10 offset-1 " style="margin-bottom: 3rem;">
+                            <tbody>
+                                <tr>
+                                    <th scope="row" style=" width:20%;white-space:nowrap;overflow: hidden">截止时间</th>
+                                    <td>
+                                        2000年00月00日
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th style="white-space:nowrap;overflow: hidden;width:1rem">目前耗时</th>
+                                    <td>
+                                        <div class="progress">
+                                            <div class="progress-bar" style="width:60%;">60%</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th style="white-space:nowrap;overflow: hidden; width:1rem">任务规划</th>
+                                    <td>
+                                        <div style="max-height: 200px; overflow-y: auto">
+                                            我们计划首先完成项目的数据库规划，然后规划整体框架，接着是后端和前端的工作...
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th style="white-space:nowrap;overflow: hidden;width:1rem">项目进度</th>
+                                    <td>
+                                        <div style="max-height: 200px; overflow-y: auto">
+                                            <div>2019-11-11</div>
+                                            <p>今天我们把框架搭起来了</p>
+                                            <hr>
+                                            <div>2019-11-12</div>
+                                            <p>项目数据库已经设计完成</p>
+                                            <hr>
+                                            <div>2019-11-13</div>
+                                            <p>后台部分开始编写了</p>
+                                            <hr>
+                                            <div>2019-11-14</div>
+                                            <p>account应用编写完了</p>
+                                            <hr>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card" style="border-top: 0.25rem solid #448AFF">
+                    <div class="clearfix" style="width: 100%">
+                        <div style="float: right; height: 6rem; width: 22rem">
+                            <div class="text-uppercase lead font-weight-bold"
+                                style="font-size: 4rem; color: rgba(41, 98, 255, 0.05); z-index: -1">
+                                members
+                            </div>
+                            <div
+                                style="font-size: 2rem; color: #999999; position: relative; top: -65%; left: 8%; z-index: 1;">
+                                人员安排
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row no-gutters" style="margin: 0rem 0px .75rem 0px">
+                        <div class="col-10 offset-1">
+                            <div style="font-weight: bold; margin: .75rem 0px .75rem 0px">
+                                项目组组长
+                            </div>
+                        </div>
+                        <div class="col-10" style="left: 10%">
+                            <div>
+                                <div style="font-size: 20px; margin-bottom: .75rem">
+                                    Python:
+                                </div>
+                                <div class="row justify-content-start col-12">
+                                    <button class="btn btn-outline-primary md-trigger" data-modal="modal-5"
+                                        onclick="javascript:" style="margin-right: 1.5rem; width: 5rem">
+                                        宋叮咛
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row no-gutters" style="margin: 0rem 0px .75rem 0px">
+                        <div class="col-10 offset-1">
+                            <div style="font-weight: bold; margin: .75rem 0px .75rem 0px">
+                                项目组成员
+                            </div>
+                        </div>
+                        <div class="col-10" style="left: 10%">
+                            <div>
+                                <div style="font-size: 20px; margin-bottom: .75rem">
+                                    Python:
+                                </div>
+                                <div class="row justify-content-start col-12">
+                                    <button class="btn btn-outline-primary md-trigger" data-modal="modal-5"
+                                        onclick="javascript:" style="margin-right: 1.5rem; width: 5rem">
+                                        宋叮咛
+                                    </button>
+                                </div>
+                            </div>
+                            <div>
+                                <div style="font-size: 20px; margin-bottom: .75rem">
+                                    Java:
+                                </div>
+                                <div class="row justify-content-start col-12">
+                                    <button class="btn btn-outline-primary md-trigger" data-modal="modal-5"
+                                        onclick="javascript:" style="margin-right: 1.5rem; width: 5rem">
+                                        宋叮咛
+                                    </button>
+                                    <button class="btn btn-outline-primary md-trigger" data-modal="modal-5"
+                                        onclick="javascript:" style="margin-right: 1.5rem; width: 5rem">
+                                        宋叮咛
+                                    </button>
+                                    <button class="btn btn-outline-primary md-trigger" data-modal="modal-5"
+                                        onclick="javascript:" style="margin-right: 1.5rem; width: 5rem">
+                                        宋叮咛
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="md-modal md-effect-5" id="modal-5">
+        <div class="md-content">
+            <div class="container">
+                <div class="row justify-content-between">
+                    <div class="col-4" style="margin-top: 10px; font-size: 24px">
+                        个人资讯
+                    </div>
+                    <div class="col-2" style="margin-top: 10px;">
+                        <button class="md-close btn-sm btn-primary"
+                            style="background-color: transparent; border: none; height: 100%">
+                            <img src="/static/pic/close.png">
+                        </button>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 5px">
+                    <div class="col-3">
+                        <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist"
+                            aria-orientation="vertical">
+                            <a class="nav-link show active" id="v-pills-process-tab" data-toggle="pill"
+                                href="#v-pills-process" role="tab" aria-controls="v-pills-process"
+                                aria-selected="true">进度</a>
+                            <a class="nav-link show" id="v-pills-schedule-tab" data-toggle="pill"
+                                href="#v-pills-schedule" role="tab" aria-controls="v-pills-schedule"
+                                aria-selected="false">规划</a>
+                            <a class="nav-link show" id="v-pills-comment-tab" data-toggle="pill" href="#v-pills-comment"
+                                role="tab" aria-controls="v-pills-comment" aria-selected="false">评价</a>
+                        </div>
+                    </div>
+                    <div class="col-9">
+                        <div class="tab-content" id="v-pills-tabContent">
+                            <div class="tab-pane fade active show" id="v-pills-process" role="tabpanel"
+                                aria-labelledby="v-pills-home-tab">
+                                <div style="height: 300px; overflow-y: auto">
+                                    <div>2019-11-11</div>
+                                    <p>这是进度正文部分</p>
+                                    <hr>
+                                    <div>2019-11-11</div>
+                                    <p>这是进度正文部分</p>
+                                    <hr>
+                                    <div>2019-11-11</div>
+                                    <p>这是进度正文部分</p>
+                                    <hr>
+                                    <div>2019-11-11</div>
+                                    <p>这是进度正文部分</p>
+                                    <hr>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="v-pills-schedule" role="tabpanel"
+                                aria-labelledby="v-pills-messages-tab">
+                                <div style="height: 300px; overflow-y: auto">
+                                    <div>2019-11-11</div>
+                                    <p>这是规划正文部分</p>
+                                    <hr>
+                                    <div>2019-11-11</div>
+                                    <p>这是规划正文部分</p>
+                                    <hr>
+                                    <div>2019-11-11</div>
+                                    <p>这是规划正文部分</p>
+                                    <hr>
+                                    <div>2019-11-11</div>
+                                    <p>这是规划正文部分</p>
+                                    <hr>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="v-pills-comment" role="tabpanel"
+                                aria-labelledby="v-pills-settings-tab">
+                                <div style="height: 300px; overflow-y: auto">
+                                    <div>2019-11-11&nbsp;宋叮咛</div>
+                                    <p>这是评价正文部分</p>
+                                    <hr>
+                                    <div>2019-11-11&nbsp;宋叮咛</div>
+                                    <p>这是评价正文部分</p>
+                                    <hr>
+                                    <div>2019-11-11&nbsp;宋叮咛</div>
+                                    <p>这是评价正文部分</p>
+                                    <hr>
+                                    <div>2019-11-11&nbsp;宋叮咛</div>
+                                    <p>这是评价正文部分</p>
+                                    <hr>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="md-modal md-effect-5" id="modal-3">
+        <div class="md-content">
+            <div class="container">
+                <div class="row justify-content-between">
+                    <div class="col-4" style="margin-top: 10px; font-size: 24px">
+                        添加附件
+                    </div>
+                    <div class="col-2" style="margin-top: 10px;">
+                        <button class="md-close btn-sm btn-primary"
+                            style="background-color: transparent; border: none; height: 100%">
+                            <img src="/static/pic/close.png">
+                        </button>
+                    </div>
+                </div>
+                <div class="col-12" style="max-height: 300px; overflow-y: auto; margin: 10px 0px">
+                    <table class="table" style="height: 200px; overflow-y: auto; word-break: keep-all">
+                        <tbody>
+                            <tr>
+                                <th style="width: 70px;">
+                                    <img src="/static/pic/组%20451.png" alt="">
+                                </th>
+                                <td>
+                                    <div>
+                                        项目需求.xmlx
+                                    </div>
+                                    <div style="margin-top: 1.2rem">
+                                        3.1mb
+                                    </div>
+                                </td>
+                                <td style="height:70px; line-height:70px; text-align:right">
+                                    <button
+                                        style="background: url(/static/pic/829.png); width:24px; height:24px; border:none;border-radius:28px 28px">
+                                    </button>
+                                    <button
+                                        style="margin-left:20px; background: url(/static/pic/826.png); width:24px; height:24px; border:none">
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th style="width: 70px;">
+                                    <img src="/static/pic/组%20451.png" alt="">
+                                </th>
+                                <td>
+                                    <div>
+                                        项目需求.xmlx
+                                    </div>
+                                    <div style="margin-top: 1.2rem">
+                                        3.1mb
+                                    </div>
+                                </td>
+                                <td style="height:70px; line-height:70px; text-align:right">
+                                    <button
+                                        style="background: url(/static/pic/829.png); width:24px; height:24px; border:none;border-radius:28px 28px">
+                                    </button>
+                                    <button
+                                        style="margin-left:20px; background: url(/static/pic/826.png); width:24px; height:24px; border:none">
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th style="width: 70px;">
+                                    <img src="/static/pic/组%20451.png" alt="">
+                                </th>
+                                <td>
+                                    <div>
+                                        项目需求.xmlx
+                                    </div>
+                                    <div style="margin-top: 1.2rem">
+                                        3.1mb
+                                    </div>
+                                </td>
+                                <td style="height:70px; line-height:70px; text-align:right">
+                                    <button
+                                        style="background: url(/static/pic/829.png); width:24px; height:24px; border:none;border-radius:28px 28px">
+                                    </button>
+                                    <button
+                                        style="margin-left:20px; background: url(/static/pic/826.png); width:24px; height:24px; border:none">
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th style="width: 70px;">
+                                    <img src="/static/pic/组%20451.png" alt="">
+                                </th>
+                                <td>
+                                    <div>
+                                        项目需求.xmlx
+                                    </div>
+                                    <div style="margin-top: 1.2rem">
+                                        3.1mb
+                                    </div>
+                                </td>
+                                <td style="height:70px; line-height:70px; text-align:right">
+                                    <button
+                                        style="background: url(/static/pic/829.png); width:24px; height:24px; border:none;border-radius:28px 28px">
+                                    </button>
+                                    <button
+                                        style="margin-left:20px; background: url(/static/pic/826.png); width:24px; height:24px; border:none">
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th style="width: 70px;">
+                                    <img src="/static/pic/组%20451.png" alt="">
+                                </th>
+                                <td>
+                                    <div>
+                                        项目需求.xmlx
+                                    </div>
+                                    <div style="margin-top: 1.2rem">
+                                        3.1mb
+                                    </div>
+                                </td>
+                                <td style="height:70px; line-height:70px; text-align:right">
+                                    <button
+                                        style="background: url(/static/pic/829.png); width:24px; height:24px; border:none;border-radius:28px 28px">
+                                    </button>
+                                    <button
+                                        style="margin-left:20px; background: url(/static/pic/826.png); width:24px; height:24px; border:none">
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div>
+                    <button type='button' class="btn btn btn-outline-primary" onmouseover="add_file_3(this)"
+                        onmouseout="add_file_4(this)" style="width: 120px; height: 40px; letter-spacing: 4px;"><a
+                            href="javascript:" style="text-decoration: none">
+                            <div id="add_file_inner">继续上传</div>
+                        </a>
+                        <script> function add_file_3() {
+                                document.getElementById('add_file_inner').style.color = '#ffffff'
+                            }
+
+                            function add_file_4() {
+                                document.getElementById('add_file_inner').style.color = '#007bff'
+                            }
+                        </script>
+                    </button>
+                    <small style="color: red; vertical-align: bottom">文件不要超过10M！</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="md-overlay"></div>
+
+    <script src="/static/js/bootstrap/jquery.min.js"></script>
+    <script src="/static/js/bootstrap/bootstrap.min.js"></script>
+    <script src="/static/js/animation/classie.js"></script>
+    <script src="/static/js/animation/modalEffects.js"></script>
+    <script src="/static/js/animation/highlight.min.js"></script>
+</body>
+
+</html>

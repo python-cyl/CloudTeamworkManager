@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="/static/css/bootstrap/bootstrap.min.css">
+    <style>
+        .add::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 53%;
+            width: 30px;
+            margin-left: -18px;
+            margin-top: -4px;
+            border-top: 5px solid #C9C9C9;
+        }
+
+        .add::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 53%;
+            height: 30px;
+            margin-left: -5px;
+            margin-top: -17px;
+            border-left: 5px solid #C9C9C9;
+        }
+
+        li {
+            line-height: 3rem;
+            vertical-align: middle;
+        }
+
+        .table td,
+        .table th {
+            border-top: 0px;
+            vertical-align: middle;
+        }
+
+        .card {
+            margin: 1.2rem 0rem;
+            border-radius: 0px;
+            border-bottom: 0px;
+            border-left: 0px;
+            border-right: 0px;
+        }
+
+        .task_card:hover {
+            box-shadow: 3px 3px 10px #888888;
+            background-image: url("./pic/each_task_card_bgi.png");
+            background-repeat: no-repeat;
+        }
+
+        .task_card:hover>div {
+            margin-left: 55px;
+        }
+
+        .avatar:hover>div {
+            display: block !important;
+            position: absolute;
+        }
+
+        .add:hover {
+            background-image: url("./pic/create_task_button_bgi.png");
+            background-repeat: round;
+            background-color: #448AFF;
+        }
+
+        .add:hover::after,
+        .add:hover::before {
+            left: 25%;
+        }
+
+        .add:hover>div {
+            display: block !important;
+            font-size: 1.2rem;
+            left: 10%;
+            position: relative;
+        }
+
+        .nav-link {
+            padding: 0rem 1rem;
+            border: 0rem;
+        }
+
+        .nav-tabs {
+            border: 0rem;
+        }
+
+        .nav-link.active {
+            border: 0px;
+            border-bottom: 1px solid #2962FF;
+            color: #2962FF;
+        }
+    </style>
+</head>
+
+<body style="background-color: #F7F8FA;">
+    <div class="container" style="height: 100%">
+        <div class="row no-gutters">
+            <div class="col-10 offset-1">
+                <div class="card" style="border: 0rem">
+                    <div class="row no-gutters">
+                        <div class="avatar col-2 offset-1">
+                            <div
+                                style="cursor: pointer; text-align: center; display: none; width: 100%; height: 6rem; background-color: rgba(0, 0, 0, 0.3)">
+                                <div style="color: #ffffff; line-height: 6rem;">点击打开个人主页</div>
+                            </div>
+                            <img src="/static/avatar/avatar.jpeg" style="width: 100%; height: 6rem">
+                        </div>
+                        <div class="col-3 offset-1" style="color: #666666; font-size: 1.3rem; line-height: 6rem">
+                            宋叮咛
+                        </div>
+                        <div class="add col-3 offset-1" style="text-align: center; cursor: pointer;">
+                            <div href=""
+                                style="display: none; line-height: 6rem; text-decoration: none; color: #ffffff">发布新任务
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="border-top: 0.25rem solid #448AFF;">
+                    <div class="row no-gutters">
+                        <div class="clearfix offset-1" style="width: 100%">
+                            <div style="float: right; height: 6rem; width: 22rem">
+                                <div class="text-uppercase lead font-weight-bold"
+                                    style="font-size: 4rem; color: rgba(41, 98, 255, 0.05); z-index: -1">
+                                    our&nbsp;task</div>
+                                <div
+                                    style="font-size: 2rem; color: #999999; position: relative; top: -65%; left: 8%; z-index: 1;">
+                                    任务列表
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row no-gutters">
+                        <div class="offset-1">
+                            <ul class="nav nav-tabs">
+                                <li class="nav-item">
+                                    <a class="nav-link active" href="#" style="border: 0px">全部任务</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#" style="border: 0px">正在进行</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#" style="border: 0px">已完成</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="row no-gutters" style="margin: 1rem 0px 1rem 0px">
+                        <div class="task_card offset-1 col-10"
+                            style="height: 6rem; margin-bottom: 1.5rem; padding: 1.2rem; cursor: pointer;">
+                            <div style="display: inline-block;">
+                                <div class="lead" style="color: #333333">任务管理系统</div>
+                                <small style="color: #999999">参与成员:&nbsp;宋叮咛,&nbsp;孙昂然,&nbsp;王子,&nbsp;都文鹤...</small>
+                            </div>
+                        </div>
+                        <div class="task_card offset-1 col-10"
+                            style="height: 6rem; margin-bottom: 1.5rem; padding: 1.2rem; cursor: pointer;">
+                            <div style="display: inline-block;">
+                                <div class="lead" style="color: #333333">任务管理系统</div>
+                                <small style="color: #999999">参与成员:&nbsp;宋叮咛,&nbsp;孙昂然,&nbsp;王子,&nbsp;都文鹤...</small>
+                            </div>
+                        </div>
+                        <div class="task_card offset-1 col-10"
+                            style="height: 6rem; margin-bottom: 1.5rem; padding: 1.2rem; cursor: pointer;">
+                            <div style="display: inline-block;">
+                                <div class="lead" style="color: #333333">任务管理系统</div>
+                                <small style="color: #999999">参与成员:&nbsp;宋叮咛,&nbsp;孙昂然,&nbsp;王子,&nbsp;都文鹤...</small>
+                            </div>
+                        </div>
+                        <div class="task_card offset-1 col-10"
+                            style="height: 6rem; margin-bottom: 1.5rem; padding: 1.2rem; cursor: pointer;">
+                            <div style="display: inline-block;">
+                                <div class="lead" style="color: #333333">任务管理系统</div>
+                                <small style="color: #999999">参与成员:&nbsp;宋叮咛,&nbsp;孙昂然,&nbsp;王子,&nbsp;都文鹤...</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row no-gutters" style="background-color: #E4EBFF; height: 4rem; cursor: pointer;">
+                        <div style="text-decoration: none; color: #999999; margin-left: auto; margin-right: auto">
+                            <div style="position: relative; transform: translateY(-50%); top: 50%">
+                                <div>点击加载更多</div>
+                                <div style="text-align: center; transform: rotate(180deg)">^</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/bootstrap/jquery.min.js"></script>
+    <script src="/static/js/bootstrap/bootstrap.min.js"></script>
+    <script src="/static/js/vue/vue.js"></script>
+    <script src="/static/js/vue/vue-resource.min.js"></script>
+</body>
+
+</html>

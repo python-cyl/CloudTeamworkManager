@@ -1,12 +1,484 @@
-<html>
-<head><title></title></head>
+<!DOCTYPE html>
+<html lang="en">
 
-<body>
-    <form id="form" autocomplete="off" method="post" action="/task/create_task/">
-        {%csrf_token%}
-        {{  form  }}
-        <div id="tip">&nbsp;</div>
-        <button>提交</button>
-    </form>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="/static/css/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/bootstrap/bootstrap.min.css">
+    <link href="/static/css/animation/component.css" rel="stylesheet">
+    <!--时间选择器-->
+    <link href="/static/css/datetimepicker/base.css" rel="stylesheet">
+    <link href="/static/css/datetimepicker/highlight.min.css" rel="stylesheet">
+    <link href="/static/css/datetimepicker/bootstrap-datetimepicker.min.css" rel="stylesheet" media="screen">
+    <title>新建项目</title>
+    <style>
+        input.form-control:focus {
+            box-shadow: 0 0 0;
+        }
+
+        input.form-control {
+            border-top: 0;
+            border-left: 0;
+            border-right: 0;
+            padding: 0;
+            border-radius: 0;
+        }
+
+        .form-control {
+            border-radius: 0;
+        }
+
+        li {
+            line-height: 3rem;
+            vertical-align: middle;
+        }
+
+        .table td,
+        .table th {
+            border-top: 0px;
+        }
+
+        .card {
+            margin: 1.2rem 0rem;
+            border-radius: 0px;
+            border-bottom: 0px;
+            border-left: 0px;
+            border-right: 0px;
+        }
+    </style>
+</head>
+
+<body style="background-color: #F7F8FA;">
+    {%csrf_token%}
+    <div class="container" style="height: 100%;">
+        <div class="row no-gutters">
+            <div class="col-10 offset-1">
+                <div class="card" style="border-top: 0.25rem solid #448AFF;">
+                    <div class="clearfix" style="width: 100%">
+                        <div style="float: right; height: 6rem; width: 22rem">
+                            <div class="text-uppercase lead font-weight-bold"
+                                style="font-size: 4rem; color: rgba(41, 98, 255, 0.05); z-index: -1">
+                                new&nbsp;task
+                            </div>
+                            <div
+                                style="font-size: 2rem; color: #999999; position: relative; top: -65%; left: 8%; z-index: 1;">
+                                任务信息
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row no-gutters">
+                        <table class="table col-10 offset-1" style="margin-bottom: 3rem">
+                            <tbody>
+                                <tr>
+                                    <th>任务名称</th>
+                                    <td><input class="form-control" id="input_task" placeholder=""
+                                            style="border-top:none;border-left: 0; border-right: 0; padding: 0; width: 20%">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>截止日期</th>
+                                    <td class="text-capitalize">
+                                        <div class="input-group date form_date col-md-5" data-date=""
+                                            data-date-format="yyyy-MM-dd" data-link-field="dtp_input2"
+                                            data-link-format="yyyy-mm-dd" style="padding: 0; width: 20%">
+                                            <input class="form-control" size="16" type="text" value=""
+                                                style="padding: 0">
+                                            <span class="input-group-addon"><span
+                                                    class="glyphicon glyphicon-remove"></span></span>
+                                            <span class="input-group-addon"><span
+                                                    class="glyphicon glyphicon-calendar"></span></span>
+                                        </div>
+                                        <input type="hidden" id="dtp_input2" value="" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>任务状态</th>
+                                    <td class="">
+                                        <select>
+                                            <option>进行中</option>
+                                            <option>已挂起</option>
+                                            <option>已结束</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>任务详情</th>
+                                    <td>
+                                        <div>
+                                            <textarea class="form-control" id="exampleFormControlTextarea1" rows="6"
+                                                placeholder="请输入项目详情......"
+                                                style="color: #666666;padding: 0;"></textarea>
+                                            <small id="emailHelp" class="form-text text-muted"
+                                                style="margin-top: 10px;height: 40px;text-align: center;float: left;letter-spacing: 5px">
+                                                需要更详细的介绍?点击<span onclick="javascript:;" class="md-trigger"
+                                                    data-modal="modal-8" style="cursor: pointer;">
+                                                    <img src="/static/pic/href_active.png">&nbsp;添加附件
+                                                </span>
+                                            </small>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card" style="border-top: 0.25rem solid #448AFF;">
+                    <div class="clearfix" style="width: 100%">
+                        <div style="float: right; height: 6rem; width: 22rem">
+                            <div class="text-uppercase lead font-weight-bold"
+                                style="font-size: 4rem; color: rgba(41, 98, 255, 0.05); z-index: -1">
+                                members
+                            </div>
+                            <div
+                                style="font-size: 2rem; color: #999999; position: relative; top: -65%; left: 8%; z-index: 1;">
+                                人员安排
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row no-gutters" style="margin: 0px 0px .75rem 0px">
+                        <div class="col-10 offset-1"
+                            style="font-weight: bold; margin-top: .75rem; margin-bottom: .75rem">
+                            添加成员
+                        </div>
+                        <div class="col-10" style="left: 10%">
+                            <button type="button" class="btn btn btn-outline-primary md-trigger" data-modal="modal-5"
+                                style="width: 140px; height: 50px;" id="in_a_0" onclick="javascript:;">
+                                点击选择
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="row no-gutters" style="margin: 0rem 0px .75rem 0px">
+                        <div class="col-10 offset-1">
+                            <div style="font-weight: bold; margin: .75rem 0px .75rem 0px">
+                                已选择的成员
+                            </div>
+                        </div>
+                        <div class="col-10" style="left: 10%">
+                            <div>
+                                <div style="font-size: 20px; margin-bottom: .75rem">
+                                    Python:
+                                </div>
+                                <div class="row justify-content-start col-12">
+                                    <button class="btn btn btn-outline-primary"
+                                        style="margin-right: 1.5rem; width: 5rem">uesr1
+                                    </button>
+                                    <button class="btn btn btn-outline-primary"
+                                        style="margin-right: 1.5rem; width: 5rem">uesr1
+                                    </button>
+                                    <button class="btn btn btn-outline-primary"
+                                        style="margin-right: 1.5rem; width: 5rem">uesr1
+                                    </button>
+                                    <button class="btn btn btn-outline-primary"
+                                        style="margin-right: 1.5rem; width: 5rem">uesr1
+                                    </button>
+                                    <button class="btn btn btn-outline-primary"
+                                        style="margin-right: 1.5rem; width: 5rem">uesr1
+                                    </button>
+                                    <button class="btn btn btn-outline-primary"
+                                        style="margin-right: 1.5rem; width: 5rem">uesr1
+                                    </button>
+                                </div>
+                            </div>
+                            <div>
+                                <div style="font-size: 20px; margin-bottom: .75rem">
+                                    Java:
+                                </div>
+                                <div class="row justify-content-start col-12">
+                                    <button class="btn btn btn-outline-primary"
+                                        style="margin-right: 1.5rem; width: 5rem">uesr1
+                                    </button>
+                                    <button class="btn btn btn-outline-primary"
+                                        style="margin-right: 1.5rem; width: 5rem">uesr1
+                                    </button>
+                                    <button class="btn btn btn-outline-primary"
+                                        style="margin-right: 1.5rem; width: 5rem">uesr1
+                                    </button>
+                                    <button class="btn btn btn-outline-primary"
+                                        style="margin-right: 1.5rem; width: 5rem">uesr1
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row no-gutters" style="margin: 0px 0px .75rem 0px">
+                        <div class="col-10 offset-1"
+                            style="font-weight: bold; margin-top: .75rem; margin-bottom: .75rem">
+                            任命组长
+                        </div>
+                        <div class="col-10" style="left: 10%">
+                            <button type="button" class="btn btn btn-outline-primary md-trigger"
+                                style="width: 140px; height: 50px;" data-modal="modal-5" onclick="javascript:;">
+                                点击选择
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="row no-gutters" style="margin: 0rem 0px .75rem 0px">
+                        <div class="col-10 offset-1">
+                            <div style="font-weight: bold; margin: .75rem 0px .75rem 0px">
+                                已任命的组长
+                            </div>
+                        </div>
+                        <div class="col-10" style="left: 10%">
+                            <div>
+                                <div style="font-size: 20px; margin-bottom: .75rem">
+                                    Python:
+                                </div>
+                                <div class="row justify-content-start col-10">
+                                    <button class="btn btn btn-outline-primary"
+                                        style="margin-right: 1.5rem; width: 5rem">uesr1
+                                    </button>
+                                </div>
+                            </div>
+                            <div>
+                                <div style="font-size: 20px; margin-bottom: .75rem">
+                                    Java:
+                                </div>
+                                <div class="row justify-content-start col-10">
+                                    <button class="btn btn btn-outline-primary"
+                                        style="margin-right: 1.5rem; width: 5rem">uesr1
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row justify-content-md-center" style="margin-bottom: 20px">
+                    <button type="button" class="btn btn-primary" style="width: 200px;height: 40px;text-align: center">
+                        <a href="" style="color:#ffffff ">确认提交</a>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div class="md-modal md-effect-5" id="modal-5">
+            <div class="md-content">
+                <div class="container">
+                    <div class="row justify-content-between">
+                        <div class="col-4" style="margin-top: 10px; font-size: 24px">
+                            添加成员
+                        </div>
+                        <div class="col-2" style="margin-top: 10px;">
+                            <button class="md-close btn-sm btn-primary"
+                                style="background-color: transparent; border: none; height: 100%">
+                                <img src="/static/pic/close.png">
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6" style="padding-right: 0;">
+                            <input type="search" id="search" class="form-control">
+                        </div>
+                        <div style="float: left;margin-top: 2px"><a href="#"><img src="/static/pic/serch.png"></a></div>
+                    </div>
+                    <div class="row" style="margin-top: 5px">
+                        <div class="col-3">
+                            <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist"
+                                aria-orientation="vertical">
+                                <a class="nav-link show active" id="v-pills-home-tab" data-toggle="pill"
+                                    href="#v-pills-home" role="tab" aria-controls="v-pills-home"
+                                    aria-selected="true">Python</a>
+                                <a class="nav-link show" id="v-pills-profile-tab" data-toggle="pill"
+                                    href="#v-pills-profile" role="tab" aria-controls="v-pills-profile"
+                                    aria-selected="false">Java</a>
+                                <a class="nav-link show" id="v-pills-messages-tab" data-toggle="pill"
+                                    href="#v-pills-messages" role="tab" aria-controls="v-pills-messages"
+                                    aria-selected="false">Js</a>
+                                <a class="nav-link" id="v-pills-settings-tab" data-toggle="pill"
+                                    href="#v-pills-settings" role="tab" aria-controls="v-pills-settings"
+                                    aria-selected="false">前端</a>
+                                <a class="nav-link" id="v-pills-design-tab" data-toggle="pill" href="#v-pills-design"
+                                    role="tab" aria-controls="v-pills-tabContent" aria-selected="false">设计</a>
+                            </div>
+                        </div>
+                        <div class="col-9">
+                            <div class="tab-content" id="v-pills-tabContent">
+                                <div class="tab-pane fade active show" id="v-pills-home" role="tabpanel"
+                                    aria-labelledby="v-pills-home-tab">
+                                    <div class="row">
+                                        <div class="col-12" style="margin-bottom: 5px; height: 100px">
+                                            <button type="button" class="btn btn-outline-primary x"
+                                                style="width: 95px;height: 37px;text-align: center">user1
+                                            </button>
+                                            <button type="button" class="btn btn-outline-primary x"
+                                                style="width: 95px;height: 37px;text-align: center">user2
+                                            </button>
+                                            <button type="button" class="btn btn-outline-primary x"
+                                                style="width: 95px;height: 37px;text-align: center">user3
+                                            </button>
+                                            <button type="button" class="btn btn-outline-primary x"
+                                                style="width: 95px;height: 37px;text-align: center">user4
+                                            </button>
+                                            <button type="button" class="btn btn-outline-primary x"
+                                                style="width: 95px;height: 37px;text-align: center">user5
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="v-pills-profile" role="tabpanel"
+                                    aria-labelledby="v-pills-profile-tab">
+                                    <div class="row">
+                                        <div class="col-12" style="margin-bottom: 5px">
+                                            <button type="button" class="btn btn-outline-warning x"
+                                                style="width: 95px;height: 37px;text-align: center">user1
+                                            </button>
+                                            <button type="button" class="btn btn-outline-warning x"
+                                                style="width: 95px;height: 37px;text-align: center">user2
+                                            </button>
+                                            <button type="button" class="btn btn-outline-warning x"
+                                                style="width: 95px;height: 37px;text-align: center">user3
+                                            </button>
+                                        </div>
+                                        <div class="col-12">
+                                            <button type="button" class="btn btn-outline-warning x"
+                                                style="width: 95px;height: 37px;text-align: center">user4
+                                            </button>
+                                            <button type="button" class="btn btn-outline-warning x"
+                                                style="width: 95px;height: 37px;text-align: center">user5
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="v-pills-messages" role="tabpanel"
+                                    aria-labelledby="v-pills-messages-tab">
+                                    <div class="row">
+                                        <div class="col-12" style="margin-bottom: 5px">
+                                            <button type="button" class="btn btn-outline-danger x"
+                                                style="width: 95px;height: 37px;text-align: center">user1
+                                            </button>
+                                            <button type="button" class="btn btn-outline-danger x"
+                                                style="width: 95px;height: 37px;text-align: center">user2
+                                            </button>
+                                            <button type="button" class="btn btn-outline-danger x"
+                                                style="width: 95px;height: 37px;text-align: center">user3
+                                            </button>
+                                        </div>
+                                        <div class="col-12">
+                                            <button type="button" class="btn btn-outline-danger x"
+                                                style="width: 95px;height: 37px;text-align: center">user4
+                                            </button>
+                                            <button type="button" class="btn btn-outline-danger x"
+                                                style="width: 95px;height: 37px;text-align: center">user5
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="v-pills-settings" role="tabpanel"
+                                    aria-labelledby="v-pills-settings-tab">
+                                    <div class="row">
+                                        <div class="col-12" style="margin-bottom: 5px">
+                                            <button type="button" class="btn btn-outline-success x"
+                                                style="width: 95px;height: 37px;text-align: center">user1
+                                            </button>
+                                            <button type="button" class="btn btn-outline-success x"
+                                                style="width: 95px;height: 37px;text-align: center">user2
+                                            </button>
+                                            <button type="button" class="btn btn-outline-success x"
+                                                style="width: 95px;height: 37px;text-align: center">user3
+                                            </button>
+                                        </div>
+                                        <div class="col-12">
+                                            <button type="button" class="btn btn-outline-success x"
+                                                style="width: 95px;height: 37px;text-align: center">user4
+                                            </button>
+                                            <button type="button" class="btn btn-outline-success x"
+                                                style="width: 95px;height: 37px;text-align: center">user5
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="v-pills-design" role="tabpanel"
+                                    aria-labelledby="v-pills-tabContent-tab">
+                                    <div class="row">
+                                        <div class="col-12" style="margin-bottom: 5px">
+                                            <button type="button" class="btn btn-outline-secondary x"
+                                                style="width: 95px;height: 37px;text-align: center">user1
+                                            </button>
+                                            <button type="button" class="btn btn-outline-secondary x"
+                                                style="width: 95px;height: 37px;text-align: center">user2
+                                            </button>
+                                            <button type="button" class="btn btn-outline-secondary x"
+                                                style="width: 95px;height: 37px;text-align: center">user3
+                                            </button>
+                                        </div>
+                                        <div class="col-12">
+                                            <button type="button" class="btn btn-outline-secondary x"
+                                                style="width: 95px;height: 37px;text-align: center">user4
+                                            </button>
+                                            <button type="button" class="btn btn-outline-secondary x"
+                                                style="width: 95px;height: 37px;text-align: center">user5
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr style=" text-align:center; width: 100%; color:deepskyblue;">
+                </div>
+            </div>
+        </div>
+
+        <div class="md-modal md-effect-8" id="modal-8">
+            <div class="md-content">
+                <div style="height: 400px">
+                    <div class="container-fluid">
+                        <div class="row justify-content-between">
+                            <div class="col-4" style="margin-top: 10px; font-size: 24px">
+                                添加附件
+                            </div>
+                            <div class="col-2" style="margin-top: 10px;">
+                                <button class="md-close btn-sm btn-primary"
+                                    style="background-color: transparent; border: none; height: 100%">
+                                    <img src="/static/pic/close.png">
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row"
+                            style="position: absolute;left: 50%;top: 50%;transform: translate(-50%, -50%);text-align: center">
+                            <div class="col-10 offset-1">
+                                <button type="button" data-modal="modal-17" class="btn btn btn-outline-primary md-trigger" style="width: 200px;height: 50px;letter-spacing: 4px; display: block">
+                                    点击选择
+                                </button>
+                                <small style="color: red;float:left;">文件不要超过10M！</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="md-overlay"></div>
+
+        <script src="/static/js/bootstrap/jquery.min.js"></script>
+        <script src="/static/js/bootstrap/bootstrap.min.js"></script>
+        <script src="/static/js/animation/classie.js"></script>
+        <script src="/static/js/animation/modalEffects.js"></script>
+        <script src="/static/js/animation/highlight.min.js"></script>
+        <script type="text/javascript" src="/static/js/datetimepicker/bootstrap-datetimepicker.js" charset="UTF-8"></script>
+        <script type="text/javascript" src="/static/js/datetimepicker/bootstrap-datetimepicker.zh-TW.js" charset="UTF-8"></script>
+        <script type="text/javascript">
+            $('.form_date').datetimepicker({
+                language: 'zh-TW',
+                weekStart: 1,
+                todayBtn: 1,
+                autoclose: 1,
+                todayHighlight: 1,
+                startView: 2,
+                minView: 2,
+                forceParse: 0
+            });
+        </script>
+
+    </div>
 </body>
+
 </html>

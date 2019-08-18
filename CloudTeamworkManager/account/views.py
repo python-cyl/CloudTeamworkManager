@@ -47,7 +47,6 @@ def register_page(request):
 
     if request.method == "POST":
         forms = RegisterForm(request.POST)
-        forms.answer = request.session.get("verify")
 
         if forms.is_valid():
             try:

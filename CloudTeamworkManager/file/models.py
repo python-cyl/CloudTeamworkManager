@@ -5,6 +5,7 @@ class appendix(models.Model):
     upload_date = models.DateField(verbose_name = '上传日期')
     task_id = models.IntegerField()
     publisher = models.IntegerField()
+    filesize = models.IntegerField()
 
     class Meta:
         permissions = {

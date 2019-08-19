@@ -18,8 +18,6 @@ def verify_code(request):
     string, code = code.make_code()
     request.session['verify'] = string
     print(request.session['verify'])
-    # logout(request)
-    # 清除本地session文件
     return HttpResponse(code.getvalue(), 'image/png')
 
 
@@ -51,20 +49,29 @@ def avatar(request):
         return HttpResponse("upload over!")
     return render(request, 'img_upload_for_user.html')
 
-  
+
 @permission_required_or_403('task.glance_over_task_details', (task, ('id', 'task_id')))
 def appendix(request, task_id, file_name):
     if request.method == 'POST':
         _file = request.FILES.get("appendix")
-        for a,b,filename in os.walk('./file/appendixes/%s'%task_id):
+        for a, b, filename in os.walk('./file/appendixes/%s'%task_id):
             if _file.name == filename:
-                if not request.user.has_perm('file.edit_appendix', appendix.objects.get(filename = filename)):
-                    return HttpResponse("403")
+                return HttpResponse("文件已存在")
 
         file = open("./file/appendixes/%s/%s"%(task_id, _file.name), 'wb')
-        file.write(_file.read())
+        for chunk in _file.chunks():
+            file.write(chunk)
         file.close()
-        file = appendix.objects.create(filename='_file.name',task_id='task_id',publisher=request.user.id)
+        file_size = os.path.getsize(".\\file\\appendixes\\%s\\%s" %(task_id, _file.name))
+        file = appendix.objects.create(filename='_file.name',task_id='task_id',publisher=request.user.id,filesize=file_size)
+        target_task = task.objects.get(id='task_id')
+        task_files = target_task.appendixes
+        task_files = json.loads(task_files)
+        task_files.append(file.id)
+        task_files = json.dumps(task_files)
+        target_task.appendixes = task_files
+        target_task.save()
+
         assign_perm('file.edit_appendix', request.user, file)
         assign_perm('file.delete_appendix', request.user, file)
 
@@ -107,4 +114,21 @@ def delete(request,task_id,appendix_id):
 
             return HttpResponse("200")
         return HttpResponse("file does not exist")
+    return HttpResponse(status=403)
+
+
+def overlay(request, task_id, file_id):
+    file = appendix.objects.get(id=file_id)
+    target_task = task.objects.get(id=task_id)
+    if request.user.has_perm("task.edit_appendix", target_task) or request.user.has_perm("file.edit_appendix", target_appendix):
+        HDD_file = open("./file/appendixes/%s/%s" % (task_id, file.filename), 'wb')
+        _file = request.FILES.get("appendix")
+        for chunk in _file.chunks():
+            HDD_file.write(chunk)
+        HDD_file.close()
+
+        file_size = os.path.getsize("./file/appendixes/%s/%s" % (task_id, file.name))
+        file.filesize = file_size
+        file.save()
+        return HttpResponse("200")
     return HttpResponse(status=403)

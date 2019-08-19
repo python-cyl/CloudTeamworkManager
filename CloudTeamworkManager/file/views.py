@@ -78,10 +78,6 @@ def appendix(request, task_id, file_name):
         return response
 
 
-def upload(request):
-    return render(request, "upload.html")
-
-
 def rename_appendix(request, task_id, appendix_id):
     target_task = task.objects.get(id = task_id)
     target_appendix = appendix.objects.get(id = appendix_id)

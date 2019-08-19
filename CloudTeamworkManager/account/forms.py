@@ -15,6 +15,13 @@ def my_clean_phone_number(phone_number):
             return phone_number
     raise ValidationError("手机号码不正确", code=402)
 
+def my_clean_picode(picode, answer):
+    if re.match("\\w{4}", picode):
+        if picode.upper() == answer.upper():
+            return picode
+        raise ValidationError("验证码校验失败")
+    raise ValidationError("验证码格式错误")
+
 class RegisterForm(forms.Form):
     phone_number = forms.CharField(max_length=11, min_length=11, label="手机号")
     password = forms.CharField(max_length=16, min_length=6, label="密码")
@@ -41,11 +48,12 @@ class LoginForm(forms.Form):
     password = forms.CharField(max_length=16, min_length=6, label="密码")
 
 class SetPasswordForm(forms.Form):
+    picode = forms.CharField(max_length=4, min_length=4, label="图形验证码")
     phone_number = forms.CharField(max_length=11, min_length=11, label="手机号")
     old_password = forms.CharField(max_length=16, min_length=6, label="当前密码")
     new_password = forms.CharField(max_length=16, min_length=6, label="新密码")
-    picode = forms.CharField(max_length=4, min_length=4, label="图形验证码")
     user = None
+    answer = None
 
     def clean_phone_number(self):
         phone_number = self.cleaned_data.get("phone_number")
@@ -66,7 +74,7 @@ class SetPasswordForm(forms.Form):
     def clean_old_password(self):
         old_password = self.cleaned_data["old_password"]
 
-        if user.check_password(old_password):
+        if self.user.check_password(old_password):
             return old_password
         raise ValidationError("当前密码不正确")
 

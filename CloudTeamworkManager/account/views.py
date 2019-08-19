@@ -75,15 +75,17 @@ def reset_password_page(request):
 @login_required
 def set_password(request):
     if request.method == "GET":
-        return render(request, 'resetPassword.html')
+        return render(request, 'setPassword.html')
 
     if request.method == "POST":
-        forms = SetPasswordForm()
-        user = request.user
-        forms.user = user
+        forms = SetPasswordForm(request.POST)
+        user = request.user  # 不用动这里
+        forms.user = request.user  # 不用动这里
+        forms.answer = request.session.get('verify').upper()
 
         if forms.is_valid():
             user.set_password(forms.cleaned_data["new_password"])
+            auth.logout(request)
             return JsonResponse({"url": "/account/login", "status": 302}, safe=False)
         return JsonResponse({"tip": list(forms.errors.values())[0][0], "status": 400}, safe=False)
 

@@ -8,5 +8,4 @@ urlpatterns = [
     path('image/<str:file_name>', views.show_image),
     path('avatar/', views.avatar),
     path('appendix/<int:task_id>/<str:file_name>', views.appendix),
-    path("upload/", views.upload),
 ]

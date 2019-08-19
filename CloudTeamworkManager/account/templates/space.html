@@ -139,7 +139,7 @@
         </div>
     </div>
 
-    <div class="container" style="height: 100%;">
+    <div class="container" style="height: 100%;" id="mainFunc">
         <div class="row">
             <div class="col-10 offset-1">
                 <div class="card" style="border-left: 0.25rem solid #448AFF;">
@@ -161,7 +161,7 @@
                             <div style="font-size: 1.8rem; margin: 1.5rem 0rem 3.0rem 0rem"><input
                                     style="text-align: center" readonly value="宋叮咛"></div>
                         </div>
-                        <div class="col-3 offset-1" style="position: relative; top: 50%; transform: translateY(-50%)">
+                        <div class="col-3 offset-1">
                             <ul class="list-unstyled" style="font-size: 1.5rem">
                                 <li>15698311360</li>
                                 <li>男</li>
@@ -190,43 +190,45 @@
                             <tbody>
                                 <tr>
                                     <th scope="row" style="width: 20%">邮箱</th>
-                                    <td><input readonly value="ssdyny@foxmail.com"></td>
+                                    <td><input :readonly="edit_status? false : 'readonly'" value="ssdyny@foxmail.com"></td>
                                 </tr>
                                 <tr>
                                     <th scope="row">方向</th>
-                                    <td class="text-capitalize"><input readonly value="Python"></td>
+                                    <td class="text-capitalize"><input :readonly="edit_status? false : 'readonly'" value="Python"></td>
                                 </tr>
                                 <tr>
                                     <th scope="row">年级</th>
-                                    <td><input readonly value="2018"></td>
+                                    <td><input :readonly="edit_status? false : 'readonly'" value="2018"></td>
                                 </tr>
                                 <tr>
                                     <th scope="row">宿舍</th>
-                                    <td><input readonly value="2#227"></td>
+                                    <td><input :readonly="edit_status? false : 'readonly'" value="2#227"></td>
                                 </tr>
                                 <tr>
                                     <th scope="row">家庭住址</th>
-                                    <td><input readonly value="山西省&nbsp;晋中市&nbsp;榆次区&nbsp;乌金山镇&nbsp;太原理工大学"></td>
+                                    <td><input :readonly="edit_status? false : 'readonly'" value="山西省 晋中市 榆次区 乌金山镇 太原理工大学"></td>
                                 </tr>
                                 <tr>
                                     <th scope="row">监护人电话</th>
-                                    <td><input readonly value="15698311360"></td>
+                                    <td><input :readonly="edit_status? false : 'readonly'" value="15698311360"></td>
                                 </tr>
                                 <tr>
                                     <th scope="row">个人介绍</th>
                                     <td>
-                                        <textarea readonly rows="1"
+                                        <textarea :readonly="edit_status? false : 'readonly'" rows="1"
                                             id="textarea">我还是一个正直忠诚、勤奋求实的人，会不断追求人格的自我完善；明显的特点是乐观自信、温和开朗、稳重宽厚，因此，我人际关系和谐，适应环境能力较强。爱好电脑、科普知识，喜欢钻研，正因为这些增强了我的实干精神，习惯事情或问题及早解决。</textarea>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
-                        <input class="edit-icon btn btn-primary" type="button" value="编辑" ;
+                        <button @click="edit_info" class="edit-icon btn btn-primary" type="button"
                             style="font-size: 0.9rem; padding: 0px; opacity: 0.3; width: 3rem; height: 1.5rem; position: absolute; left: 93%; bottom: 3%;">
+                            [[ edit_or_save ]]
+                        </button>
                     </div>
                 </div>
 
-                <div class="card" style="border-left: 0.25rem solid #448AFF;">
+                <!-- <div class="card" style="border-left: 0.25rem solid #448AFF;">
                     <div class="clearfix" style="width: 100%">
                         <div style="float: right; height: 6rem; width: 22rem">
                             <div class="text-uppercase lead font-weight-bold"
@@ -341,7 +343,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>
@@ -356,12 +358,33 @@
         var textarea = document.getElementById("textarea")
         textarea.style.height = 'auto';
         textarea.style.height = textarea.scrollHeight + 5 + "px";
+    </script>
 
-        $('.toast').toast('show')
-
-        $("#mymodal").modal("toggle");
-
-        var app = new vue();
+    <script>
+        Vue.http.headers.common['X-CSRFToken'] = $("input[name='csrfmiddlewaretoken']").val()
+        var app = new Vue({
+            delimiters: ['[[', ']]'],
+            el: '#mainFunc',
+            data: {
+                edit_status: true,
+                edit_or_save: "保存"
+            },
+            methods: {
+                show_right_bar: function () {
+                    $('.toast').toast('show');
+                    $("#mymodal").modal("toggle");
+                },
+                edit_info: function() {
+                    if (this.edit_status){
+                        this.edit_status = false;
+                        this.edit_or_save = "编辑";
+                        return;
+                    }
+                    this.edit_status = true;
+                    this.edit_or_save = "保存";
+                }
+            }
+        })
     </script>
 </body>
 

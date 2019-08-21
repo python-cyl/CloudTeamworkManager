@@ -343,7 +343,7 @@ class task(object):
 
             # 通知
 
-            return JsonResponse({"url": "/task/%d"%target_task.id, "status": 302}, safe=False)
+            return JsonResponse({"task_id": target_task.id, "status": 200}, safe=False)
         return JsonResponse({"tip": "表单验证失败", "status": 400}, safe=False)
 
     # 需要修改

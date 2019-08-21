@@ -15,7 +15,6 @@ class task(ModelForm):
         self.fields["members"].required = False
         self.fields["task_description"].required = False
         self.fields["task_need"].required = False
-        self.fields["appendixes"].required = False
         self.fields["leaders"].required = False
 
         self.fields["members"].initial = ""

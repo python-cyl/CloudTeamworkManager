@@ -458,7 +458,8 @@ class task(object):
         return JsonResponse({"tip": "操作成功", "status": 200}, safe=False)
 
     def task_page(self, request):
-        pass
+        target_task = self.task.values("task_name", "publish_date", "deadline", "task_status", "members", "creator", "leaders", "task_description", "task_progress", "task_comment", "appendixes")
+        return reander(request, target_task, "task_detail.html")
 
     @staticmethod
     def get_members(request):

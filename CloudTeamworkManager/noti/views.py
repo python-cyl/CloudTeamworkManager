@@ -17,12 +17,12 @@ def delete_target(request, notification_id):
 
 def get_read(request):
     notifications = request.user.notifications.read()
-    notifications = notifications.values('recipient', 'actor_content_type', 'verb', 'description', 'timestamp')
+    notifications = notifications.values('id', 'actor_content_type', 'verb', 'description', 'timestamp')
     return JsonResponse(list(notifications), safe=False)
 
 def get_unread(request):
     notifications = request.user.notifications.unread()
-    notifications = notifications.values('recipient', 'actor_content_type', 'verb', 'description', 'timestamp')
+    notifications = notifications.values('id', 'actor_content_type', 'verb', 'description', 'timestamp')
     return JsonResponse(list(notifications), safe=False)
 
 def mark_all_as_read(request):

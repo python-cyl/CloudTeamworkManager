@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/static/css/bootstrap/bootstrap.min.css">
+    <title>补全信息</title>
+    <style id="style">
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+        }
+
+        .form-control:focus {
+            box-shadow: 0px 0px 0px;
+            border-color: #80bdff !important;
+        }
+
+        .form-control {
+            border-top: 0px;
+            border-left: 0px;
+            border-right: 0px;
+            padding: 0px;
+            border-radius: 0px;
+        }
+
+        form {
+            width: 100%;
+            height: 225px;
+        }
+
+        /* 这是next动画 */
+        .basic_info_part_one_next-enter {
+            transform: translateX(10%);
+            opacity: 0;
+        }
+
+        .basic_info_part_one_next-enter-to {
+            transform: translateX(0%);
+            opacity: 1;
+        }
+
+        .basic_info_part_one_next-leave {
+            transform: translateX(0%);
+            opacity: 1;
+            position: absolute;
+            top: 0px;
+        }
+
+        .basic_info_part_one_next-leave-to {
+            transform: translateX(-10%);
+            opacity: 0;
+            position: absolute;
+            top: 0px;
+        }
+
+        .basic_info_part_one_next-enter-active,
+        .basic_info_part_one_next-leave-active {
+            transition: all .5s ease;
+        }
+
+        .basic_info_part_two_next-enter {
+            transform: translateX(10%);
+            opacity: 0;
+        }
+
+        .basic_info_part_two_next-enter-to {
+            transform: translateX(0%);
+            opacity: 1;
+        }
+
+        .basic_info_part_two_next-leave {
+            transform: translateX(0%);
+            opacity: 1;
+            position: absolute;
+            top: 0px;
+        }
+
+        .basic_info_part_two_next-leave-to {
+            transform: translateX(-10%);
+            opacity: 0;
+            position: absolute;
+            top: 0px;
+        }
+
+        .basic_info_part_two_next-enter-active,
+        .basic_info_part_two_next-leave-active {
+            transition: all .5s ease;
+        }
+
+        .extend_info_part_one_next-enter {
+            transform: translateX(10%);
+            opacity: 0;
+        }
+
+        .extend_info_part_one_next-enter-to {
+            transform: translateX(0%);
+            opacity: 1;
+        }
+
+        .extend_info_part_one_next-leave {
+            transform: translateX(0%);
+            opacity: 1;
+            position: absolute;
+            top: 0px;
+        }
+
+        .extend_info_part_one_next-leave-to {
+            transform: translateX(-10%);
+            opacity: 0;
+            position: absolute;
+            top: 0px;
+        }
+
+        .extend_info_part_one_next-enter-active,
+        .extend_info_part_one_next-leave-active {
+            transition: all .5s ease;
+        }
+
+        .extend_info_part_two_next-enter {
+            transform: translateX(10%);
+            opacity: 0;
+        }
+
+        .extend_info_part_two_next-enter-to {
+            transform: translateX(0%);
+            opacity: 1;
+        }
+
+        .extend_info_part_two_next-leave {
+            transform: translateX(0%);
+            opacity: 1;
+            position: absolute;
+            top: 0px;
+        }
+
+        .extend_info_part_two_next-leave-to {
+            transform: translateX(-10%);
+            opacity: 0;
+            position: absolute;
+            top: 0px;
+        }
+
+        .extend_info_part_two_next-enter-active,
+        .extend_info_part_two_next-leave-active {
+            transition: all .5s ease;
+        }
+
+        .extend_info_avatar_next-enter {
+            transform: translateX(10%);
+            opacity: 0;
+        }
+
+        .extend_info_avatar_next-enter-to {
+            transform: translateX(0%);
+            opacity: 1;
+        }
+
+        .extend_info_avatar_next-leave {
+            transform: translateX(0%);
+            opacity: 1;
+            position: absolute;
+            top: 0px;
+        }
+
+        .extend_info_avatar_next-leave-to {
+            transform: translateX(10%);
+            opacity: 0;
+            position: absolute;
+            top: 0px;
+        }
+
+        .extend_info_avatar_next-enter-active,
+        .extend_info_avatar_next-leave-active {
+            transition: all .5s ease;
+        }
+
+        /* 这是previous动画 */
+        .basic_info_part_one_previous-enter {
+            transform: translateX(-10%);
+            opacity: 0;
+        }
+
+        .basic_info_part_one_previous-enter-to {
+            transform: translateX(0%);
+            opacity: 1;
+        }
+
+        .basic_info_part_one_previous-leave {
+            transform: translateX(0%);
+            opacity: 1;
+            position: absolute;
+            top: 0px;
+        }
+
+        .basic_info_part_one_previous-leave-to {
+            transform: translateX(-10%);
+            opacity: 0;
+            position: absolute;
+            top: 0px;
+        }
+
+        .basic_info_part_one_previous-enter-active,
+        .basic_info_part_one_previous-leave-active {
+            transition: all .5s ease;
+        }
+
+        .basic_info_part_two_previous-enter {
+            transform: translateX(-10%);
+            opacity: 0;
+        }
+
+        .basic_info_part_two_previous-enter-to {
+            transform: translateX(0%);
+            opacity: 1;
+        }
+
+        .basic_info_part_two_previous-leave {
+            transform: translateX(0%);
+            opacity: 1;
+            position: absolute;
+            top: 0px;
+        }
+
+        .basic_info_part_two_previous-leave-to {
+            transform: translateX(10%);
+            opacity: 0;
+            position: absolute;
+            top: 0px;
+        }
+
+        .basic_info_part_two_previous-enter-active,
+        .basic_info_part_two_previous-leave-active {
+            transition: all .5s ease;
+        }
+
+        .extend_info_part_one_previous-enter {
+            transform: translateX(-10%);
+            opacity: 0;
+        }
+
+        .extend_info_part_one_previous-enter-to {
+            transform: translateX(0%);
+            opacity: 1;
+        }
+
+        .extend_info_part_one_previous-leave {
+            transform: translateX(0%);
+            opacity: 1;
+            position: absolute;
+            top: 0px;
+        }
+
+        .extend_info_part_one_previous-leave-to {
+            transform: translateX(10%);
+            opacity: 0;
+            position: absolute;
+            top: 0px;
+        }
+
+        .extend_info_part_one_previous-enter-active,
+        .extend_info_part_one_previous-leave-active {
+            transition: all .5s ease;
+        }
+
+        .extend_info_part_two_previous-enter {
+            transform: translateX(-10%);
+            opacity: 0;
+        }
+
+        .extend_info_part_two_previous-enter-to {
+            transform: translateX(0%);
+            opacity: 1;
+        }
+
+        .extend_info_part_two_previous-leave {
+            transform: translateX(0%);
+            opacity: 1;
+            position: absolute;
+            top: 0px;
+        }
+
+        .extend_info_part_two_previous-leave-to {
+            transform: translateX(10%);
+            opacity: 0;
+            position: absolute;
+            top: 0px;
+        }
+
+        .extend_info_part_two_previous-enter-active,
+        .extend_info_part_two_previous-leave-active {
+            transition: all .5s ease;
+        }
+
+        .extend_info_avatar_previous-enter {
+            transform: translateX(-10%);
+            opacity: 0;
+        }
+
+        .extend_info_avatar_previous-enter-to {
+            transform: translateX(0%);
+            opacity: 1;
+        }
+
+        .extend_info_avatar_previous-leave {
+            transform: translateX(0%);
+            opacity: 1;
+            position: absolute;
+            top: 0px;
+        }
+
+        .extend_info_avatar_previous-leave-to {
+            transform: translateX(10%);
+            opacity: 0;
+            position: absolute;
+            top: 0px;
+        }
+
+        .extend_info_avatar_previous-enter-active,
+        .extend_info_avatar_previous-leave-active {
+            transition: all .5s ease;
+        }
+    </style>
+</head>
+
+<body
+    style="background: url(/static/svg/leftUp.svg) left top no-repeat fixed, url(/static/svg/rightDown.svg) 150% -200% no-repeat fixed, url(/static/svg/rightUp.svg) right top no-repeat fixed; background-size: 800px">
+    <div class="container" style="height: 100%">
+        <div class="row no-gutters" style="height: 100%">
+            <div style="height: auto; display: inline-block; z-index: -1; background: #448AFF;" class="col-4 offset-1">
+                <div style="height: 100%; background: url(/static/svg/middle.svg); opacity:0.4"></div>
+            </div>
+
+            <div class="align-self-center col-5" style="margin-left: -12.5%;">
+                <div class="text-right clearfix">
+                    <div class="text-uppercase font-weight-light" style="color: #536DFE; font-size: 48px">
+                        perfect&nbsp;info
+                    </div>
+                    <div style="font-size: 22px; color: #333333">补全你的个人信息
+                    </div>
+                    <hr noshade=true style="width: 17%; height: 1px; background-color: #536DFE; float: right;">
+                </div>
+                <div class="row justify-content-center no-gutters shadow p-0 mb-5 bg-white rounded" id="mainFunc">
+                    <div class="col-10" style="margin-top: 10%; margin-bottom: 10%">
+                        {% csrf_token %}
+                        <transition :name="basic_info_part_one_name">
+                            <form v-if="basic_info_part_one" class="clearfix">
+                                <label style="font-size: 14px; margin: 0.5rem 0rem 0.5rem 0rem">请输入你的姓名</label>
+                                <input v-model="name" class="form-control" placeholder="请输入你的姓名">
+                                <label style="font-size: 14px; margin: 0.5rem 0rem 0.5rem 0rem">请选择你的生日</label>
+                                <input v-model="birthday" type="date" class="form-control">
+                                <label style="font-size: 14px; margin: 0.5rem 0rem 0.5rem 0rem">请选择你的性别</label>
+                                <select v-model="sex" class="form-control">
+                                    <option selected value="">请选择</option>
+                                    <option value='m'>男</option>
+                                    <option value='f'>女</option>
+                                </select>
+                            </form>
+                        </transition>
+                        <transition :name="basic_info_part_two_name">
+                            <form v-if="basic_info_part_two" class="clearfix">
+                                <label style="font-size: 14px; margin: 0.5rem 0rem 0.5rem 0rem">请输入你的学号</label>
+                                <input v-model="student_id" type="text" class="form-control"
+                                    placeholder="示例: 2015006797">
+                                <label style="font-size: 14px; margin: 0.5rem 0rem 0.5rem 0rem">请选择你的年级</label>
+                                <select v-model="grade" class="form-control">
+                                    <option selected value="">请选择</option>
+                                    <option value='2016'>2016</option>
+                                    <option value='2017'>2017</option>
+                                    <option value='2018'>2018</option>
+                                    <option value='2019'>2019</option>
+                                </select>
+                                <label style="font-size: 14px; margin: 0.5rem 0rem 0.5rem 0rem">请选择你的方向</label>
+                                <select v-model="major" class="form-control">
+                                    <option selected value="">请选择</option>
+                                    <option value='M'>机电创新团队</option>
+                                    <option value='P'>Python</option>
+                                    <option value='N'>Node.js</option>
+                                    <option value='J'>Java</option>
+                                    <option value='F'>前端</option>
+                                    <option value='D'>设计</option>
+                                </select>
+                            </form>
+                        </transition>
+                        <transition :name="extend_info_part_one_name">
+                            <form v-if="extend_info_part_one" class="clearfix">
+                                <label style="font-size: 14px; margin: 0.5rem 0rem 0.5rem 0rem">请输入你的邮箱</label>
+                                <input v-model="email" type="text" class="form-control"
+                                    placeholder="示例: someone@example.com">
+                                <label style="font-size: 14px; margin: 0.5rem 0rem 0.5rem 0rem">请输入你的宿舍</label>
+                                <input v-model="room" type="text" class="form-control" placeholder="示例: 2#227">
+                                <label style="font-size: 14px; margin: 0.5rem 0rem 0.5rem 0rem">请输入你的家庭地址</label>
+                                <input v-model="home_address" type="text" class="form-control" placeholder="请输入你的家庭地址">
+                            </form>
+                        </transition>
+                        <transition :name="extend_info_part_two_name">
+                            <form v-if="extend_info_part_two" class="clearfix">
+                                <label style="font-size: 14px; margin: 0.5rem 0rem 0.5rem 0rem">请输入你的监护人的电话</label>
+                                <input v-model="guardian_phone" type="text" class="form-control"
+                                    placeholder="请输入你的监护人的电话">
+                                <label style="font-size: 14px; margin: 0.5rem 0rem 0.5rem 0rem">请输入你的个人介绍</label>
+                                <textarea v-model="introduction" type="text" class="form-control"
+                                    placeholder="我是一个活泼开朗的..."
+                                    style="height: 113px; border: 1px solid #ced4da"></textarea>
+                            </form>
+                        </transition>
+                        <transition :name="extend_info_avatar_name">
+                            <form v-if="extend_info_avatar" class="clearfix">
+                                <div style="text-align: center; height: 187.16px">
+                                    <img :src="src" style="width: 40%" class="rounded-circle" id="avatar">
+                                </div>
+                                <label for="file" class="btn btn-primary col-6 offset-3"
+                                    style="cursor: pointer">请选择你的头像</label>
+                                <input type="file" name="avatar" accept=".jpg" v-on:change="show_avatar($event)"
+                                    id="file" style="height: 0px; margin-left: -1000px">
+                            </form>
+                        </transition>
+                        <div class="tip" style="margin-top: 0.5rem; font-size: 14px; color: #E86263; height: 21px">
+                            [[tip]]
+                        </div>
+                        <input v-if="!basic_info_part_one" @click="previous" type="button" class="btn btn-primary col-2"
+                            value="<" style="float: left; font-size: 18px; margin-top: 10%">
+                        <input @click="next" type="button" class="btn btn-primary col-6 offset-4" :value="right_button"
+                            style="float: right; font-size: 18px; margin-top: 10%">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="/static/js/bootstrap/jquery.min.js"></script>
+        <script src="/static/js/bootstrap/popper.min.js"></script>
+        <script src="/static/js/bootstrap/bootstrap.bundle.min.js"></script>
+        <script src="/static/js/vue/vue.js"></script>
+        <script src="/static/js/vue/vue-resource.min.js"></script>
+
+        <script>
+            Vue.http.headers.common['X-CSRFToken'] = $("input[name='csrfmiddlewaretoken']").val()
+            var app = new Vue({
+                delimiters: ['[[', ']]'],
+                el: '#mainFunc',
+                data: {
+                    basic_info_part_one: true,
+                    basic_info_part_two: false,
+                    extend_info_part_one: false,
+                    extend_info_part_two: false,
+                    extend_info_avatar: false,
+                    basic_info_part_one_name: "basic_info_part_one_next",
+                    basic_info_part_two_name: "basic_info_part_two_next",
+                    extend_info_part_one_name: "extend_info_part_one_next",
+                    extend_info_part_two_name: "extend_info_part_two_next",
+                    extend_info_avatar_name: "extend_info_avatar_next",
+                    right_button: '下一步',
+                    name: "",
+                    birthday: "",
+                    sex: "",
+                    student_id: "",
+                    grade: "",
+                    major: "",
+                    email: "",
+                    room: "",
+                    home_address: "",
+                    guardian_phone: "",
+                    introduction: "",
+                    avatar: "",
+                    src: "/static/pic/组 18.png",
+                    tip: "",
+                },
+                methods: {
+                    show_avatar: function (event) {
+                        this.avatar = event.target.files[0];
+                        this.src = window.URL.createObjectURL(this.avatar);
+                        event.target = null;
+                        document.getElementById("avatar").style.height = document.getElementById("avatar").scrollWidth + 'px';
+                    },
+                    submit: function () {
+                        var formData = new FormData();
+                        formData.append('avatar', this.avatar);
+                        this.$http.post('/file/avatar/', formData, { headers: { 'Content-Type': 'multipart/form-data' } }).then(result => {
+                            if (result.body.status == 302) {
+                                window.location.href = result.body.url;
+                            }
+                            else {
+                                this.tip = result.body.tip;
+                            }
+                        })
+                    },
+                    previous: function () {
+                        if (this.extend_info_avatar) {
+                            this.extend_info_avatar_name = "extend_info_avatar_previous";
+                            this.extend_info_part_two_name = "extend_info_part_two_previous";
+                            this.extend_info_avatar = false;
+                            this.extend_info_part_two = true;
+                            this.right_button = "下一步";
+                        }
+                        else if (this.extend_info_part_two) {
+                            this.extend_info_part_two_name = "extend_info_part_two_previous";
+                            this.extend_info_part_one_name = "extend_info_part_one_previous";
+                            this.extend_info_part_two = false;
+                            this.extend_info_part_one = true;
+                        }
+                        else if (this.extend_info_part_one) {
+                            this.extend_info_part_one_name = "extend_info_part_one_previous";
+                            this.basic_info_part_two_name = "basic_info_part_two_previous";
+                            this.extend_info_part_one = false;
+                            this.basic_info_part_two = true;
+                        }
+                        else {
+                            this.basic_info_part_two_name = "basic_info_part_two_previous";
+                            this.basic_info_part_one_name = "basic_info_part_one_previous";
+                            this.basic_info_part_two = false;
+                            this.basic_info_part_one = true;
+                        }
+                    },
+                    next: function () {
+                        if (this.basic_info_part_one) {
+                            this.basic_info_part_one_name = "basic_info_part_one_next";
+                            this.basic_info_part_two_name = "basic_info_part_two_next";
+                            this.basic_info_part_one = false;
+                            this.basic_info_part_two = true;
+                        }
+                        else if (this.basic_info_part_two) {
+                            this.basic_info_part_two_name = "basic_info_part_two_next";
+                            this.extend_info_part_one_name = "extend_info_part_one_next";
+                            this.basic_info_part_two = false;
+                            this.extend_info_part_one = true;
+                        }
+                        else if (this.extend_info_part_one) {
+                            this.extend_info_part_one_name = "extend_info_part_one_next";
+                            this.extend_info_part_two_name = "extend_info_part_two_next";
+                            this.extend_info_part_one = false;
+                            this.extend_info_part_two = true;
+                        }
+                        else if (this.extend_info_part_two) {
+                            this.extend_info_avatar_name = "extend_info_avatar_next";
+                            this.extend_info_part_two_name = "extend_info_part_two_next";
+                            this.extend_info_part_two = false;
+                            this.extend_info_avatar = true;
+                            this.right_button = "提交";
+                        }
+                        else {
+                            this.submit();
+                        }
+                    }
+                }
+            });
+        </script>
+</body>
+
+</html>

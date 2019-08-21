@@ -29,10 +29,20 @@
 
         [readonly]:focus {
             border: 0px solid !important;
+            border-bottom: 1px rgba(255, 255, 255, 0) solid !important;
         }
 
         [readonly] {
             border: 0px solid !important;
+            border-bottom: 1px rgba(255, 255, 255, 0) solid !important;
+        }
+
+        textarea[readonly]{
+            border: 1px rgba(255, 255, 255, 0) solid !important;
+        }
+
+        textarea[readonly]:focus{
+            border: 1px rgba(255, 255, 255, 0) solid !important;
         }
 
         input {
@@ -366,8 +376,8 @@
             delimiters: ['[[', ']]'],
             el: '#mainFunc',
             data: {
-                edit_status: true,
-                edit_or_save: "保存"
+                edit_status: {{ edit_status }},
+                edit_or_save: "{{ edit_or_save }}",
             },
             methods: {
                 show_right_bar: function () {

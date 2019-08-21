@@ -145,7 +145,7 @@ def personal_page(request):
 @login_required
 def perfect_info(request):
     if request.method == "GET":
-        return render(request, "space.html", {"model": "perfect_info"})
+        return render(request, "perfect_info.html")
 
     if request.method == "POST":
         user_info = UserProfile.objects.get(user_id = request.user.id)
@@ -161,7 +161,7 @@ def perfect_info(request):
 @login_required
 def change_info(request):
     if request.method == "GET":
-        return render(request, "space.html", {"model": "change_info"})
+        return render(request, "space.html", {"edit_status": "false", "edit_or_save": "'编辑'"})
 
     if request.method == "POST":
         user_info = UserProfile.objects.get(user_id = request.user.id)

@@ -10,4 +10,6 @@ urlpatterns = [
     path('mark_all_as_read/', views.mark_all_as_read),
     path('mark_target_as_read/<int:notification_id>', views.mark_target_as_read),
     path('send_test/', views.send_test),
+    path('',views.notifications),
+    path('get_target_type/<int:type>', views.get_target_type),
 ]

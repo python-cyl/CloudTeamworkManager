@@ -47,6 +47,15 @@ def get_target_type(request, type):
 
     return JsonResponse({"content": {"unread": unread, "read": read}, "status": 200}, safe=False)
 
+def notifications(request):
+    readjs = list(request.user.notifications.read().values('recipient', 'actor_content_type', 'verb', 'description', 'timestamp','id'))
+    for i in readjs:
+        i['timestamp'] = str(i['timestamp'])[:-7]
+    unreadjs = list(request.user.notifications.unread().values('recipient', 'actor_content_type', 'verb', 'description', 'timestamp','id'))
+    for i in unreadjs:
+        i['timestamp'] = str(i['timestamp'])[:-7]
+    return render(request,'notification.html',{"readjs":json.dumps(readjs),"unreadjs":json.dumps(unreadjs)})
+
 def send_test(request):
     actor = request.user
     type = Notification.objects

@@ -457,7 +457,7 @@ class task(object):
         return JsonResponse({"tip": "操作成功", "status": 200}, safe=False)
 
     def task_page(self, request):
-        target_task = self.task.values("task_name", "publish_date", "deadline", "task_status", "members", "creator", "leaders", "task_description", "task_progress", "task_comment", "appendixes")
+        target_task = self.task.values("id", "task_name", "publish_date", "deadline", "task_status", "members", "creator", "leaders", "task_description", "task_progress", "task_comment", "appendixes")
         members = json.loads(target_task["members"])
         target_task["members"] = json.dumps([{"id": each, "name": UserProfile.objects.get(user_id = each)["name"]} for each in members])
         

@@ -59,5 +59,5 @@ def notifications(request):
 def send_test(request):
     actor = request.user
     type = Notification.objects
-    notify.send(actor, recipient=actor, verb='你好鸭，这是测试通知', description = "这是的是通知的正文部分")
+    notify.send(actor, recipient=actor, verb='你好鸭，这是测试通知', description = "这是的是通知的正文部分", msg_type=1)
     return HttpResponse("ok")

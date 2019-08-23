@@ -365,14 +365,9 @@
                                 <label style="font-size: 14px; margin: 0.5rem 0rem 0.5rem 0rem">请输入你的学号</label>
                                 <input v-model="student_id" type="text" class="form-control"
                                     placeholder="示例: 2015006797">
-                                <label style="font-size: 14px; margin: 0.5rem 0rem 0.5rem 0rem">请选择你的年级</label>
-                                <select v-model="grade" class="form-control">
-                                    <option selected value="">请选择</option>
-                                    <option value='2016'>2016</option>
-                                    <option value='2017'>2017</option>
-                                    <option value='2018'>2018</option>
-                                    <option value='2019'>2019</option>
-                                </select>
+                                <label style="font-size: 14px; margin: 0.5rem 0rem 0.5rem 0rem">请输入你的云ID</label>
+                                <input v-model="cloud_id" type="text" class="form-control"
+                                    placeholder="示例: 1234567">
                                 <label style="font-size: 14px; margin: 0.5rem 0rem 0.5rem 0rem">请选择你的方向</label>
                                 <select v-model="major" class="form-control">
                                     <option selected value="">请选择</option>
@@ -457,7 +452,7 @@
                     birthday: "",
                     sex: "",
                     student_id: "",
-                    grade: "",
+                    cloud_id: "",
                     major: "",
                     email: "",
                     room: "",
@@ -479,11 +474,21 @@
                         var formData = new FormData();
                         formData.append('avatar', this.avatar);
                         this.$http.post('/file/avatar/', formData, { headers: { 'Content-Type': 'multipart/form-data' } }).then(result => {
+                            if (result.body.status == 200) {
+                                ;
+                            }
+                            else {
+                                this.tip = result.body.tip;
+                                return;
+                            }
+                        })
+                        this.$http.post('/account/perfect_information/', { "name": this.name, "birthday": this.birthday, "sex": this.sex, "student_id": this.student_id, "grade": this.student_id.substr(0, 4), "cloud_id": this.cloud_id, "major": this.major, "email": this.email, "room": this.room, "home_address": this.home_address, "guardian_phone": this.guardian_phone, "introduction": this.introduction }, { emulateJSON: true }).then(result => {
                             if (result.body.status == 302) {
                                 window.location.href = result.body.url;
                             }
                             else {
                                 this.tip = result.body.tip;
+                                return;
                             }
                         })
                     },

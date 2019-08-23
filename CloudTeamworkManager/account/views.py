@@ -6,7 +6,8 @@ from django.contrib import auth
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
-from .forms import RegisterForm, LoginForm, ResetPasswordForm, change_info, extend_info, SetPasswordForm, my_clean_phone_number
+from .forms import RegisterForm, LoginForm, ResetPasswordForm, extend_info, SetPasswordForm, my_clean_phone_number
+from .forms import change_info as change_info_form
 from .models import UserProfile
 from .msgcode import sendcode
 from task.models import task
@@ -115,9 +116,10 @@ def sendmsgcode(request):
 
 @login_required
 def space_page(request):
-    user_info = UserProfile.objects.get(user_id = request.user.id)
+    target_userprofile = UserProfile.objects.get(user_id = request.user.id)
+    target_user = request.user
 
-    return render(request, 'space.html')
+    return render(request, 'space.html', {"name": target_userprofile.name, "phone_number": target_user.username, "gender": target_userprofile.sex, "student_id": target_userprofile.student_id, "birthday": target_userprofile.birthday, "email": target_userprofile.email, "major": target_userprofile.major, "grade": target_userprofile.grade, "room": target_userprofile.room, "home_address": target_userprofile.home_address, "guardian_phone": target_userprofile.guardian_phone, "introduction": target_userprofile.introduction, "user_id": target_user.id, "sex": target_userprofile.sex, "birthday": target_userprofile.birthday, "edit_status": "false", "edit_or_save": "编辑"})
 
 def home(request):
     if request.user.is_authenticated:
@@ -149,7 +151,7 @@ def perfect_info(request):
 
     if request.method == "POST":
         user_info = UserProfile.objects.get(user_id = request.user.id)
-        if user_info.name:
+        if not user_info.name:
             forms = extend_info(request.POST, instance=user_info)
 
             if forms.is_valid():
@@ -161,11 +163,11 @@ def perfect_info(request):
 @login_required
 def change_info(request):
     if request.method == "GET":
-        return render(request, "space.html", {"edit_status": "false", "edit_or_save": "'编辑'"})
+        return render(request, "space.html", {"edit_status": "true", "edit_or_save": "保存"})
 
     if request.method == "POST":
         user_info = UserProfile.objects.get(user_id = request.user.id)
-        forms = change_info(request.POST, instance=user_info)
+        forms = change_info_form(request.POST, instance=user_info)
 
         if forms.is_valid():
             forms.save()

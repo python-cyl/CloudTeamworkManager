@@ -5,6 +5,7 @@ from notifications.signals import notify
 from notifications.models import Notification
 
 
+# 类型定义: 1是系统消息，2是组内消息
 def delete_all_read(request):
     notifications = request.user.notifications.read()
     notifications.delete()
@@ -33,6 +34,18 @@ def mark_target_as_read(request, notification_id):
     notification = Notification.objects.get(id = notification_id)
     notification.mark_as_read()
     return JsonResponse({"tip": "操作成功", "status": 200}, safe=False)
+
+def get_target_type(request, type):
+    unread = request.user.notifications.unread()
+    read = request.user.notifications.read()
+
+    unread = unread.get(actor_content_type = type)
+    read = read.get(actor_content_type = type)
+
+    unread = list(unread.values('id', 'actor_content_type', 'verb', 'description', 'timestamp'))
+    read = list(read.values('id', 'actor_content_type', 'verb', 'description', 'timestamp'))
+
+    return JsonResponse({"content": {"unread": unread, "read": read}, "status": 200}, safe=False)
 
 def send_test(request):
     actor = request.user

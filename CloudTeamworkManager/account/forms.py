@@ -153,4 +153,4 @@ class extend_info(ModelForm):
 class change_info(extend_info):
     class Meta:
         model = UserProfile
-        exclude = ("involved_projects_number", "managed_projects_number", "name", "student_id", "cloud_id", "major", "grade", "sex", "managed_projects", "unread_notifications", "read_notifications", "involved_projects", "user")
+        exclude = ("involved_projects_number", "managed_projects_number", "name", "student_id", "cloud_id", "major", "birthday", "grade", "sex", "managed_projects", "unread_notifications", "read_notifications", "involved_projects", "user")

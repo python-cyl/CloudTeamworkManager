@@ -3,7 +3,6 @@ from django.contrib.auth.models import User,AbstractUser,AbstractBaseUser
 
 
 class UserProfile(models.Model):
-# class UserProfile(AbstractBaseUser):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     name = models.CharField(max_length = 5, verbose_name = '姓名')
     birthday = models.CharField(max_length = 10, verbose_name = '生日')

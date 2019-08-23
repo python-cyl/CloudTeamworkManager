@@ -27,22 +27,24 @@
             border-top: 0px;
         }
 
-        [readonly]:focus {
+        input[readonly]:focus {
+            border: 0px solid !important;
+            border-bottom: 1px rgba(255, 255, 255, 0) solid !important;
+            outline: 0px;
+        }
+
+        input[readonly] {
             border: 0px solid !important;
             border-bottom: 1px rgba(255, 255, 255, 0) solid !important;
         }
 
-        [readonly] {
-            border: 0px solid !important;
-            border-bottom: 1px rgba(255, 255, 255, 0) solid !important;
-        }
-
-        textarea[readonly]{
+        textarea[readonly] {
             border: 1px rgba(255, 255, 255, 0) solid !important;
         }
 
-        textarea[readonly]:focus{
+        textarea[readonly]:focus {
             border: 1px rgba(255, 255, 255, 0) solid !important;
+            outline: 0px;
         }
 
         input {
@@ -50,11 +52,11 @@
             border-top: 0px;
             border-left: 0px;
             border-right: 0px;
-            width: 100%;
         }
 
         input:focus {
             border-bottom: 1px #80bdff solid;
+            outline: 0px;
         }
 
         textarea {
@@ -64,6 +66,7 @@
 
         textarea:focus {
             border: 1px #80bdff solid;
+            outline: 0px;
         }
 
         .task-card:hover .content {
@@ -150,6 +153,7 @@
     </div>
 
     <div class="container" style="height: 100%;" id="mainFunc">
+        {% csrf_token %}
         <div class="row">
             <div class="col-10 offset-1">
                 <div class="card" style="border-left: 0.25rem solid #448AFF;">
@@ -167,16 +171,15 @@
 
                     <div class="row no-gutters">
                         <div class="col-2 offset-1" style="text-align: center">
-                            <img src="/static/pic/avatar.jpeg" class="rounded-circle" style="width: 7.5rem">
-                            <div style="font-size: 1.8rem; margin: 1.5rem 0rem 3.0rem 0rem"><input
-                                    style="text-align: center" readonly value="宋叮咛"></div>
+                            <img :src="avatarsrc" class="rounded-circle" style="width: 7.5rem">
+                            <div style="font-size: 1.8rem; margin: 1.5rem 0rem 3.0rem 0rem">[[name]]</div>
                         </div>
                         <div class="col-3 offset-1">
                             <ul class="list-unstyled" style="font-size: 1.5rem">
-                                <li>15698311360</li>
-                                <li>男</li>
-                                <li>1999年11月28日</li>
-                                <li>2018006797</li>
+                                <li>[[phone_number]]</li>
+                                <li>[[sex]]</li>
+                                <li>[[birthday]]</li>
+                                <li>[[student_id]]</li>
                             </ul>
                         </div>
                     </div>
@@ -200,33 +203,38 @@
                             <tbody>
                                 <tr>
                                     <th scope="row" style="width: 20%">邮箱</th>
-                                    <td><input :readonly="edit_status? false : 'readonly'" value="ssdyny@foxmail.com"></td>
+                                    <td><input v-model="email" :readonly="edit_status? false : 'readonly'"
+                                            value="ssdyny@foxmail.com">
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th scope="row">方向</th>
-                                    <td class="text-capitalize"><input :readonly="edit_status? false : 'readonly'" value="Python"></td>
+                                    <td class="text-capitalize"><input readonly :value="major"></td>
                                 </tr>
                                 <tr>
                                     <th scope="row">年级</th>
-                                    <td><input :readonly="edit_status? false : 'readonly'" value="2018"></td>
+                                    <td><input readonly :value="grade"></td>
                                 </tr>
                                 <tr>
                                     <th scope="row">宿舍</th>
-                                    <td><input :readonly="edit_status? false : 'readonly'" value="2#227"></td>
+                                    <td><input v-model="room" :readonly="edit_status? false : 'readonly'" value="2#227">
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th scope="row">家庭住址</th>
-                                    <td><input :readonly="edit_status? false : 'readonly'" value="山西省 晋中市 榆次区 乌金山镇 太原理工大学"></td>
+                                    <td><input v-model="home_address" :readonly="edit_status? false : 'readonly'"
+                                            value="山西省 晋中市 榆次区 乌金山镇 太原理工大学"></td>
                                 </tr>
                                 <tr>
                                     <th scope="row">监护人电话</th>
-                                    <td><input :readonly="edit_status? false : 'readonly'" value="15698311360"></td>
+                                    <td><input v-model="guardian_phone" :readonly="edit_status? false : 'readonly'"
+                                            value="15698311360"></td>
                                 </tr>
                                 <tr>
                                     <th scope="row">个人介绍</th>
                                     <td>
-                                        <textarea :readonly="edit_status? false : 'readonly'" rows="1"
-                                            id="textarea">我还是一个正直忠诚、勤奋求实的人，会不断追求人格的自我完善；明显的特点是乐观自信、温和开朗、稳重宽厚，因此，我人际关系和谐，适应环境能力较强。爱好电脑、科普知识，喜欢钻研，正因为这些增强了我的实干精神，习惯事情或问题及早解决。</textarea>
+                                        <textarea @change="auto_height" v-model="introduction" :readonly="edit_status? false : 'readonly'"
+                                            rows="1" id="textarea"></textarea>
                                     </td>
                                 </tr>
                             </tbody>
@@ -365,12 +373,6 @@
     <script src="/static/js/vue/vue-resource.min.js"></script>
 
     <script>
-        var textarea = document.getElementById("textarea")
-        textarea.style.height = 'auto';
-        textarea.style.height = textarea.scrollHeight + 5 + "px";
-    </script>
-
-    <script>
         Vue.http.headers.common['X-CSRFToken'] = $("input[name='csrfmiddlewaretoken']").val()
         var app = new Vue({
             delimiters: ['[[', ']]'],
@@ -378,22 +380,47 @@
             data: {
                 edit_status: {{ edit_status }},
                 edit_or_save: "{{ edit_or_save }}",
+                email: "{{ email }}",
+                room: "{{ room }}",
+                home_address: "{{ home_address }}",
+                guardian_phone: "{{ guardian_phone }}",
+                introduction: "{{ introduction }}",
+                major: "{{ major }}",
+                grade: "{{ grade }}",
+                avatarsrc: "/static/avatar/{{ user_id }}.jpg",
+                phone_number: "{{phone_number}}",
+                sex: "{{sex}}",
+                birthday: "{{birthday}}",
+                student_id: "{{student_id}}",
+                name: "{{name}}"
             },
-            methods: {
-                show_right_bar: function () {
-                    $('.toast').toast('show');
-                    $("#mymodal").modal("toggle");
-                },
-                edit_info: function() {
-                    if (this.edit_status){
-                        this.edit_status = false;
-                        this.edit_or_save = "编辑";
-                        return;
-                    }
-                    this.edit_status = true;
-                    this.edit_or_save = "保存";
+        methods: {
+            show_right_bar: function () {
+                $('.toast').toast('show');
+                $("#mymodal").modal("toggle");
+            },
+            auto_height: function(){
+                var textarea = document.getElementById("textarea")
+                textarea.style.height = 'auto';
+                textarea.style.height = textarea.scrollHeight + 5 + "px";
+            },
+            edit_info: function() {
+                if (this.edit_status) {
+                    this.$http.post("/account/change_information/", {"email": this.email, "room": this.room, "home_address": this.home_address, "guardian_phone": this.guardian_phone, "introduction": this.introduction}, { emulateJSON: true }).then(result => {
+                        if (result.body.status == 200) {
+                            this.edit_status = false;
+                            this.edit_or_save = "编辑";
+                        }
+                        else {
+                            this.tip = result.body.tip;
+                        }
+                    })
+                    return;
                 }
+                this.edit_status = true;
+                this.edit_or_save = "保存";
             }
+        }
         })
     </script>
 </body>

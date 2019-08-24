@@ -47,205 +47,207 @@
 
 <body style="background-color: #F7F8FA;">
     {%csrf_token%}
-    <div class="container" style="height: 100%;">
-        <div class="row no-gutters">
-            <div class="col-10 offset-1">
-                <div class="card" style="border-top: 0.25rem solid #448AFF;">
-                    <div class="clearfix" style="width: 100%">
-                        <div style="float: right; height: 6rem; width: 22rem">
-                            <div class="text-uppercase lead font-weight-bold"
-                                style="font-size: 4rem; color: rgba(41, 98, 255, 0.05); z-index: -1">
-                                new&nbsp;task
+    <div id="mainFunc">
+        <div class="container" style="height: 100%;">
+            <div class="row no-gutters">
+                <div class="col-10 offset-1">
+                    <div class="card" style="border-top: 0.25rem solid #448AFF;">
+                        <div class="clearfix" style="width: 100%">
+                            <div style="float: right; height: 6rem; width: 22rem">
+                                <div class="text-uppercase lead font-weight-bold"
+                                    style="font-size: 4rem; color: rgba(41, 98, 255, 0.05); z-index: -1">
+                                    new&nbsp;task
+                                </div>
+                                <div
+                                    style="font-size: 2rem; color: #999999; position: relative; top: -65%; left: 8%; z-index: 1;">
+                                    任务信息
+                                </div>
                             </div>
-                            <div
-                                style="font-size: 2rem; color: #999999; position: relative; top: -65%; left: 8%; z-index: 1;">
-                                任务信息
+                        </div>
+
+                        <div class="row no-gutters">
+                            <table class="table col-10 offset-1" style="margin-bottom: 3rem">
+                                <tbody>
+                                    <tr>
+                                        <th>任务名称</th>
+                                        <td><input class="form-control" id="input_task" placeholder=""
+                                                style="border-top:none;border-left: 0; border-right: 0; padding: 0; width: 20%">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>截止日期</th>
+                                        <td class="text-capitalize">
+                                            <input type="date">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>任务状态</th>
+                                        <td class="">
+                                            <select>
+                                                <option>进行中</option>
+                                                <option>已挂起</option>
+                                                <option>已结束</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>任务详情</th>
+                                        <td>
+                                            <div>
+                                                <textarea class="form-control" id="exampleFormControlTextarea1" rows="6"
+                                                    placeholder="请输入项目详情......"
+                                                    style="color: #666666;padding: 0;"></textarea>
+                                                <small id="emailHelp" class="form-text text-muted"
+                                                    style="margin-top: 10px;height: 40px;text-align: center;float: left;letter-spacing: 5px">
+                                                    需要更详细的介绍?点击<span onclick="javascript:;" class="md-trigger"
+                                                        data-modal="modal-8" style="cursor: pointer;">
+                                                        <img src="/static/pic/href_active.png">&nbsp;添加附件
+                                                    </span>
+                                                </small>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card" style="border-top: 0.25rem solid #448AFF;">
+                        <div class="clearfix" style="width: 100%">
+                            <div style="float: right; height: 6rem; width: 22rem">
+                                <div class="text-uppercase lead font-weight-bold"
+                                    style="font-size: 4rem; color: rgba(41, 98, 255, 0.05); z-index: -1">
+                                    members
+                                </div>
+                                <div
+                                    style="font-size: 2rem; color: #999999; position: relative; top: -65%; left: 8%; z-index: 1;">
+                                    人员安排
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row no-gutters" style="margin: 0px 0px .75rem 0px">
+                            <div class="col-10 offset-1"
+                                style="font-weight: bold; margin-top: .75rem; margin-bottom: .75rem">
+                                添加成员
+                            </div>
+                            <div class="col-10" style="left: 10%">
+                                <button type="button" class="btn btn btn-outline-primary md-trigger"
+                                    data-modal="modal-5" style="width: 140px; height: 50px;" id="in_a_0"
+                                    onclick="javascript:;">
+                                    点击选择
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="row no-gutters" style="margin: 0rem 0px .75rem 0px">
+                            <div class="col-10 offset-1">
+                                <div style="font-weight: bold; margin: .75rem 0px .75rem 0px">
+                                    已选择的成员
+                                </div>
+                            </div>
+                            <div class="col-10" style="left: 10%">
+                                <div>
+                                    <div style="font-size: 20px; margin-bottom: .75rem">
+                                        Python:
+                                    </div>
+                                    <div class="row justify-content-start col-12">
+                                        <button class="btn btn btn-outline-primary"
+                                            style="margin-right: 1.5rem; width: 5rem">uesr1
+                                        </button>
+                                        <button class="btn btn btn-outline-primary"
+                                            style="margin-right: 1.5rem; width: 5rem">uesr1
+                                        </button>
+                                        <button class="btn btn btn-outline-primary"
+                                            style="margin-right: 1.5rem; width: 5rem">uesr1
+                                        </button>
+                                        <button class="btn btn btn-outline-primary"
+                                            style="margin-right: 1.5rem; width: 5rem">uesr1
+                                        </button>
+                                        <button class="btn btn btn-outline-primary"
+                                            style="margin-right: 1.5rem; width: 5rem">uesr1
+                                        </button>
+                                        <button class="btn btn btn-outline-primary"
+                                            style="margin-right: 1.5rem; width: 5rem">uesr1
+                                        </button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 20px; margin-bottom: .75rem">
+                                        Java:
+                                    </div>
+                                    <div class="row justify-content-start col-12">
+                                        <button class="btn btn btn-outline-primary"
+                                            style="margin-right: 1.5rem; width: 5rem">uesr1
+                                        </button>
+                                        <button class="btn btn btn-outline-primary"
+                                            style="margin-right: 1.5rem; width: 5rem">uesr1
+                                        </button>
+                                        <button class="btn btn btn-outline-primary"
+                                            style="margin-right: 1.5rem; width: 5rem">uesr1
+                                        </button>
+                                        <button class="btn btn btn-outline-primary"
+                                            style="margin-right: 1.5rem; width: 5rem">uesr1
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row no-gutters" style="margin: 0px 0px .75rem 0px">
+                            <div class="col-10 offset-1"
+                                style="font-weight: bold; margin-top: .75rem; margin-bottom: .75rem">
+                                任命组长
+                            </div>
+                            <div class="col-10" style="left: 10%">
+                                <button type="button" class="btn btn btn-outline-primary md-trigger"
+                                    style="width: 140px; height: 50px;" data-modal="modal-5" onclick="javascript:;">
+                                    点击选择
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="row no-gutters" style="margin: 0rem 0px .75rem 0px">
+                            <div class="col-10 offset-1">
+                                <div style="font-weight: bold; margin: .75rem 0px .75rem 0px">
+                                    已任命的组长
+                                </div>
+                            </div>
+                            <div class="col-10" style="left: 10%">
+                                <div>
+                                    <div style="font-size: 20px; margin-bottom: .75rem">
+                                        Python:
+                                    </div>
+                                    <div class="row justify-content-start col-10">
+                                        <button class="btn btn btn-outline-primary"
+                                            style="margin-right: 1.5rem; width: 5rem">uesr1
+                                        </button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 20px; margin-bottom: .75rem">
+                                        Java:
+                                    </div>
+                                    <div class="row justify-content-start col-10">
+                                        <button class="btn btn btn-outline-primary"
+                                            style="margin-right: 1.5rem; width: 5rem">uesr1
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="row no-gutters">
-                        <table class="table col-10 offset-1" style="margin-bottom: 3rem">
-                            <tbody>
-                                <tr>
-                                    <th>任务名称</th>
-                                    <td><input class="form-control" id="input_task" placeholder=""
-                                            style="border-top:none;border-left: 0; border-right: 0; padding: 0; width: 20%">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>截止日期</th>
-                                    <td class="text-capitalize">
-                                        <input type="date">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>任务状态</th>
-                                    <td class="">
-                                        <select>
-                                            <option>进行中</option>
-                                            <option>已挂起</option>
-                                            <option>已结束</option>
-                                        </select>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>任务详情</th>
-                                    <td>
-                                        <div>
-                                            <textarea class="form-control" id="exampleFormControlTextarea1" rows="6"
-                                                placeholder="请输入项目详情......"
-                                                style="color: #666666;padding: 0;"></textarea>
-                                            <small id="emailHelp" class="form-text text-muted"
-                                                style="margin-top: 10px;height: 40px;text-align: center;float: left;letter-spacing: 5px">
-                                                需要更详细的介绍?点击<span onclick="javascript:;" class="md-trigger"
-                                                    data-modal="modal-8" style="cursor: pointer;">
-                                                    <img src="/static/pic/href_active.png">&nbsp;添加附件
-                                                </span>
-                                            </small>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div class="row justify-content-md-center" style="margin-bottom: 20px">
+                        <button type="button" class="btn btn-primary"
+                            style="width: 200px;height: 40px;text-align: center">
+                            <a href="" style="color:#ffffff ">确认提交</a>
+                        </button>
                     </div>
-                </div>
-
-                <div class="card" style="border-top: 0.25rem solid #448AFF;">
-                    <div class="clearfix" style="width: 100%">
-                        <div style="float: right; height: 6rem; width: 22rem">
-                            <div class="text-uppercase lead font-weight-bold"
-                                style="font-size: 4rem; color: rgba(41, 98, 255, 0.05); z-index: -1">
-                                members
-                            </div>
-                            <div
-                                style="font-size: 2rem; color: #999999; position: relative; top: -65%; left: 8%; z-index: 1;">
-                                人员安排
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row no-gutters" style="margin: 0px 0px .75rem 0px">
-                        <div class="col-10 offset-1"
-                            style="font-weight: bold; margin-top: .75rem; margin-bottom: .75rem">
-                            添加成员
-                        </div>
-                        <div class="col-10" style="left: 10%">
-                            <button type="button" class="btn btn btn-outline-primary md-trigger" data-modal="modal-5"
-                                style="width: 140px; height: 50px;" id="in_a_0" onclick="javascript:;">
-                                点击选择
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="row no-gutters" style="margin: 0rem 0px .75rem 0px">
-                        <div class="col-10 offset-1">
-                            <div style="font-weight: bold; margin: .75rem 0px .75rem 0px">
-                                已选择的成员
-                            </div>
-                        </div>
-                        <div class="col-10" style="left: 10%">
-                            <div>
-                                <div style="font-size: 20px; margin-bottom: .75rem">
-                                    Python:
-                                </div>
-                                <div class="row justify-content-start col-12">
-                                    <button class="btn btn btn-outline-primary"
-                                        style="margin-right: 1.5rem; width: 5rem">uesr1
-                                    </button>
-                                    <button class="btn btn btn-outline-primary"
-                                        style="margin-right: 1.5rem; width: 5rem">uesr1
-                                    </button>
-                                    <button class="btn btn btn-outline-primary"
-                                        style="margin-right: 1.5rem; width: 5rem">uesr1
-                                    </button>
-                                    <button class="btn btn btn-outline-primary"
-                                        style="margin-right: 1.5rem; width: 5rem">uesr1
-                                    </button>
-                                    <button class="btn btn btn-outline-primary"
-                                        style="margin-right: 1.5rem; width: 5rem">uesr1
-                                    </button>
-                                    <button class="btn btn btn-outline-primary"
-                                        style="margin-right: 1.5rem; width: 5rem">uesr1
-                                    </button>
-                                </div>
-                            </div>
-                            <div>
-                                <div style="font-size: 20px; margin-bottom: .75rem">
-                                    Java:
-                                </div>
-                                <div class="row justify-content-start col-12">
-                                    <button class="btn btn btn-outline-primary"
-                                        style="margin-right: 1.5rem; width: 5rem">uesr1
-                                    </button>
-                                    <button class="btn btn btn-outline-primary"
-                                        style="margin-right: 1.5rem; width: 5rem">uesr1
-                                    </button>
-                                    <button class="btn btn btn-outline-primary"
-                                        style="margin-right: 1.5rem; width: 5rem">uesr1
-                                    </button>
-                                    <button class="btn btn btn-outline-primary"
-                                        style="margin-right: 1.5rem; width: 5rem">uesr1
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row no-gutters" style="margin: 0px 0px .75rem 0px">
-                        <div class="col-10 offset-1"
-                            style="font-weight: bold; margin-top: .75rem; margin-bottom: .75rem">
-                            任命组长
-                        </div>
-                        <div class="col-10" style="left: 10%">
-                            <button type="button" class="btn btn btn-outline-primary md-trigger"
-                                style="width: 140px; height: 50px;" data-modal="modal-5" onclick="javascript:;">
-                                点击选择
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="row no-gutters" style="margin: 0rem 0px .75rem 0px">
-                        <div class="col-10 offset-1">
-                            <div style="font-weight: bold; margin: .75rem 0px .75rem 0px">
-                                已任命的组长
-                            </div>
-                        </div>
-                        <div class="col-10" style="left: 10%">
-                            <div>
-                                <div style="font-size: 20px; margin-bottom: .75rem">
-                                    Python:
-                                </div>
-                                <div class="row justify-content-start col-10">
-                                    <button class="btn btn btn-outline-primary"
-                                        style="margin-right: 1.5rem; width: 5rem">uesr1
-                                    </button>
-                                </div>
-                            </div>
-                            <div>
-                                <div style="font-size: 20px; margin-bottom: .75rem">
-                                    Java:
-                                </div>
-                                <div class="row justify-content-start col-10">
-                                    <button class="btn btn btn-outline-primary"
-                                        style="margin-right: 1.5rem; width: 5rem">uesr1
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row justify-content-md-center" style="margin-bottom: 20px">
-                    <button type="button" class="btn btn-primary" style="width: 200px;height: 40px;text-align: center">
-                        <a href="" style="color:#ffffff ">确认提交</a>
-                    </button>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div>
         <div class="md-modal md-effect-5" id="modal-5">
             <div class="md-content">
                 <div class="container">
@@ -264,7 +266,8 @@
                         <div class="col-6" style="padding-right: 0;">
                             <input type="search" id="search" class="form-control">
                         </div>
-                        <div style="float: left;margin-top: 2px"><a href="#"><img src="/static/pic/serch.png"></a></div>
+                        <div style="float: left;margin-top: 2px"><a href="#"><img src="/static/pic/serch.png"></a>
+                        </div>
                     </div>
                     <div class="row" style="margin-top: 5px">
                         <div class="col-3">
@@ -432,7 +435,9 @@
                         <div class="row"
                             style="position: absolute;left: 50%;top: 50%;transform: translate(-50%, -50%);text-align: center">
                             <div class="col-10 offset-1">
-                                <button type="button" data-modal="modal-17" class="btn btn btn-outline-primary md-trigger" style="width: 200px;height: 50px;letter-spacing: 4px; display: block">
+                                <button type="button" data-modal="modal-17"
+                                    class="btn btn btn-outline-primary md-trigger"
+                                    style="width: 200px;height: 50px;letter-spacing: 4px; display: block">
                                     点击选择
                                 </button>
                                 <small style="color: red;float:left;">文件不要超过10M！</small>
@@ -444,12 +449,28 @@
         </div>
         <div class="md-overlay"></div>
 
-        <script src="/static/js/bootstrap/jquery.min.js"></script>
-        <script src="/static/js/bootstrap/bootstrap.min.js"></script>
-        <script src="/static/js/animation/classie.js"></script>
-        <script src="/static/js/animation/modalEffects.js"></script>
-        <script src="/static/js/animation/highlight.min.js"></script>
     </div>
+    <script src="/static/js/bootstrap/jquery.min.js"></script>
+    <script src="/static/js/bootstrap/bootstrap.min.js"></script>
+    <script src="/static/js/vue/vue.js"></script>
+    <script src="/static/js/vue/vue-resource.min.js"></script>
+
+    <script>
+        Vue.http.headers.common['X-CSRFToken'] = $("input[name='csrfmiddlewaretoken']").val()
+        var app = new Vue({
+            delimiters: ['[[', ']]'],
+            el: 'div',
+            data: {
+
+            },
+            methods: {
+
+            },
+        })
+    </script>
+
+    <script src="/static/js/animation/classie.js"></script>
+    <script src="/static/js/animation/modalEffects.js"></script>
 </body>
 
 </html>

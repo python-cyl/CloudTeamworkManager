@@ -177,6 +177,9 @@ def change_info(request):
 @login_required
 def task_list(request):
     user = UserProfile.objects.get(user_id = request.user.id)
-    task_list = json.loads(user.involved_projects)
-    
-    return json.dumps([task.objects.get(id = each).values(["id", "task_name", "members", "task_status"]) for each in task_list])
+    _task_list = json.loads(user.involved_projects)
+    temp = [task.objects.filter(id = each).values("id", "task_name", "members", "task_status")[0] for each in _task_list]
+    for each_task in temp:
+        members = json.loads(each_task["members"])
+        each_task["members"] = [UserProfile.objects.get(user_id = each).name for each in members]
+    return render(request, "task_list.html", {"content": temp})

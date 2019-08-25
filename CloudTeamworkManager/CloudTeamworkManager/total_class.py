@@ -1,4 +1,5 @@
 from django.shortcuts import render, HttpResponse, get_object_or_404
+from django.forms.models import model_to_dict
 from django.http import JsonResponse
 from django.contrib.auth.models import User, Group, Permission
 from guardian.shortcuts import assign_perm, remove_perm
@@ -457,12 +458,12 @@ class task(object):
         return JsonResponse({"tip": "操作成功", "status": 200}, safe=False)
 
     def task_page(self, request):
-        target_task = self.task.values("id", "task_name", "publish_date", "deadline", "task_status", "members", "creator", "leaders", "task_description", "task_progress", "task_comment", "appendixes")
+        target_task = model_to_dict(self.task, fields=["id", "task_name", "publish_date", "deadline", "task_status", "members", "creator", "leaders", "task_description", "task_progress", "task_comment", "appendixes"])
         members = json.loads(target_task["members"])
         # 合并两个字典并生成一个列表，然后序列化
-        target_task["members"] = json.dumps([{**{"id": each}, **UserProfile.objects.get(user_id = each).values('name', 'major')} for each in members])
+        target_task["members"] = json.dumps([{**{"id": each}, **model_to_dict(UserProfile.objects.get(user_id = each), firlds=['name', 'major'])} for each in members])
         
-        return reander(request, target_task, "task_detail.html")
+        return reander(request, "task_detail.html", target_task)
 
     @staticmethod
     def get_members(request):

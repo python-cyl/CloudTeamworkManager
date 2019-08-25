@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.contrib.auth.models import User
 from notifications.signals import notify
 from notifications.models import Notification
+import json
 
 
 # 类型定义: 1是系统消息，2是组内消息
@@ -48,18 +49,17 @@ def get_target_type(request, type):
     return JsonResponse({"content": {"unread": unread, "read": read}, "status": 200}, safe=False)
 
 def notifications(request):
-    readjs = list(request.user.notifications.read().values('recipient', 'data', 'verb', 'description', 'timestamp','id'))
-    for i in readjs:
+    read = list(request.user.notifications.read().values('data', 'verb', 'description', 'timestamp','id'))
+    for i in read:
         i['timestamp'] = str(i['timestamp'])[:-7]
-    unreadjs = list(request.user.notifications.unread().values('recipient', 'data', 'verb', 'description', 'timestamp','id',))
-    for i in unreadjs:
+    unread = list(request.user.notifications.unread().values('data', 'verb', 'description', 'timestamp','id',))
+    for i in unread:
         i['timestamp'] = str(i['timestamp'])[:-7]
-    return render(request,'notification.html',{"readjs":json.dumps(readjs),"unreadjs":json.dumps(unreadjs),})
+    return render(request, 'notification.html', {"read": json.dumps(read),"unread": json.dumps(unread),})
 
-def send_test(request):
+def send_test(request, type):
     actor = request.user
-    type = Notification.objects
-    notify.send(actor, recipient=actor, verb='你好鸭，这是测试通知', description = "这是的是通知的正文部分", msg_type=1)
+    notify.send(actor, recipient=actor, verb='你好鸭，这是测试通知', description = "这是的是通知的正文部分", type=type)
     return HttpResponse("ok")
 
 def get_target_type(request, type): # 1系统 2组内
@@ -71,5 +71,11 @@ def get_target_type(request, type): # 1系统 2组内
 
     unread = list(unread.values('id', 'data', 'verb', 'description', 'timestamp'))
     read = list(read.values('id', 'data', 'verb', 'description', 'timestamp'))
+
+    for i in read:
+        i['timestamp'] = str(i['timestamp'])[:-7]
+
+    for i in unread:
+        i['timestamp'] = str(i['timestamp'])[:-7]
 
     return JsonResponse({"content": {"unread": unread, "read": read}, "status": 200}, safe=False)

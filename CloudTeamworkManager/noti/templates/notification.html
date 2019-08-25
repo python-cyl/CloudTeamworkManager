@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="/static/css/bootstrap/bootstrap.min.css">
+    <link href="/static/css/animation/component.css" rel="stylesheet">
     <title>当前消息</title>
     <style>
         li {
@@ -33,7 +34,7 @@
                             <div class="text-uppercase lead font-weight-bold"
                                 style="font-size: 4rem; color: rgba(41, 98, 255, 0.05); z-index: -1">
                                 messages</div>
-                            <div
+                            <div onclick="javascript: ;"
                                 style="font-size: 2rem; color: #999999; position: relative; top: -65%; left: 8%; z-index: 1;">
                                 你的消息
                             </div>
@@ -50,12 +51,12 @@
                             <li class="nav-item col-3">
                                 <a class="nav-link " id="pills-system-tab" data-toggle="pill" href="#pills-system"
                                     role="tab" aria-controls="pills-system" aria-selected="false"
-                                    style="text-align: center">系统消息</a>
+                                    style="text-align: center " @click="getSysInfo">系统消息</a>
                             </li>
                             <li class="nav-item col-3">
                                 <a class="nav-link" id="pills-group-tab" data-toggle="pill" href="#pills-group"
                                     role="tab" aria-controls="pills-group" aria-selected="false"
-                                    style="text-align: center">组内消息</a>
+                                    style="text-align: center" @click="getTeamInfo">组内消息</a>
                             </li>
                         </ul>
                         <!-- <div class="col-2">
@@ -64,384 +65,341 @@
                             </a>
                         </div> -->
                     </div>
-
-                    <div class="tab-content col-10 offset-1" id="pills-tabContent" style="padding-bottom: .75rem">
-                        <div class="tab-pane fade show active" id="pills-home" role="tabpanel"
-                            aria-labelledby="pills-home-tab">
-                            <div class="unread_notific">
-                                <div class="row no-gutters" style="height: 5rem">
-                                    <div class="col-2" style="text-align: center">
-                                        <img src="/static/pic/system_notific_logo.png"
-                                            style="border-radius: 100%; height: 4rem; width: auto; position: relative; top: 50%; transform: translateY(-50%)">
-                                    </div>
-                                    <div class="col-10">
-                                        <span style="position: relative; top: 1.1rem">
-                                            <span style="padding: 0">任务管理系统项目组
-                                                <span class="badge badge-pill badge-primary">New</span>
+                    <div id="VUEC">
+                        <div class="tab-content col-10 offset-1" id="pills-tabContent" style="padding-bottom: .75rem">
+                            <div class="tab-pane fade show active" id="pills-home" role="tabpanel"
+                                aria-labelledby="pills-home-tab">
+                                <div class="unread_notific">
+                                    <div v-for="json in unread" @click="show_detail(json)"
+                                        class="md-trigger row no-gutters" style="height: 5rem; cursor: pointer;"
+                                        data-modal="modal-8">
+                                        <div class="col-2" style="text-align: center" v-checkIndex="unread">
+                                            <!-- <img v-if="checkType(json)" -->
+                                            <img :src='isSys(json)? "/static/pic/组内消息logo.png":"/static/pic/系统消息logo.png"'
+                                                style="border-radius: 100%; height: 4rem; width: auto; position: relative; top: 50%; transform: translateY(-50%)">
+                                        </div>
+                                        <div class="col-10">
+                                            <span style="position: relative; top: 1.1rem">
+                                                <a style="padding: 0">[[ json.verb ]]
+                                                    <span class="badge badge-pill badge-primary">New</span>
+                                                </a>
+                                                <br>
+                                                <small>[[ json.description ]]</small>
                                             </span>
-                                            <br>
-                                            <small>社区版的pycharm支持django框架</small>
-                                        </span>
-                                        <div style="float: right; margin-right: 8.33%">
-                                            <span>2019-4-20</span>
-                                            <span>13:35</span>
+                                            <div style="float: right; margin-right: 8.33%">
+                                                <span>[[ json.timestamp ]]</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row no-gutters" style="height: 5rem">
-                                    <div class="col-2" style="text-align: center">
-                                        <img src="/static/pic/system_notific_logo.png"
-                                            style="border-radius: 100%; height: 4rem; width: auto; position: relative; top: 50%; transform: translateY(-50%)">
-                                    </div>
-                                    <div class="col-10">
-                                        <span style="position: relative; top: 1.1rem">
-                                            <span style="padding: 0">任务管理系统项目组
-                                                <span class="badge badge-pill badge-primary">New</span>
-                                            </span>
-                                            <br>
-                                            <small>社区版的pycharm支持django框架</small>
-                                        </span>
-                                        <div style="float: right; margin-right: 8.33%">
-                                            <span>2019-4-20</span>
-                                            <span>13:35</span>
+                                <hr v-if="stan" style="background-color: #007bff" />
+                                <div class="read_notific">
+                                    <ul v-for="json in read" class="md-trigger row no-gutters"
+                                        style="height: 5rem; cursor: pointer;" data-modal="modal-8"
+                                        @click="show_detail(json)">
+                                        <div class="row no-gutters" style="height: 5rem">
+                                            <div class="col-2" style="text-align: center">
+                                                <!-- <img v-if="checkType(json)" -->
+                                                <img  :src="isSys(json)? typeImg : typeImg2"
+                                                    style="border-radius: 100%; height: 4rem; width: auto; position: relative; top: 50%; transform: translateY(-50%)">
+                                            </div>
+                                            <div class="col-10">
+                                                <span style="position: relative; top: 1.1rem">
+                                                    <a style="padding: 0">[[ json.verb ]]
+                                                    </a>
+                                                    <br>
+                                                    <small>[[ json.description ]]</small>
+                                                </span>
+                                                <div style="float: right; margin-right: 8.33%">
+                                                    <span>[[ json.timestamp ]]</span>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <hr style="background-color: #007bff" />
-                            <div class="read_notific">
-                                <div class="row no-gutters" style="height: 5rem">
-                                    <div class="col-2" style="text-align: center">
-                                        <img src="/static/pic/system_notific_logo.png"
-                                            style="border-radius: 100%; height: 4rem; width: auto; position: relative; top: 50%; transform: translateY(-50%)">
-                                    </div>
-                                    <div class="col-10">
-                                        <span style="position: relative; top: 1.1rem">
-                                            <span style="padding: 0">任务管理系统项目组
-
-                                            </span>
-                                            <br>
-                                            <small>社区版的pycharm支持django框架</small>
-                                        </span>
-                                        <div style="float: right; margin-right: 8.33%">
-                                            <span>2019-4-20</span>
-                                            <span>13:35</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row no-gutters" style="height: 5rem">
-                                    <div class="col-2" style="text-align: center">
-                                        <img src="/static/pic/system_notific_logo.png"
-                                            style="border-radius: 100%; height: 4rem; width: auto; position: relative; top: 50%; transform: translateY(-50%)">
-                                    </div>
-                                    <div class="col-10">
-                                        <span style="position: relative; top: 1.1rem">
-                                            <span style="padding: 0">任务管理系统项目组
-
-                                            </span>
-                                            <br>
-                                            <small>社区版的pycharm支持django框架</small>
-                                        </span>
-                                        <div style="float: right; margin-right: 8.33%">
-                                            <span>2019-4-20</span>
-                                            <span>13:35</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row no-gutters" style="height: 5rem">
-                                    <div class="col-2" style="text-align: center">
-                                        <img src="/static/pic/system_notific_logo.png"
-                                            style="border-radius: 100%; height: 4rem; width: auto; position: relative; top: 50%; transform: translateY(-50%)">
-                                    </div>
-                                    <div class="col-10">
-                                        <span style="position: relative; top: 1.1rem">
-                                            <span style="padding: 0">任务管理系统项目组
-
-                                            </span>
-                                            <br>
-                                            <small>社区版的pycharm支持django框架</small>
-                                        </span>
-                                        <div style="float: right; margin-right: 8.33%">
-                                            <span>2019-4-20</span>
-                                            <span>13:35</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row no-gutters" style="height: 5rem">
-                                    <div class="col-2" style="text-align: center">
-                                        <img src="/static/pic/system_notific_logo.png"
-                                            style="border-radius: 100%; height: 4rem; width: auto; position: relative; top: 50%; transform: translateY(-50%)">
-                                    </div>
-                                    <div class="col-10">
-                                        <span style="position: relative; top: 1.1rem">
-                                            <span style="padding: 0">任务管理系统项目组
-
-                                            </span>
-                                            <br>
-                                            <small>社区版的pycharm支持django框架</small>
-                                        </span>
-                                        <div style="float: right; margin-right: 8.33%">
-                                            <span>2019-4-20</span>
-                                            <span>13:35</span>
-                                        </div>
-                                    </div>
+                                    </ul>
                                 </div>
                             </div>
-                        </div>
-                        <div class="tab-pane fade" id="pills-system" role="tabpanel"
-                            aria-labelledby="pills-profile-tab">
-                            <div class="unread_notific">
-                                <div class="row no-gutters" style="height: 5rem">
-                                    <div class="col-2" style="text-align: center">
-                                        <img src="/static/pic/system_notific_logo.png"
-                                            style="border-radius: 100%; height: 4rem; width: auto; position: relative; top: 50%; transform: translateY(-50%)">
-                                    </div>
-                                    <div class="col-10">
-                                        <span style="position: relative; top: 1.1rem">
-                                            <span style="padding: 0">任务管理系统项目组
-                                                <span class="badge badge-pill badge-primary">New</span>
+                            <div class="tab-pane fade" id="pills-system" role="tabpanel"
+                                aria-labelledby="pills-profile-tab">
+                                <div class="unread_notific">
+                                    <div v-for="json in sys_unread" @click="show_detail(json)"
+                                        class="md-trigger row no-gutters" style="height: 5rem; cursor: pointer;"
+                                        data-modal="modal-8">
+                                        <div class="col-2" style="text-align: center" v-checkIndex="unread">
+                                            <img  :src="typeImg"
+                                                style="border-radius: 100%; height: 4rem; width: auto; position: relative; top: 50%; transform: translateY(-50%)">
+                                        </div>
+                                        <div class="col-10">
+                                            <span style="position: relative; top: 1.1rem">
+                                                <a style="padding: 0">[[ json.verb ]]
+                                                    <span class="badge badge-pill badge-primary">New</span>
+                                                </a>
+                                                <br>
+                                                <small>[[ json.description ]]</small>
                                             </span>
-                                            <br>
-                                            <small>社区版的pycharm支持django框架</small>
-                                        </span>
-                                        <div style="float: right; margin-right: 8.33%">
-                                            <span>2019-4-20</span>
-                                            <span>13:35</span>
+                                            <div style="float: right; margin-right: 8.33%">
+                                                <span>[[ json.timestamp ]]</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row no-gutters" style="height: 5rem">
-                                    <div class="col-2" style="text-align: center">
-                                        <img src="/static/pic/system_notific_logo.png"
-                                            style="border-radius: 100%; height: 4rem; width: auto; position: relative; top: 50%; transform: translateY(-50%)">
-                                    </div>
-                                    <div class="col-10">
-                                        <span style="position: relative; top: 1.1rem">
-                                            <span style="padding: 0">任务管理系统项目组
-                                                <span class="badge badge-pill badge-primary">New</span>
-                                            </span>
-                                            <br>
-                                            <small>社区版的pycharm支持django框架</small>
-                                        </span>
-                                        <div style="float: right; margin-right: 8.33%">
-                                            <span>2019-4-20</span>
-                                            <span>13:35</span>
+                                <hr v-if="stan" style="background-color: #007bff" />
+                                <div class="read_notific">
+                                    <ul v-for="json in sys_read" class="md-trigger row no-gutters"
+                                        style="height: 5rem; cursor: pointer;" data-modal="modal-8"
+                                        @click="show_detail(json)">
+                                        <div class="row no-gutters" style="height: 5rem">
+                                            <div class="col-2" style="text-align: center">
+                                                <img  :src="typeImg"
+                                                    style="border-radius: 100%; height: 4rem; width: auto; position: relative; top: 50%; transform: translateY(-50%)">
+                                            </div>
+                                            <div class="col-10">
+                                                <span style="position: relative; top: 1.1rem">
+                                                    <a style="padding: 0">[[ json.verb ]]
+                                                    </a>
+                                                    <br>
+                                                    <small>[[ json.description ]]</small>
+                                                </span>
+                                                <div style="float: right; margin-right: 8.33%">
+                                                    <span>[[ json.timestamp ]]</span>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
+                                    </ul>
                                 </div>
                             </div>
-                            <hr style="background-color: #007bff" />
-                            <div class="read_notific">
-                                <div class="row no-gutters" style="height: 5rem">
-                                    <div class="col-2" style="text-align: center">
-                                        <img src="/static/pic/system_notific_logo.png"
-                                            style="border-radius: 100%; height: 4rem; width: auto; position: relative; top: 50%; transform: translateY(-50%)">
-                                    </div>
-                                    <div class="col-10">
-                                        <span style="position: relative; top: 1.1rem">
-                                            <span style="padding: 0">任务管理系统项目组
-
-                                            </span>
-                                            <br>
-                                            <small>社区版的pycharm支持django框架</small>
-                                        </span>
-                                        <div style="float: right; margin-right: 8.33%">
-                                            <span>2019-4-20</span>
-                                            <span>13:35</span>
+                            <div class="tab-pane fade" id="pills-group" role="tabpanel"
+                                aria-labelledby="pills-contact-tab">
+                                <div class="unread_notific">
+                                    <div class="unread_notific">
+                                        <div v-for="json in team_unread" @click="show_detail(json)"
+                                            class="md-trigger row no-gutters" style="height: 5rem; cursor: pointer;"
+                                            data-modal="modal-8">
+                                            <div class="col-2" style="text-align: center" v-checkIndex="unread">
+                                                <img :src="typeImg2"
+                                                    style="border-radius: 100%; height: 4rem; width: auto; position: relative; top: 50%; transform: translateY(-50%)">
+                                            </div>
+                                            <div class="col-10">
+                                                <span style="position: relative; top: 1.1rem">
+                                                    <a style="padding: 0">[[ json.verb ]]
+                                                        <span class="badge badge-pill badge-primary">New</span>
+                                                    </a>
+                                                    <br>
+                                                    <small>[[ json.description ]]</small>
+                                                </span>
+                                                <div style="float: right; margin-right: 8.33%">
+                                                    <span>[[ json.timestamp ]]</span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="row no-gutters" style="height: 5rem">
-                                    <div class="col-2" style="text-align: center">
-                                        <img src="/static/pic/system_notific_logo.png"
-                                            style="border-radius: 100%; height: 4rem; width: auto; position: relative; top: 50%; transform: translateY(-50%)">
-                                    </div>
-                                    <div class="col-10">
-                                        <span style="position: relative; top: 1.1rem">
-                                            <span style="padding: 0">任务管理系统项目组
-
-                                            </span>
-                                            <br>
-                                            <small>社区版的pycharm支持django框架</small>
-                                        </span>
-                                        <div style="float: right; margin-right: 8.33%">
-                                            <span>2019-4-20</span>
-                                            <span>13:35</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row no-gutters" style="height: 5rem">
-                                    <div class="col-2" style="text-align: center">
-                                        <img src="/static/pic/system_notific_logo.png"
-                                            style="border-radius: 100%; height: 4rem; width: auto; position: relative; top: 50%; transform: translateY(-50%)">
-                                    </div>
-                                    <div class="col-10">
-                                        <span style="position: relative; top: 1.1rem">
-                                            <span style="padding: 0">任务管理系统项目组
-
-                                            </span>
-                                            <br>
-                                            <small>社区版的pycharm支持django框架</small>
-                                        </span>
-                                        <div style="float: right; margin-right: 8.33%">
-                                            <span>2019-4-20</span>
-                                            <span>13:35</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row no-gutters" style="height: 5rem">
-                                    <div class="col-2" style="text-align: center">
-                                        <img src="/static/pic/system_notific_logo.png"
-                                            style="border-radius: 100%; height: 4rem; width: auto; position: relative; top: 50%; transform: translateY(-50%)">
-                                    </div>
-                                    <div class="col-10">
-                                        <span style="position: relative; top: 1.1rem">
-                                            <span style="padding: 0">任务管理系统项目组
-
-                                            </span>
-                                            <br>
-                                            <small>社区版的pycharm支持django框架</small>
-                                        </span>
-                                        <div style="float: right; margin-right: 8.33%">
-                                            <span>2019-4-20</span>
-                                            <span>13:35</span>
-                                        </div>
+                                    <hr v-if="stan" style="background-color: #007bff" />
+                                    <div class="read_notific">
+                                        <ul v-for="json in team_read" class="md-trigger row no-gutters"
+                                            style="height: 5rem; cursor: pointer;" data-modal="modal-8"
+                                            @click="show_detail(json)">
+                                            <div class="row no-gutters" style="height: 5rem">
+                                                <div class="col-2" style="text-align: center">
+                                                    <img  :src="typeImg2"
+                                                        style="border-radius: 100%; height: 4rem; width: auto; position: relative; top: 50%; transform: translateY(-50%)">
+                                                </div>
+                                                <div class="col-10">
+                                                    <span style="position: relative; top: 1.1rem">
+                                                        <a style="padding: 0">[[ json.verb ]]
+                                                        </a>
+                                                        <br>
+                                                        <small>[[ json.description ]]</small>
+                                                    </span>
+                                                    <div style="float: right; margin-right: 8.33%">
+                                                        <span>[[ json.timestamp ]]</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ul>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="tab-pane fade" id="pills-group" role="tabpanel" aria-labelledby="pills-contact-tab">
-                            <div class="unread_notific">
-                                <div class="row no-gutters" style="height: 5rem">
-                                    <div class="col-2" style="text-align: center">
-                                        <img src="/static/pic/system_notific_logo.png"
-                                            style="border-radius: 100%; height: 4rem; width: auto; position: relative; top: 50%; transform: translateY(-50%)">
-                                    </div>
-                                    <div class="col-10">
-                                        <span style="position: relative; top: 1.1rem">
-                                            <span style="padding: 0">任务管理系统项目组
-                                                <span class="badge badge-pill badge-primary">New</span>
-                                            </span>
-                                            <br>
-                                            <small>社区版的pycharm支持django框架</small>
-                                        </span>
-                                        <div style="float: right; margin-right: 8.33%">
-                                            <span>2019-4-20</span>
-                                            <span>13:35</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row no-gutters" style="height: 5rem">
-                                    <div class="col-2" style="text-align: center">
-                                        <img src="/static/pic/system_notific_logo.png"
-                                            style="border-radius: 100%; height: 4rem; width: auto; position: relative; top: 50%; transform: translateY(-50%)">
-                                    </div>
-                                    <div class="col-10">
-                                        <span style="position: relative; top: 1.1rem">
-                                            <span style="padding: 0">任务管理系统项目组
-                                                <span class="badge badge-pill badge-primary">New</span>
-                                            </span>
-                                            <br>
-                                            <small>社区版的pycharm支持django框架</small>
-                                        </span>
-                                        <div style="float: right; margin-right: 8.33%">
-                                            <span>2019-4-20</span>
-                                            <span>13:35</span>
+                        <div>
+                            <div class="md-modal md-effect-8" id="modal-8">
+                                <div class="md-content">
+                                    <div>
+                                        <div class="container-fluid">
+                                            <div class="row justify-content-between">
+                                                <div class="col-4" style="margin-top: 10px; font-size: 24px">
+                                                    消息详情
+                                                </div>
+                                                <div class="col-2" style="margin-top: 10px;">
+                                                    <button class="md-close btn-sm btn-primary"
+                                                        style="background-color: transparent; border: none; height: 100%">
+                                                        <img src="/static/pic/close.png">
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <!-- 下一站：标题 -->
+                                                    <div class="lead" v-text="verb"></div>
+                                                    <!-- 下一站：正文 -->
+                                                    <div class="text-left" v-text="description">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-12" v-text="timestamp">
+                                                    <!-- 下一站：时间 -->
+                                                    <small></small>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <hr style="background-color: #007bff" />
-                            <div class="read_notific">
-                                <div class="row no-gutters" style="height: 5rem">
-                                    <div class="col-2" style="text-align: center">
-                                        <img src="/static/pic/system_notific_logo.png"
-                                            style="border-radius: 100%; height: 4rem; width: auto; position: relative; top: 50%; transform: translateY(-50%)">
-                                    </div>
-                                    <div class="col-10">
-                                        <span style="position: relative; top: 1.1rem">
-                                            <span style="padding: 0">任务管理系统项目组
-
-                                            </span>
-                                            <br>
-                                            <small>社区版的pycharm支持django框架</small>
-                                        </span>
-                                        <div style="float: right; margin-right: 8.33%">
-                                            <span>2019-4-20</span>
-                                            <span>13:35</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row no-gutters" style="height: 5rem">
-                                    <div class="col-2" style="text-align: center">
-                                        <img src="/static/pic/system_notific_logo.png"
-                                            style="border-radius: 100%; height: 4rem; width: auto; position: relative; top: 50%; transform: translateY(-50%)">
-                                    </div>
-                                    <div class="col-10">
-                                        <span style="position: relative; top: 1.1rem">
-                                            <span style="padding: 0">任务管理系统项目组
-
-                                            </span>
-                                            <br>
-                                            <small>社区版的pycharm支持django框架</small>
-                                        </span>
-                                        <div style="float: right; margin-right: 8.33%">
-                                            <span>2019-4-20</span>
-                                            <span>13:35</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row no-gutters" style="height: 5rem">
-                                    <div class="col-2" style="text-align: center">
-                                        <img src="/static/pic/system_notific_logo.png"
-                                            style="border-radius: 100%; height: 4rem; width: auto; position: relative; top: 50%; transform: translateY(-50%)">
-                                    </div>
-                                    <div class="col-10">
-                                        <span style="position: relative; top: 1.1rem">
-                                            <span style="padding: 0">任务管理系统项目组
-
-                                            </span>
-                                            <br>
-                                            <small>社区版的pycharm支持django框架</small>
-                                        </span>
-                                        <div style="float: right; margin-right: 8.33%">
-                                            <span>2019-4-20</span>
-                                            <span>13:35</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row no-gutters" style="height: 5rem">
-                                    <div class="col-2" style="text-align: center">
-                                        <img src="/static/pic/system_notific_logo.png"
-                                            style="border-radius: 100%; height: 4rem; width: auto; position: relative; top: 50%; transform: translateY(-50%)">
-                                    </div>
-                                    <div class="col-10">
-                                        <span style="position: relative; top: 1.1rem">
-                                            <span style="padding: 0">任务管理系统项目组
-
-                                            </span>
-                                            <br>
-                                            <small>社区版的pycharm支持django框架</small>
-                                        </span>
-                                        <div style="float: right; margin-right: 8.33%">
-                                            <span>2019-4-20</span>
-                                            <span>13:35</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            <div class="md-overlay"></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
+    <div>
+    </div>
     <script src="/static/js/bootstrap/jquery.min.js"></script>
     <script src="/static/js/bootstrap/popper.min.js"></script>
     <script src="/static/js/bootstrap/bootstrap.bundle.min.js"></script>
     <script src="/static/js/vue/vue.js"></script>
     <script src="/static/js/vue/vue-resource.min.js"></script>
+
+    <script>
+        var vm = new Vue({
+            // el: '#pills-tabContent',
+            el: 'div',
+            delimiters: ['[[', ']]'],
+            data: {
+                index: 0,
+                typeImg: '/static/pic/系统消息logo.png',
+                typeImg2:'/static/pic/组内消息logo.png',
+                read: {{ readjs|safe }},
+                unread: {{ unreadjs|safe }},
+                stan: Boolean({{ readjs|safe }} && ({{ unreadjs|safe }})),
+                // sys_read: {{ sys_readjs|safe }},
+                // sys_unread: {{ sys_unreadjs|safe }},
+                // team_read: {{ team_readjs|safe }},
+                // team_unread: {{ team_unreadjs|safe }},
+                sys_read:'',
+                sys_unread:'',
+                team_read:'',
+                team_unread:'',
+                recipient: '',
+                verb: '',
+                description: '',
+                timestamp: '',
+                id: '',
+                sysInfo:'',
+                teamInfo:'',
+            },
+            methods: {
+                // checkIndex:function(jsonList){
+                //     if(this.index!==jsonList.length-1){this.index+=1;}
+                //     else{this.index=0;}
+                // },
+                isSys:function(json){
+                    console.log('进入函数了');
+                    console.log(json)
+                    if(JSON.parse(json.data).type=='sys'){
+                        return true;
+                    }
+                    return false;
+                },
+                isTeam:function(json){
+                    console.log('进入函数了');
+                    if(json.data=={'type':'team'}){
+                        return true;
+                    }
+                    return false;
+                },
+                getSysInfo:function(){
+                    this.$http.get('get_sysInfo/').then(result=>{
+                        if(result.status===200){
+                            this.sys_unread = result.body.content.unread;                            
+                            this.sys_read = result.body.content.read;                            
+                        }
+                    })
+                },
+                getTeamInfo:function(){
+                    this.$http.get('get_teamInfo').then(result=>{
+                        if(result.status===200){
+                            this.team_read = result.body.content.read;
+                            this.team_unread = result.body.content.unread;
+                        }
+                    })
+                },
+                checkType: function (json) {
+                    console.log('v-if已经执行了一次checkType...');
+                if (json.data === '{"type":"sys"}') { //如果type是sys(系统消息类型)，就让this.typeImg指向系统消息图片的路径
+                    this.typeImg = '/static/pic/系统消息logo.png';
+                    } else { this.typeImg = '/static/pic/组内消息logo.png';//如果type是team，就让this.typeImg指向队内消息图片的路径
+                    }
+                    return true; //总是return true，因为用v-if的真正目的是，利用它的执行流程动态改变typeImg，从而给不同类型的消息显示不同的logo
+                },
+                show_detail: function (json) {
+                    this.recipient = json.recipient;
+
+                    this.description = '内容：' + json.description;
+                    this.timestamp = '时间：' + json.timestamp;
+                    this.id = json.id;
+                    this.verb ='标题：' + json.verb;
+                    this.$http.get('mark_target_as_read/' + json.id).then(result => {
+                        // console.log('entered');
+                        if (result.body.status === 200) {
+                            // console.log('sucess!');
+                        }
+                    })
+                },
+                JP: function () {
+                    this.unread = (this.unread);
+                    console.log(this.unread);
+                },
+                getRead: function () {
+                    alert('getRead');
+                    this.read = this.getReadAjax();
+                },
+                getUnread: function () {
+                    alert('getUnread');
+                    this.unread = this.getUnreadAjax();
+                },
+                getReadAjax: function () {
+                    alert('in!');
+                    this.$http.post('/noti/get_read/', {}, { emulateJSON: true }).then(result => {
+                        if (result.body.status === 200) {
+                            alert('out!', result.body);
+                            return result.body;
+                        }
+                    })
+                },
+                setReaded: function (id) {
+                    this.$http.post('mark_target_as_read/' + id + '/', {}, { emulateJSON: true }).then(result => {
+                        if (result.body.status === 200) {
+                            console.log('sucess!');
+                        }
+                    })
+                },
+                getUnreadAjax: function () {
+                    alert('in');
+                    this.$http.post('/noti/get_unread/', {}, { emulateJSON: true }).then(result => {
+                        if (status === 200) {
+                            alert('out!', result.body);
+                            return result.body;
+                        }
+                    })
+                },
+            },
+        })
+
+    </script>
+
+    <script src="/static/js/animation/classie.js"></script>
+    <script src="/static/js/animation/modalEffects.js"></script>
+    <script src="/static/js/animation/highlight.min.js"></script>
 </body>
 
 </html>

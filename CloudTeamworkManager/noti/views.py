@@ -48,16 +48,28 @@ def get_target_type(request, type):
     return JsonResponse({"content": {"unread": unread, "read": read}, "status": 200}, safe=False)
 
 def notifications(request):
-    readjs = list(request.user.notifications.read().values('recipient', 'actor_content_type', 'verb', 'description', 'timestamp','id'))
+    readjs = list(request.user.notifications.read().values('recipient', 'data', 'verb', 'description', 'timestamp','id'))
     for i in readjs:
         i['timestamp'] = str(i['timestamp'])[:-7]
-    unreadjs = list(request.user.notifications.unread().values('recipient', 'actor_content_type', 'verb', 'description', 'timestamp','id'))
+    unreadjs = list(request.user.notifications.unread().values('recipient', 'data', 'verb', 'description', 'timestamp','id',))
     for i in unreadjs:
         i['timestamp'] = str(i['timestamp'])[:-7]
-    return render(request,'notification.html',{"readjs":json.dumps(readjs),"unreadjs":json.dumps(unreadjs)})
+    return render(request,'notification.html',{"readjs":json.dumps(readjs),"unreadjs":json.dumps(unreadjs),})
 
 def send_test(request):
     actor = request.user
     type = Notification.objects
     notify.send(actor, recipient=actor, verb='你好鸭，这是测试通知', description = "这是的是通知的正文部分", msg_type=1)
     return HttpResponse("ok")
+
+def get_target_type(request, type): # 1系统 2组内
+    unread = request.user.notifications.unread()
+    read = request.user.notifications.read()
+
+    unread = unread.filter(data={"type": type})
+    read = read.filter(data={"type": type})
+
+    unread = list(unread.values('id', 'data', 'verb', 'description', 'timestamp'))
+    read = list(read.values('id', 'data', 'verb', 'description', 'timestamp'))
+
+    return JsonResponse({"content": {"unread": unread, "read": read}, "status": 200}, safe=False)

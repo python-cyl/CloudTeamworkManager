@@ -177,7 +177,7 @@
                         <div class="col-3 offset-1">
                             <ul class="list-unstyled" style="font-size: 1.5rem">
                                 <li>[[phone_number]]</li>
-                                <li>[[sex]]</li>
+                                <li>[[sex | sexFormat]]</li>
                                 <li>[[birthday]]</li>
                                 <li>[[student_id]]</li>
                             </ul>
@@ -209,7 +209,7 @@
                                 </tr>
                                 <tr>
                                     <th scope="row">方向</th>
-                                    <td class="text-capitalize"><input readonly :value="major"></td>
+                                    <td class="text-capitalize"><input readonly :value="major | majorFormat"></td>
                                 </tr>
                                 <tr>
                                     <th scope="row">年级</th>
@@ -233,8 +233,9 @@
                                 <tr>
                                     <th scope="row">个人介绍</th>
                                     <td>
-                                        <textarea @change="auto_height" v-model="introduction" :readonly="edit_status? false : 'readonly'"
-                                            rows="1" id="textarea"></textarea>
+                                        <textarea @change="auto_height" v-model="introduction"
+                                            :readonly="edit_status? false : 'readonly'" rows="1"
+                                            id="textarea"></textarea>
                                     </td>
                                 </tr>
                             </tbody>
@@ -245,123 +246,6 @@
                         </button>
                     </div>
                 </div>
-
-                <!-- <div class="card" style="border-left: 0.25rem solid #448AFF;">
-                    <div class="clearfix" style="width: 100%">
-                        <div style="float: right; height: 6rem; width: 22rem">
-                            <div class="text-uppercase lead font-weight-bold"
-                                style="font-size: 4rem; color: rgba(41, 98, 255, 0.05); z-index: -1">
-                                about&nbsp;me</div>
-                            <div
-                                style="font-size: 2rem; color: #999999; position: relative; top: -65%; left: 8%; z-index: 1;">
-                                参加的任务
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row no-gutters">
-                        <div class="col-10 offset-1" style="margin-bottom: 3rem">
-                            <div class="row justify-content-between no-gutters">
-                                <div class="col-5 card task-card"
-                                    style="position: relative; height: 7rem; margin-bottom: 1.2rem;">
-                                    <div class="content"
-                                        style="position: absolute; left: 50%; top: 50%; transform: translateX(-50%) translateY(-50%); display: inline;">
-                                        <div class="lead">任务管理系统</div>
-                                        <div style="font-size: 0.7rem; display: contents">2019-1-1</div>
-                                    </div>
-                                    <a href="">
-                                        <div class="detail"
-                                            style="color: white; display: none; background-color: #448AFF; width: 20%; height: 100%; left: 100%; position: absolute">
-                                            <div
-                                                style="width: 2.3rem; margin-right: auto; margin-left: auto; position: relative; top: 50%; transform: translateY(-50%); text-align: center;">
-                                                查看详情
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-                                <div class="col-5 card task-card"
-                                    style="position: relative; height: 7rem; margin-bottom: 1.2rem;">
-                                    <div class="content"
-                                        style="position: absolute; left: 50%; top: 50%; transform: translateX(-50%) translateY(-50%); display: inline;">
-                                        <div class="lead">任务管理系统</div>
-                                        <div style="font-size: 0.7rem; display: contents">2019-1-1</div>
-                                    </div>
-                                    <a href="">
-                                        <div class="detail"
-                                            style="color: white; display: none; background-color: #448AFF; width: 20%; height: 100%; left: 100%; position: absolute">
-                                            <div
-                                                style="width: 2.3rem; margin-right: auto; margin-left: auto; position: relative; top: 50%; transform: translateY(-50%); text-align: center;">
-                                                查看详情
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-                                <div class="col-5 card task-card"
-                                    style="position: relative; height: 7rem; margin-bottom: 1.2rem;">
-                                    <div class="content"
-                                        style="position: absolute; left: 50%; top: 50%; transform: translateX(-50%) translateY(-50%); display: inline;">
-                                        <div class="lead">任务管理系统</div>
-                                        <div style="font-size: 0.7rem; display: contents">2019-1-1</div>
-                                    </div>
-                                    <a href="">
-                                        <div class="detail"
-                                            style="color: white; display: none; background-color: #448AFF; width: 20%; height: 100%; left: 100%; position: absolute">
-                                            <div
-                                                style="width: 2.3rem; margin-right: auto; margin-left: auto; position: relative; top: 50%; transform: translateY(-50%); text-align: center;">
-                                                查看详情
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-                                <div class="col-5 card task-card"
-                                    style="position: relative; height: 7rem; margin-bottom: 1.2rem;">
-                                    <div class="content"
-                                        style="position: absolute; left: 50%; top: 50%; transform: translateX(-50%) translateY(-50%); display: inline;">
-                                        <div class="lead">任务管理系统</div>
-                                        <div style="font-size: 0.7rem; display: contents">2019-1-1</div>
-                                    </div>
-                                    <a href="">
-                                        <div class="detail"
-                                            style="color: white; display: none; background-color: #448AFF; width: 20%; height: 100%; left: 100%; position: absolute">
-                                            <div
-                                                style="width: 2.3rem; margin-right: auto; margin-left: auto; position: relative; top: 50%; transform: translateY(-50%); text-align: center;">
-                                                查看详情
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-                                <div class="w-100"></div>
-                                <div class="col-12 text-right">
-                                    <a href="">查看更多</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card" style="border-left: 0.25rem solid #448AFF;">
-                    <div class="clearfix" style="width: 100%">
-                        <div style="float: right; height: 6rem; width: 22rem">
-                            <div class="text-uppercase lead font-weight-bold"
-                                style="font-size: 4rem; color: rgba(41, 98, 255, 0.05); z-index: -1">
-                                about&nbsp;me</div>
-                            <div
-                                style="font-size: 2rem; color: #999999; position: relative; top: -65%; left: 8%; z-index: 1;">
-                                参加的任务
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row no-gutters">
-                        <div class="col-10 offset-1"
-                            style="margin-bottom: 3rem; position: relative; height: 5rem; margin-bottom: 1.2rem;">
-                            <div
-                                style="position: absolute; left: 50%; top: 50%; transform: translateX(-50%) translateY(-50%); display: inline;">
-                                <div class="lead">暂无记录</div>
-                            </div>
-                        </div>
-                    </div>
-                </div> -->
             </div>
         </div>
     </div>
@@ -373,6 +257,34 @@
     <script src="/static/js/vue/vue-resource.min.js"></script>
 
     <script>
+        Vue.filter('majorFormat', function(major){
+            if (major == "P"){
+                return "Python"
+            }
+            else if(major == 'F'){
+                return "前端"
+            }
+            else if(major == 'N'){
+                return "Node.js"
+            }
+            else if(major == 'M'){
+                return "机电创新团队"
+            }
+            else if(major == 'J'){
+                return "Java"
+            }
+            else if(major == 'D'){
+                return "设计"
+            }
+        })
+        Vue.filter('sexFormat', function(sex){
+            if (sex == 'f'){
+                return "女"
+            }
+            else if(sex == 'm'){
+                return "男"
+            }
+        })
         Vue.http.headers.common['X-CSRFToken'] = $("input[name='csrfmiddlewaretoken']").val()
         var app = new Vue({
             delimiters: ['[[', ']]'],
@@ -394,33 +306,33 @@
                 student_id: "{{student_id}}",
                 name: "{{name}}"
             },
-        methods: {
-            show_right_bar: function () {
-                $('.toast').toast('show');
-                $("#mymodal").modal("toggle");
-            },
-            auto_height: function(){
-                var textarea = document.getElementById("textarea")
-                textarea.style.height = 'auto';
-                textarea.style.height = textarea.scrollHeight + 5 + "px";
-            },
-            edit_info: function() {
-                if (this.edit_status) {
-                    this.$http.post("/account/change_information/", {"email": this.email, "room": this.room, "home_address": this.home_address, "guardian_phone": this.guardian_phone, "introduction": this.introduction}, { emulateJSON: true }).then(result => {
-                        if (result.body.status == 200) {
-                            this.edit_status = false;
-                            this.edit_or_save = "编辑";
-                        }
-                        else {
-                            this.tip = result.body.tip;
-                        }
-                    })
-                    return;
+            methods: {
+                show_right_bar: function () {
+                    $('.toast').toast('show');
+                    $("#mymodal").modal("toggle");
+                },
+                auto_height: function () {
+                    var textarea = document.getElementById("textarea")
+                    textarea.style.height = 'auto';
+                    textarea.style.height = textarea.scrollHeight + 5 + "px";
+                },
+                edit_info: function () {
+                    if (this.edit_status) {
+                        this.$http.post("/account/change_information/", { "email": this.email, "room": this.room, "home_address": this.home_address, "guardian_phone": this.guardian_phone, "introduction": this.introduction }, { emulateJSON: true }).then(result => {
+                            if (result.body.status == 200) {
+                                this.edit_status = false;
+                                this.edit_or_save = "编辑";
+                            }
+                            else {
+                                this.tip = result.body.tip;
+                            }
+                        })
+                        return;
+                    }
+                    this.edit_status = true;
+                    this.edit_or_save = "保存";
                 }
-                this.edit_status = true;
-                this.edit_or_save = "保存";
             }
-        }
         })
     </script>
 </body>

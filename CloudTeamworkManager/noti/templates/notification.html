@@ -51,12 +51,12 @@
                             <li class="nav-item col-3">
                                 <a class="nav-link " id="pills-system-tab" data-toggle="pill" href="#pills-system"
                                     role="tab" aria-controls="pills-system" aria-selected="false"
-                                    style="text-align: center" @click="getNoti(1)">系统消息</a>
+                                    style="text-align: center">系统消息</a>
                             </li>
                             <li class="nav-item col-3">
                                 <a class="nav-link" id="pills-group-tab" data-toggle="pill" href="#pills-group"
                                     role="tab" aria-controls="pills-group" aria-selected="false"
-                                    style="text-align: center" @click="getNoti(2)">组内消息</a>
+                                    style="text-align: center">组内消息</a>
                             </li>
                         </ul>
                     </div>
@@ -65,9 +65,9 @@
                             <div class="tab-pane fade show active" id="pills-home" role="tabpanel"
                                 aria-labelledby="pills-home-tab">
                                 <div class="unread_notific">
-                                    <div v-for="each in unread" class="row no-gutters md-trigger"
+                                    <div v-for="(each, index) in unread" class="row no-gutters md-trigger"
                                         style="height: 5rem; cursor: pointer;; cursor: pointer;" data-modal="modal-8"
-                                        @click="show_detail(each.verb, each.description, each.timestamp, each.id)">
+                                        @click="show_detail(each.verb, each.description, each.timestamp, each.id, index)">
                                         <div class="col-2" style="text-align: center">
                                             <img :src="JSON.parse(each.data).type == 1? sys_logo : team_logo"
                                                 style="border-radius: 100%; height: 4rem; width: auto; position: relative; top: 50%; transform: translateY(-50%)">
@@ -90,7 +90,7 @@
                                 <div class="read_notific">
                                     <div v-for="each in read" class="row no-gutters md-trigger"
                                         style="height: 5rem; cursor: pointer;" data-modal="modal-8"
-                                        @click="show_detail(each.verb, each.description, each.timestamp, each.id)">
+                                        @click="show_detail(each.verb, each.description, each.timestamp, each.id, -1)">
                                         <div class="col-2" style="text-align: center">
                                             <img :src="JSON.parse(each.data).type == 1? sys_logo : team_logo"
                                                 style="border-radius: 100%; height: 4rem; width: auto; position: relative; top: 50%; transform: translateY(-50%)">
@@ -111,10 +111,10 @@
                             <div class="tab-pane fade" id="pills-system" role="tabpanel"
                                 aria-labelledby="pills-profile-tab">
                                 <div class="unread_notific">
-                                    <div v-for="each in sys_unread" class="row no-gutters md-trigger" style="height: 5rem; cursor: pointer;"
-                                        data-modal="modal-8" @click="show_detail(each.verb, each.description, each.timestamp, each.id)">
+                                    <div v-for="(each, index) in unread" v-if="JSON.parse(each.data).type == 1" class="row no-gutters md-trigger" style="height: 5rem; cursor: pointer;"
+                                        data-modal="modal-8" @click="show_detail(each.verb, each.description, each.timestamp, each.id, index)">
                                         <div class="col-2" style="text-align: center">
-                                            <img :src="JSON.parse(each.data).type == 1? sys_logo : team_logo"
+                                            <img :src="sys_logo"
                                                 style="border-radius: 100%; height: 4rem; width: auto; position: relative; top: 50%; transform: translateY(-50%)">
                                         </div>
                                         <div class="col-10">
@@ -133,10 +133,10 @@
                                 </div>
                                 <hr v-if="sys_read.length && sys_unread.length" style="background-color: #007bff">
                                 <div class="read_notific">
-                                    <div v-for="each in sys_read" class="row no-gutters md-trigger" style="height: 5rem; cursor: pointer;"
-                                        data-modal="modal-8" @click="show_detail(each.verb, each.description, each.timestamp, each.id)">
+                                    <div v-for="each in read" v-if="JSON.parse(each.data).type == 1" class="row no-gutters md-trigger" style="height: 5rem; cursor: pointer;"
+                                        data-modal="modal-8" @click="show_detail(each.verb, each.description, each.timestamp, each.id, -1)">
                                         <div class="col-2" style="text-align: center">
-                                            <img :src="JSON.parse(each.data).type == 1? sys_logo : team_logo"
+                                            <img :src="sys_logo"
                                                 style="border-radius: 100%; height: 4rem; width: auto; position: relative; top: 50%; transform: translateY(-50%)">
                                         </div>
                                         <div class="col-10">
@@ -156,10 +156,10 @@
                             <div class="tab-pane fade" id="pills-group" role="tabpanel"
                                 aria-labelledby="pills-contact-tab">
                                 <div class="unread_notific">
-                                    <div v-for="each in team_unread" class="row no-gutters md-trigger" style="height: 5rem; cursor: pointer;"
-                                        data-modal="modal-8" @click="show_detail(each.verb, each.description, each.timestamp, each.id)">
+                                    <div v-for="(each, index) in unread" v-if="JSON.parse(each.data).type == 2" class="row no-gutters md-trigger" style="height: 5rem; cursor: pointer;"
+                                        data-modal="modal-8" @click="show_detail(each.verb, each.description, each.timestamp, each.id, index)">
                                         <div class="col-2" style="text-align: center">
-                                            <img :src="JSON.parse(each.data).type == 1? sys_logo : team_logo"
+                                            <img :src="team_logo"
                                                 style="border-radius: 100%; height: 4rem; width: auto; position: relative; top: 50%; transform: translateY(-50%)">
                                         </div>
                                         <div class="col-10">
@@ -178,16 +178,15 @@
                                 </div>
                                 <hr v-if="team_read.length && team_unread.length" style="background-color: #007bff" />
                                 <div class="read_notific">
-                                    <div v-for="each in team_read" class="row no-gutters md-trigger" style="height: 5rem; cursor: pointer;"
+                                    <div v-for="each in read" v-if="JSON.parse(each.data).type == 2" class="row no-gutters md-trigger" style="height: 5rem; cursor: pointer;"
                                         data-modal="modal-8" @click="show_detail(each.verb, each.description, each.timestamp, each.id)">
                                         <div class="col-2" style="text-align: center">
-                                            <img :src="JSON.parse(each.data).type == 1? sys_logo : team_logo"
+                                            <img :src="team_logo"
                                                 style="border-radius: 100%; height: 4rem; width: auto; position: relative; top: 50%; transform: translateY(-50%)">
                                         </div>
                                         <div class="col-10">
                                             <span style="position: relative; top: 1.1rem">
-                                                <span style="padding: 0">[[each.verb]]
-                                                </span>
+                                                <span style="padding: 0">[[each.verb]]</span>
                                                 <br>
                                                 <small>[[each.description]]</small>
                                             </span>
@@ -255,45 +254,24 @@
                 detail_title: "",
                 detail_body: "",
                 detail_date: "",
-                team_unread: "",
-                team_read: "",
-                sys_unread: "",
-                sys_read: "",
+                team_unread: 0,
+                team_read: 0,
+                sys_unread: 0,
+                sys_read: 0,
                 sys_logo: "/static/pic/系统消息logo.png",
                 team_logo: "/static/pic/组内消息logo.png"
             },
             methods: {
-                show_detail: function (title, body, date, id) {
+                show_detail: function (title, body, date, id, index = -1) {
                     this.detail_title = title;
                     this.detail_body = body;
                     this.detail_date = date;
                     this.$http.get('mark_target_as_read/' + id)
                     document.getElementById("modal-8").classList.add("md-show");
-                },
-                getNoti: function (type) {
-                    if (type == 1) {
-                        if (this.sys_read || this.sys_unread){
-                            return;
-                        }
-                    }
-                    else if (type == 2){
-                        if (this.team_read || this.team_unread){
-                            return;
-                        }
-                    }
 
-                    this.$http.get('get_target_type/' + type).then(result => {
-                        if (result.status === 200) {
-                            if (type == 1) {
-                                this.sys_read = result.body.content.read;
-                                this.sys_unread = result.body.content.unread;
-                            }
-                            else {
-                                this.team_read = result.body.content.read;
-                                this.team_unread = result.body.content.unread;
-                            }
-                        }
-                    })
+                    if (index != -1){
+                        this.read.unshift(this.unread.splice(index, 1)[0]);
+                    }
                 },
             }
         })

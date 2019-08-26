@@ -10,6 +10,7 @@ from account.models import UserProfile
 import re
 import json
 import time
+import os
 
 
 class user(object):
@@ -344,6 +345,8 @@ class task(object):
 
             # 通知
 
+            os.makedirs("./file/appendixes/%s/"%(target_task.id))
+
             return JsonResponse({"task_id": target_task.id, "status": 200}, safe=False)
         return JsonResponse({"tip": "表单验证失败", "status": 400}, safe=False)
 
@@ -463,7 +466,7 @@ class task(object):
         # 合并两个字典并生成一个列表，然后序列化
         target_task["members"] = json.dumps([{**{"id": each}, **model_to_dict(UserProfile.objects.get(user_id = each), firlds=['name', 'major'])} for each in members])
         
-        return reander(request, "task_detail.html", target_task)
+        return render(request, "task_detail.html", target_task)
 
     @staticmethod
     def get_members(request):

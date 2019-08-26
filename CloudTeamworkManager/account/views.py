@@ -182,4 +182,4 @@ def task_list(request):
     for each_task in temp:
         members = json.loads(each_task["members"])
         each_task["members"] = [UserProfile.objects.get(user_id = each).name for each in members]
-    return render(request, "task_list.html", {"content": temp})
+    return render(request, "task_list.html", {"content": temp, "name": user.name})

@@ -106,20 +106,24 @@
                 <div class="card" style="border: 0rem">
                     <div class="row no-gutters">
                         <div class="avatar col-2 offset-1">
-                            <div
-                                style="cursor: pointer; text-align: center; display: none; width: 100%; height: 6rem; background-color: rgba(0, 0, 0, 0.3)">
-                                <div style="color: #ffffff; line-height: 6rem;">点击打开个人主页</div>
-                            </div>
-                            <img src="/static/avatar/avatar.jpeg" style="width: 100%; height: 6rem">
+                            <a href="/account/space/">
+                                <div
+                                    style="cursor: pointer; text-align: center; display: none; width: 100%; height: 6rem; background-color: rgba(0, 0, 0, 0.3)">
+                                    <div style="color: #ffffff; line-height: 6rem;">点击打开个人主页</div>
+                                </div>
+                                <img src="/static/avatar/{{ user.id }}.jpg" style="width: 100%; height: 6rem">
+                            </a>
                         </div>
                         <div class="col-3 offset-1" style="color: #666666; font-size: 1.3rem; line-height: 6rem">
-                            宋叮咛
+                            {{ name }}
                         </div>
+                        {% if perms.task.create_tasks %}
                         <div class="add col-3 offset-1" style="text-align: center; cursor: pointer;">
                             <div href=""
                                 style="display: none; line-height: 6rem; text-decoration: none; color: #ffffff">发布新任务
                             </div>
                         </div>
+                        {% endif %}
                     </div>
                 </div>
 
@@ -167,7 +171,8 @@
                             <div class="tab-pane fade show active col-12" id="pills-all" role="tabpanel"
                                 aria-labelledby="pills-all-tab">
                                 <div v-for="each in task_list" class="task_card offset-1 col-10"
-                                    style="height: 6rem; margin-bottom: 1.5rem; padding: 1.2rem; cursor: pointer;"  @click="show_detail(each.id)">
+                                    style="height: 6rem; margin-bottom: 1.5rem; padding: 1.2rem; cursor: pointer;"
+                                    @click="show_detail(each.id)">
                                     <div style="display: inline-block;">
                                         <div class="lead" style="color: #333333">[[each.task_name]]</div>
                                         <small style="color: #999999">参与成员:
@@ -238,31 +243,31 @@
             el: '#mainFunc',
             data: {
                 task_list: {{ content| safe }},
-                ongoing: [],
-                pause: [],
+        ongoing: [],
+            pause: [],
                 finished: [],
             },
-            mounted() {
-                this.classify()
-            },
-            methods: {
-                classify: function () {
-                    for (each of this.task_list) {
-                        if (each.status == 0) {
-                            this.pause.push(each)
-                        }
-                        else if (each.status == 1) {
-                            this.ongoing.push(each)
-                        }
-                        else if (each.status == -1) {
-                            this.finished.push(each)
-                        }
+        mounted() {
+            this.classify()
+        },
+        methods: {
+            classify: function () {
+                for (each of this.task_list) {
+                    if (each.task_status == 0) {
+                        this.pause.push(each)
                     }
-                },
-                show_detail: function(task_id){
-                    window.location.href = "/task/task_page/"+task_id+"/";
+                    else if (each.task_status == 1) {
+                        this.ongoing.push(each)
+                    }
+                    else if (each.task_status == -1) {
+                        this.finished.push(each)
+                    }
                 }
+            },
+            show_detail: function(task_id) {
+                window.location.href = "/task/task_page/" + task_id + "/";
             }
+        }
         })
     </script>
 </body>

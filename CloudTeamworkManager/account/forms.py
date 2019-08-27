@@ -29,14 +29,12 @@ class RegisterForm(forms.Form):
 
     def clean_phone_number(self):
         phone_number = self.cleaned_data["phone_number"]
-
         return my_clean_phone_number(phone_number)
 
     def clean_msgcode(self):
         msgcode = self.cleaned_data["msgcode"]
 
         if re.match("\d{4}", msgcode):
-
             if verifycode(self.cleaned_data.get("phone_number"), msgcode):
                 return msgcode
             raise ValidationError("验证码校验失败")
@@ -68,7 +66,6 @@ class SetPasswordForm(forms.Form):
 
     def clean_picode(self):
         picode = self.cleaned_data["picode"]
-
         return my_clean_picode(picode, self.answer)
 
     def clean_old_password(self):
@@ -125,7 +122,7 @@ class extend_info(ModelForm):
     def clean_room(self):
         room = self.cleaned_data.get("room")
 
-        if re.match("\d{4,8}", room):
+        if re.match("\d{1,2}#\d{3}", room):
             return room
         raise ValidationError("宿舍号不正确")
 
@@ -144,11 +141,11 @@ class extend_info(ModelForm):
         raise ValidationError("学号不正确")
 
     def clean_grade(self):
-        grade = self.cleaned_data.get("grade")
+        grade = self.cleaned_data.get("student_id")[:4]
 
         if re.match("\d{4}", grade):
             return grade
-        raise ValidationError("年级不正确")
+        raise ValidationError("学号不正确")
 
 class change_info(extend_info):
     class Meta:

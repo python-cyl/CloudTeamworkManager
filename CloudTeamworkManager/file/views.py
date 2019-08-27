@@ -33,8 +33,12 @@ def avatar(request):
         return HttpResponse(status="403")
 
     if request.method == "GET":
-        ava = open(os.path.join("static/avatar/"+str(user_id)+'.jpg'), 'rb')
-        return HttpResponse(ava.read(), "image/jpg")
+        if os.path.exists("static/avatar/"+str(request.user.id)+'.jpg'):
+            ava = open(os.path.join("static/avatar/"+str(request.user.id)+'.jpg'), 'rb')
+            return HttpResponse(ava.read(), "image/jpg")
+        else:
+            ava = open(os.path.join("static/avatar/default_avatar.png"), 'rb')
+            return HttpResponse(ava.read(), "image/png")
 
     if request.method == "POST":
         user_id = request.user.id

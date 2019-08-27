@@ -109,7 +109,7 @@
                                 <a style="color: #F44336; font-size: 18px" href="">退出登录</a>
                             </div>
                             <div class="float-right" style="width: 30%">
-                                <img class="rounded-circle" src="/static/pic/avatar.jpeg" width="100%">
+                                <img class="rounded-circle" src="/file/avatar/" width="100%">
                             </div>
                         </div>
                         <div style="width: 100%; margin-top: 5%">
@@ -171,8 +171,12 @@
 
                     <div class="row no-gutters">
                         <div class="col-2 offset-1" style="text-align: center">
-                            <img :src="avatarsrc" class="rounded-circle" style="width: 7.5rem">
-                            <div style="font-size: 1.8rem; margin: 1.5rem 0rem 3.0rem 0rem">[[name]]</div>
+                            <label for="file" style="cursor: pointer">
+                                <img :src="avatarsrc" class="rounded-circle" style="width: 7.5rem; height: 7.5rem">
+                            </label>
+                            <input type="file" name="avatar" accept=".jpg" @change="upload_avatar" id="file"
+                                style="height: 0px; opacity: 0;">
+                            <div style="font-size: 1.8rem; margin: 0rem 0rem 3.0rem 0rem">[[name]]</div>
                         </div>
                         <div class="col-3 offset-1">
                             <ul class="list-unstyled" style="font-size: 1.5rem">
@@ -257,31 +261,31 @@
     <script src="/static/js/vue/vue-resource.min.js"></script>
 
     <script>
-        Vue.filter('majorFormat', function(major){
-            if (major == "P"){
+        Vue.filter('majorFormat', function (major) {
+            if (major == "P") {
                 return "Python"
             }
-            else if(major == 'F'){
+            else if (major == 'F') {
                 return "前端"
             }
-            else if(major == 'N'){
+            else if (major == 'N') {
                 return "Node.js"
             }
-            else if(major == 'M'){
+            else if (major == 'M') {
                 return "机电创新团队"
             }
-            else if(major == 'J'){
+            else if (major == 'J') {
                 return "Java"
             }
-            else if(major == 'D'){
+            else if (major == 'D') {
                 return "设计"
             }
         })
-        Vue.filter('sexFormat', function(sex){
-            if (sex == 'f'){
+        Vue.filter('sexFormat', function (sex) {
+            if (sex == 'f') {
                 return "女"
             }
-            else if(sex == 'm'){
+            else if (sex == 'm') {
                 return "男"
             }
         })
@@ -299,12 +303,13 @@
                 introduction: "{{ introduction }}",
                 major: "{{ major }}",
                 grade: "{{ grade }}",
-                avatarsrc: "/static/avatar/{{ user_id }}.jpg",
+                avatarsrc: "/file/avatar/",
                 phone_number: "{{phone_number}}",
                 sex: "{{sex}}",
                 birthday: "{{birthday}}",
                 student_id: "{{student_id}}",
-                name: "{{name}}"
+                name: "{{name}}",
+                avatar: "",
             },
             methods: {
                 show_right_bar: function () {
@@ -331,6 +336,23 @@
                     }
                     this.edit_status = true;
                     this.edit_or_save = "保存";
+                },
+                upload_avatar: function () {
+                    this.avatar = event.target.files[0];
+                    this.avatarsrc = window.URL.createObjectURL(this.avatar);
+                    event.target = null;
+
+                    var formData = new FormData();
+                    formData.append('avatar', this.avatar);
+                    this.$http.post('/file/avatar/', formData, { headers: { 'Content-Type': 'multipart/form-data' } }).then(result => {
+                        if (result.body.status == 200) {
+                            ;
+                        }
+                        else {
+                            console.log(result.body.tip)
+                            return;
+                        }
+                    })
                 }
             }
         })

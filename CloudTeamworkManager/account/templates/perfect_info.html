@@ -366,8 +366,7 @@
                                 <input v-model="student_id" type="text" class="form-control"
                                     placeholder="示例: 2015006797">
                                 <label style="font-size: 14px; margin: 0.5rem 0rem 0.5rem 0rem">请输入你的云ID</label>
-                                <input v-model="cloud_id" type="text" class="form-control"
-                                    placeholder="示例: 1234567">
+                                <input v-model="cloud_id" type="text" class="form-control" placeholder="示例: 1234567">
                                 <label style="font-size: 14px; margin: 0.5rem 0rem 0.5rem 0rem">请选择你的方向</label>
                                 <select v-model="major" class="form-control">
                                     <option selected value="">请选择</option>
@@ -405,12 +404,13 @@
                         <transition :name="extend_info_avatar_name">
                             <form v-if="extend_info_avatar" class="clearfix">
                                 <div style="text-align: center; height: 187.16px">
-                                    <img :src="src" style="width: 40%" class="rounded-circle" id="avatar">
+                                    <img :src="src" style="width: 40%" :style="{height: avatar_height}"
+                                        class="rounded-circle" id="avatar">
                                 </div>
                                 <label for="file" class="btn btn-primary col-6 offset-3"
                                     style="cursor: pointer">请选择你的头像</label>
                                 <input type="file" name="avatar" accept=".jpg" v-on:change="show_avatar($event)"
-                                    id="file" style="height: 0px; margin-left: -1000px">
+                                    id="file" style="height: 0px; opacity: 0;">
                             </form>
                         </transition>
                         <div class="tip" style="margin-top: 0.5rem; font-size: 14px; color: #E86263; height: 21px">
@@ -460,6 +460,7 @@
                     guardian_phone: "",
                     introduction: "",
                     avatar: "",
+                    avatar_height: "auto",
                     src: "/static/pic/组 18.png",
                     tip: "",
                 },
@@ -468,12 +469,13 @@
                         this.avatar = event.target.files[0];
                         this.src = window.URL.createObjectURL(this.avatar);
                         event.target = null;
-                        document.getElementById("avatar").style.height = document.getElementById("avatar").scrollWidth + 'px';
+                        this.avatar_height = document.getElementById("avatar").scrollWidth + 'px';
                     },
                     submit: function () {
-                        var formData = new FormData();
-                        formData.append('avatar', this.avatar);
-                        this.$http.post('/file/avatar/', formData, { headers: { 'Content-Type': 'multipart/form-data' } }).then(result => {
+                        if (this.avater){
+                            var formData = new FormData();
+                            formData.append('avatar', this.avatar);
+                            this.$http.post('/file/avatar/', formData, { headers: { 'Content-Type': 'multipart/form-data' } }).then(result => {
                             if (result.body.status == 200) {
                                 ;
                             }
@@ -482,6 +484,7 @@
                                 return;
                             }
                         })
+                        }
                         this.$http.post('/account/perfect_information/', { "name": this.name, "birthday": this.birthday, "sex": this.sex, "student_id": this.student_id, "grade": this.student_id.substr(0, 4), "cloud_id": this.cloud_id, "major": this.major, "email": this.email, "room": this.room, "home_address": this.home_address, "guardian_phone": this.guardian_phone, "introduction": this.introduction }, { emulateJSON: true }).then(result => {
                             if (result.body.status == 302) {
                                 window.location.href = result.body.url;
@@ -521,16 +524,20 @@
                     },
                     next: function () {
                         if (this.basic_info_part_one) {
-                            this.basic_info_part_one_name = "basic_info_part_one_next";
-                            this.basic_info_part_two_name = "basic_info_part_two_next";
-                            this.basic_info_part_one = false;
-                            this.basic_info_part_two = true;
+                            if (this.check_basic_info_part_one()) {
+                                this.basic_info_part_one_name = "basic_info_part_one_next";
+                                this.basic_info_part_two_name = "basic_info_part_two_next";
+                                this.basic_info_part_one = false;
+                                this.basic_info_part_two = true;
+                            }
                         }
                         else if (this.basic_info_part_two) {
-                            this.basic_info_part_two_name = "basic_info_part_two_next";
-                            this.extend_info_part_one_name = "extend_info_part_one_next";
-                            this.basic_info_part_two = false;
-                            this.extend_info_part_one = true;
+                            if (this.check_basic_info_part_two()) {
+                                this.basic_info_part_two_name = "basic_info_part_two_next";
+                                this.extend_info_part_one_name = "extend_info_part_one_next";
+                                this.basic_info_part_two = false;
+                                this.extend_info_part_one = true;
+                            }
                         }
                         else if (this.extend_info_part_one) {
                             this.extend_info_part_one_name = "extend_info_part_one_next";
@@ -539,15 +546,59 @@
                             this.extend_info_part_two = true;
                         }
                         else if (this.extend_info_part_two) {
-                            this.extend_info_avatar_name = "extend_info_avatar_next";
-                            this.extend_info_part_two_name = "extend_info_part_two_next";
-                            this.extend_info_part_two = false;
-                            this.extend_info_avatar = true;
-                            this.right_button = "提交";
+                            if (this.check_extend_info_part_two()) {
+                                this.extend_info_avatar_name = "extend_info_avatar_next";
+                                this.extend_info_part_two_name = "extend_info_part_two_next";
+                                this.extend_info_part_two = false;
+                                this.extend_info_avatar = true;
+                                this.right_button = "提交";
+                            }
                         }
                         else {
                             this.submit();
                         }
+                    },
+
+                    // 表单验证部分
+                    check_basic_info_part_one: function () {
+                        if (this.name.length < 3 || this.name.length > 5) {
+                            this.tip = "姓名不正确"
+                            return false;
+                        }
+                        if (!this.birthday) {
+                            this.tip = "请选择生日"
+                            return false;
+                        }
+                        if (!this.sex) {
+                            this.tip = "请选择性别"
+                            return false;
+                        }
+                        this.tip = ""
+                        return true;
+                    },
+                    check_basic_info_part_two: function () {
+                        if (this.student_id.length != 10) {
+                            this.tip = "学号不正确"
+                            return false;
+                        }
+                        if (!this.cloud_id) {
+                            this.tip = "请输入云顶号"
+                            return false;
+                        }
+                        if (!this.major) {
+                            this.tip = "请选择方向"
+                            return false;
+                        }
+                        this.tip = ""
+                        return true;
+                    },
+                    check_extend_info_part_two: function () {
+                        if (this.guardian_phone.length != 11 && this.guardian_phone.length != 0) {
+                            this.tip = "监护人电话不正确"
+                            return false;
+                        }
+                        this.tip = ""
+                        return true
                     }
                 }
             });

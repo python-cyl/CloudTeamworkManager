@@ -104,16 +104,18 @@ class member(user):
         else:
             target_group =  Group.objects.get(name = str(self.task.id))
 
-        self.task.members = json.dumps(json.loads(self.task.members).remove(self.user_buildin.id))
-        self.task.save()
+        #self.task.members = json.dumps(json.loads(self.task.members).remove(self.user_buildin.id))
+        #self.task.save()
 
-        self.user_profile.involved_projects = json.dumps(json.loads(self.user_profile.involved_projects).remove(self.task.id))
-        self.user_profile.involved_projects_num -= 1;
+        temp = json.loads(self.user_profile.involved_projects)
+        temp.remove(self.task.id)
+        self.user_profile.involved_projects = json.dumps(temp)
+        self.user_profile.involved_projects_number -= 1;
         self.user_profile.save()
 
         self.user_buildin.groups.remove(target_group)
-        remove_perm('publisher.edit_personal_progress', self.user, personal_progress.objects.get(id = "%s&%s"%(self.task.id, self.user_buildin.id)))
-        remove_perm('publisher.edit_personal_shedule', self.user, personal_shedule.objects.get(id = "%s&%s"%(self.task.id, self.user_buildin.id)))
+        remove_perm('publisher.edit_personal_progress', self.user_buildin, personal_progress.objects.get(id = "%s&%s"%(self.task.id, self.user_buildin.id)))
+        remove_perm('publisher.edit_personal_shedule', self.user_buildin, personal_shedule.objects.get(id = "%s&%s"%(self.task.id, self.user_buildin.id)))
 
     def view_personal_comments(self, request):
         if request.user.has_perm("task.view_personal_comments", self.task):
@@ -135,14 +137,14 @@ class member(user):
             return JsonResponse({"tip": "操作成功", "status": 200}, safe=False)
         return HttpResponse(status=403)
 
-    def view_personal_shedule(self, request):
+    def view_personal_schedule(self, request):
         shedule = personal_shedule.objects.get(id = "%s&%s"%(self.task.id, self.user_buildin.id))
 
         if request.user.has_perm("publisher.view_personal_shedule", shedule) or request.user.has_perm("task.view_personal_shedule", self.task):
             return HttpResponse(shedule.detail)
         return HttpResponse(status=403)
 
-    def edit_personal_shedule(self, request):
+    def edit_personal_schedule(self, request):
         shedule = personal_shedule.objects.get(id = "%s&%s"%(self.task.id, self.user_buildin.id))
 
         if request.user.has_perm("publisher.edit_personal_shedule", shedule):
@@ -177,14 +179,14 @@ class member(user):
 
     def cancel_leader(self, target_group):
         if self.is_leader:
-            self.task.leaders = json.dumps(json.loads(self.task.leaders).remove(self.user_buildin.id))
-            self.task.save()
+            #self.task.leaders = json.dumps(json.loads(self.task.leaders).remove(self.user_buildin.id))
+            #self.task.save()
 
-            temp = json.loads(self.user_buildin.managed_projects)
+            temp = json.loads(self.user_profile.managed_projects)
             temp.remove(self.task.id)
-            self.user_buildin.managed_projects = json.dumps(temp)
-            self.user_buildin.managed_projects_number -= 1
-            self.user_buildin.save()
+            self.user_profile.managed_projects = json.dumps(temp)
+            self.user_profile.managed_projects_number -= 1
+            self.user_profile.save()
 
             self.user_buildin.groups.remove(target_group)
         else:
@@ -192,7 +194,7 @@ class member(user):
             # 这里需要抛出异常，用户不是该项目组的组长
 
     def set_leader(self, target_group):
-        if not self.is_leader:
+        if self.is_leader:
             temp = json.loads(self.task.leaders)
             if not self.user_buildin.id in temp:
                 temp.append(self.user_buildin.id)
@@ -266,12 +268,12 @@ class task(object):
             return JsonResponse({"tip": "操作成功", "status": 200}, safe=False)
         return HttpResponse(status = 403)
 
-    def view_task_shedule(self, request):
+    def view_task_schedule(self, request):
         if request.user.has_perm("task.glance_over_task_details", self.task):
             return HttpResponse(self.task.task_schedule)
         return HttpResponse(status = 403)
 
-    def edit_task_shedule(self, request):
+    def edit_task_schedule(self, request):
         if request.user.has_perm("task.edit_task_shedule", self.task):
             if request.POST.get("action") == "upgrade":
                 self.task.task_schedule = _publisher(self.task.task_schedule).upgrade(request.POST.get("content"), editor_id = request.user.id)
@@ -351,7 +353,7 @@ class task(object):
         return JsonResponse({"tip": "表单验证失败", "status": 400}, safe=False)
 
     def edit_page(self, request):
-        return render(request, "create_task.html", {"task_name": self.task.task_name, "deadline": self.task.deadline, "task_status": self.task.task_status, "members": self.task.members, "leaders": self.task.leaders, "task_description": self.task.task_description})
+        return render(request, "edit_task.html", {"task_id": self.task.id, "task_name": self.task.task_name, "deadline": self.task.deadline, "task_status": self.task.task_status, "members": self.task.members, "leaders": self.task.leaders, "task_description": self.task.task_description})
 
     def edit_task(self, request):
         form = forms_task(request.POST, instance = self.task)
@@ -377,7 +379,6 @@ class task(object):
 
             # 更新参与过该任务的成员列表
             form.instance.all_members = json.dumps(list(set(json.loads(form.instance.all_members) + list(current_members))))
-            form.save()
 
             # 撤销组长
             for each in removed_leaders:
@@ -433,6 +434,7 @@ class task(object):
                 target_member.set_leader(target_group_leader)
 
                 # 通知
+            form.save()
 
             return JsonResponse({"url": "/task/%d"%self.task.id, "status": 302}, safe=False)
         return JsonResponse({"tip": "表单验证失败", "status": 400}, safe=False)
@@ -461,11 +463,13 @@ class task(object):
         return JsonResponse({"tip": "操作成功", "status": 200}, safe=False)
 
     def task_page(self, request):
-        target_task = model_to_dict(self.task, fields=["id", "task_name", "publish_date", "deadline", "task_status", "members", "creator", "leaders", "task_description", "task_progress", "task_comment", "appendixes"])
+        target_task = model_to_dict(self.task, fields=["id", "task_name", "publish_date", "deadline", "task_status", "members", "creator", "leaders", "task_description", "task_progress", "task_schedule", "task_comment", "appendixes"])
         members = json.loads(target_task["members"])
+        leaders = json.loads(target_task["leaders"])
         # 合并两个字典并生成一个列表，然后序列化
-        target_task["members"] = json.dumps([{**{"id": each}, **model_to_dict(UserProfile.objects.get(user_id = each), firlds=['name', 'major'])} for each in members])
-        
+        target_task["members"] = json.dumps([{**{"id": each}, **model_to_dict(UserProfile.objects.get(user_id = each), fields=['name', 'major'])} for each in members])
+        target_task["leaders"] = json.dumps([{**{"id": each}, **model_to_dict(UserProfile.objects.get(user_id = each), fields=['name', 'major'])} for each in leaders])
+
         return render(request, "task_detail.html", target_task)
 
     @staticmethod

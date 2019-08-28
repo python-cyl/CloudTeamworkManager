@@ -123,17 +123,17 @@ def delete(request, task_id, appendix_id):
 
 
 def overlay(request, task_id, file_id):
-    file = _appendix.objects.get(id=file_id)
+    target_appendix = _appendix.objects.get(id=file_id)
     target_task = task.objects.get(id=task_id)
     if request.user.has_perm("task.edit_appendix", target_task) or request.user.has_perm("file.edit_appendix", target_appendix):
-        HDD_file = open("./file/appendixes/%s/%s" % (task_id, file.filename), 'wb')
+        HDD_file = open("./file/appendixes/%s/%s" % (task_id, target_appendix.filename), 'wb')
         _file = request.FILES.get("appendix")
         for chunk in _file.chunks():
             HDD_file.write(chunk)
         HDD_file.close()
 
-        file_size = os.path.getsize("./file/appendixes/%s/%s" % (task_id, file.name))
-        file.filesize = file_size
-        file.save()
+        file_size = os.path.getsize("./file/appendixes/%s/%s" % (task_id, target_appendix.name))
+        target_appendix.filesize = file_size
+        target_appendix.save()
         return JsonResponse({"tip": "操作成功", "status": 200}, safe=False)
     return HttpResponse(status=403)

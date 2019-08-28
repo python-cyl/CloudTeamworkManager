@@ -1,4 +1,4 @@
-from CloudTeamworkManager.total_class import user, member, _publisher, task
+from CloudTeamworkManager.total_class import member, _publisher, task
 from django.shortcuts import render
 
 

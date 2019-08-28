@@ -167,10 +167,11 @@
                                     Java:
                                 </div>
                                 <div class="row justify-content-start col-12">
-                                    <input class="btn btn-outline-primary" type="button"
-                                           style="margin-right: 1.5rem; width: 5rem"
-                                           v-for="(item,i) in selected_list_ja" :key="item.user_id" :value="item.name"
-                                           @click="set_leader($event,item)">
+                                    <input v-for="(item, i) in selected_list_ja" class="btn btn-outline-primary"
+                                           :class="{active: (leaders_accept.indexOf(Number(item.user_id)) != -1)} "
+                                           type="button"
+                                           style="margin-right: 1.5rem; width: 5rem" :key="item.user_id"
+                                           :value="item.name" @click="set_leader($event,item)">
                                 </div>
                             </div>
                             <div>
@@ -178,10 +179,11 @@
                                     Node.js:
                                 </div>
                                 <div class="row justify-content-start col-12">
-                                    <input class="btn btn-outline-primary" type="button"
-                                           style="margin-right: 1.5rem; width: 5rem"
-                                           v-for="(item,i) in selected_list_no" :key="item.user_id" :value="item.name"
-                                           @click="set_leader($event,item)">
+                                    <input v-for="(item, i) in selected_list_no" class="btn btn-outline-primary"
+                                           :class="{active: (leaders_accept.indexOf(Number(item.user_id)) != -1)} "
+                                           type="button"
+                                           style="margin-right: 1.5rem; width: 5rem" :key="item.user_id"
+                                           :value="item.name" @click="set_leader($event,item)">
                                 </div>
                             </div>
                             <div>
@@ -189,10 +191,11 @@
                                     前端:
                                 </div>
                                 <div class="row justify-content-start col-12">
-                                    <input class="btn btn-outline-primary" type="button"
-                                           style="margin-right: 1.5rem; width: 5rem"
-                                           v-for="(item,i) in selected_list_fr" :key="item.user_id" :value="item.name"
-                                           @click="set_leader($event,item)">
+                                    <input v-for="(item, i) in selected_list_fr" class="btn btn-outline-primary"
+                                           :class="{active: (leaders_accept.indexOf(Number(item.user_id)) != -1)} "
+                                           type="button"
+                                           style="margin-right: 1.5rem; width: 5rem" :key="item.user_id"
+                                           :value="item.name" @click="set_leader($event,item)">
                                 </div>
                             </div>
                             <div>
@@ -200,10 +203,11 @@
                                     设计
                                 </div>
                                 <div class="row justify-content-start col-12">
-                                    <input class="btn btn-outline-primary" type="button"
-                                           style="margin-right: 1.5rem; width: 5rem"
-                                           v-for="(item,i) in selected_list_de" :key="item.user_id" :value="item.name"
-                                           @click="set_leader($event,item)">
+                                    <input v-for="(item, i) in selected_list_de" class="btn btn-outline-primary"
+                                           :class="{active: (leaders_accept.indexOf(Number(item.user_id)) != -1)} "
+                                           type="button"
+                                           style="margin-right: 1.5rem; width: 5rem" :key="item.user_id"
+                                           :value="item.name" @click="set_leader($event,item)">
                                 </div>
                             </div>
                         </div>

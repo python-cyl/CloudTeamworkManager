@@ -481,6 +481,7 @@ class task(object):
 
     def task_page(self, request):
         target_task = model_to_dict(self.task, fields=["id", "task_name", "publish_date", "deadline", "task_status", "members", "creator", "leaders", "task_description", "task_progress", "task_schedule", "task_comment", "appendixes"])
+        target_task["publish_date"] = self.task.publish_date
         members = json.loads(target_task["members"])
         leaders = json.loads(target_task["leaders"])
 

@@ -98,6 +98,14 @@
                             <table class="table col-10 offset-1 " style="margin-bottom: 3rem;">
                                 <tbody>
                                     <tr>
+                                        <th scope="row" style="width: 20%">创建时间</th>
+                                        <td>
+                                            <div style="max-height: 200px; overflow-y: auto">
+                                                [[publish_date]]
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
                                         <th scope="row" style="width: 20%">任务详情</th>
                                         <td>
                                             <div style="max-height: 200px; overflow-y: auto">
@@ -116,21 +124,21 @@
                                         <th scope="row" style="width: 20%">任务评价</th>
                                         <td>
                                             <div style="max-height: 200px; overflow-y: auto">
-                                                <div v-for="(item,i) in personalProcess" :key="item.id">
+                                                <div v-for="(item,i) in task_comment" :key="item.id">
                                                     <div style="margin-bottom: 0.5rem">[[item.publish_date]]</div>
                                                     <textarea rows="1" placeholder="请输入内容" :key="item.publish_date"
                                                         :readonly="i == 0? (isActive? false : 'readonly' ) : true"
                                                         style="padding: 10px 0px 8px 0px; color: #747474; resize: none"
-                                                        :id="i == 0? (isActive? 'target' : 'abandon' ) : 'abandon'">[[item.content]]</textarea>
+                                                        :id="i == 0? (isActive? 'target_task_comment' : 'abandon' ) : 'abandon'">[[item.content]]</textarea>
                                                     <hr>
                                                 </div>
                                             </div>
                                             <input v-if="add_button" type="button" :value="add"
-                                                class="btn btn btn-outline-primary" style="margin-top: 5pxs"
-                                                @click="add_input1()">
+                                                class="btn btn-outline-primary" style="margin-top: 5pxs"
+                                                @click="add_task_comment()">
                                             <input v-if="edit_button" type="button" :value="edit"
-                                                class="btn btn btn-outline-primary" style="float:right"
-                                                v-if="i == personalProcess.length-1" @click="edit_progress()">
+                                                class="btn btn-outline-primary" style="float:right"
+                                                v-if="i == personalProcess.length-1" @click="edit_task_comment()">
                                         </td>
                                     </tr>
                                 </tbody>
@@ -173,20 +181,42 @@
                                         <th style="white-space:nowrap;overflow: hidden; width:1rem">任务规划</th>
                                         <td>
                                             <div style="max-height: 200px; overflow-y: auto">
-                                                [[task_schedule]]
+                                                <div v-for="(item,i) in task_schedule" :key="item.id">
+                                                    <div style="margin-bottom: 0.5rem">[[item.publish_date]]</div>
+                                                    <textarea rows="1" placeholder="请输入内容" :key="item.publish_date"
+                                                        :readonly="i == 0? (isActive? false : 'readonly' ) : true"
+                                                        style="padding: 10px 0px 8px 0px; color: #747474; resize: none"
+                                                        :id="i == 0? (isActive? 'target_task_schedule' : 'abandon' ) : 'abandon'">[[item.content]]</textarea>
+                                                    <hr>
+                                                </div>
                                             </div>
+                                            <input v-if="add_button" type="button" :value="add"
+                                                class="btn btn-outline-primary" style="margin-top: 5pxs"
+                                                @click="add_task_schedule()">
+                                            <input v-if="edit_button" type="button" :value="edit"
+                                                class="btn btn-outline-primary" style="float:right"
+                                                v-if="i == personalProcess.length-1" @click="edit_task_schedule()">
                                         </td>
                                     </tr>
                                     <tr>
                                         <th style="white-space:nowrap;overflow: hidden;width:1rem">项目进度</th>
                                         <td>
                                             <div style="max-height: 200px; overflow-y: auto">
-                                                <div v-for="item in task_progress">
-                                                    <div>[[item.publish_date]]</div>
-                                                    <p>[[item.content]]</p>
+                                                <div v-for="(item,i) in task_progress" :key="item.id">
+                                                    <div style="margin-bottom: 0.5rem">[[item.publish_date]]</div>
+                                                    <textarea rows="1" placeholder="请输入内容" :key="item.publish_date"
+                                                        :readonly="i == 0? (isActive? false : 'readonly' ) : true"
+                                                        style="padding: 10px 0px 8px 0px; color: #747474; resize: none"
+                                                        :id="i == 0? (isActive? 'target_task_progress' : 'abandon' ) : 'abandon'">[[item.content]]</textarea>
                                                     <hr>
                                                 </div>
                                             </div>
+                                            <input v-if="add_button" type="button" :value="add"
+                                                class="btn btn-outline-primary" style="margin-top: 5pxs"
+                                                @click="add_task_progress()">
+                                            <input v-if="edit_button" type="button" :value="edit"
+                                                class="btn btn-outline-primary" style="float:right"
+                                                v-if="i == personalProcess.length-1" @click="edit_task_progress()">
                                         </td>
                                     </tr>
                                 </tbody>
@@ -449,10 +479,10 @@
                                         </div>
                                     </div>
                                     <input v-if="add_button" type="button" :value="add"
-                                        class="btn btn btn-outline-primary" style="margin-top: 5pxs"
+                                        class="btn btn-outline-primary" style="margin-top: 5pxs"
                                         @click="add_progress()">
                                     <input v-if="edit_button" type="button" :value="edit"
-                                        class="btn btn btn-outline-primary" style="float:right"
+                                        class="btn btn-outline-primary" style="float:right"
                                         v-if="i == personalProcess.length-1" @click="edit_progress()">
                                 </div>
                                 <div class="tab-pane fade" id="v-pills-schedule" role="tabpanel"
@@ -468,10 +498,10 @@
                                         </div>
                                     </div>
                                     <input v-if="add_button" type="button" :value="add"
-                                        class="btn btn btn-outline-primary" style="margin-top: 5pxs"
+                                        class="btn btn-outline-primary" style="margin-top: 5pxs"
                                         @click="add_schedule()">
                                     <input v-if="edit_button" type="button" :value="edit"
-                                        class="btn btn btn-outline-primary" style="float:right"
+                                        class="btn btn-outline-primary" style="float:right"
                                         v-if="i == personalProcess.length-1" @click="edit_schedule()">
                                 </div>
                                 <div class="tab-pane fade" id="v-pills-comment" role="tabpanel"
@@ -487,10 +517,10 @@
                                         </div>
                                     </div>
                                     <input v-if="add_button" type="button" :value="add"
-                                        class="btn btn btn-outline-primary" style="margin-top: 5pxs"
+                                        class="btn btn-outline-primary" style="margin-top: 5pxs"
                                         @click="add_comments()">
                                     <input v-if="edit_button" type="button" :value="edit"
-                                        class="btn btn btn-outline-primary" style="float:right"
+                                        class="btn btn-outline-primary" style="float:right"
                                         v-if="i == personalProcess.length-1" @click="edit_comments()">
                                 </div>
                             </div>
@@ -626,7 +656,7 @@
                         </table>
                     </div>
                     <div>
-                        <button type='button' class="btn btn btn-outline-primary" onmouseover="add_file_3(this)"
+                        <button type='button' class="btn btn-outline-primary" onmouseover="add_file_3(this)"
                             onmouseout="add_file_4(this)" style="width: 120px; height: 40px; letter-spacing: 4px;"><a
                                 href="javascript:" style="text-decoration: none">
                                 <div id="add_file_inner">继续上传</div>
@@ -661,14 +691,14 @@
                     publish_date: '{{ publish_date|safe }}',
                     deadline: '{{ deadline|safe }}',
                     task_status: '{{ task_status|safe }}',
-                    members: JSON.parse('{{ members|safe }}'),
+                    members: {{ members|safe }},
                     creator: '{{ creator|safe }}',
-                    leaders: JSON.parse('{{ leaders|safe }}'),
+                    leaders: {{ leaders|safe }},
                     task_description: '{{ task_description|safe }}',
-                    task_progress: JSON.parse('{{ task_progress|safe}}'),
-                    task_comment: JSON.parse('{{ task_comment|safe }}'),
-                    task_schedule: JSON.parse('{{ task_schedule|safe }}'),
-                    appendixes: JSON.parse('{{ appendixes|safe }}'),
+                    task_progress: {{ task_progress|safe}},
+                    task_comment: {{ task_comment|safe }},
+                    task_schedule: {{ task_schedule|safe }},
+                    appendixes: {{ appendixes|safe }},
                     task_id: '{{ id|safe }}',
                     personalProcess: [],
                     personalSchedule: [],
@@ -785,6 +815,84 @@
                             this.personalProcess = result.body;
                         })
                     },
+                    edit_task_schedule: function() {
+                        this.isActive = !this.isActive;
+                        if (this.isActive) {
+                            this.add_button = false;
+                            this.edit = '保存'
+                        }
+                        else if (!this.isActive) {
+                            this.edit = '编辑'
+                            this.add_button = true
+                            this.task_schedule[0].content = document.getElementById("target_task_schedule").value
+                        }
+                    },
+                    add_task_schedule: function () {
+                        if (!this.isActive) {
+                            this.task_progress.unshift({ "content": "", "creater": "", "publish_date": Date.parse(new Date()), "upgrade_date": "2910-11-11" });
+                            this.edit_button = false;
+                            this.isActive = true;
+                            this.add = '保存'
+                        }
+                        else if (this.isActive) {
+                            this.task_schedule[0].content = document.getElementById("target_task_schedule").value
+                            this.edit_button = true;
+                            this.isActive = false;
+                            this.add = '添加';
+                        }
+                    },
+                    edit_task_progress: function() {
+                        this.isActive = !this.isActive;
+                        if (this.isActive) {
+                            this.add_button = false;
+                            this.edit = '保存'
+                        }
+                        else if (!this.isActive) {
+                            this.edit = '编辑'
+                            this.add_button = true
+                            this.task_progress[0].content = document.getElementById("target_task_progress").value
+                        }
+                    },
+                    add_task_progress: function () {
+                        if (!this.isActive) {
+                            this.task_progress.unshift({ "content": "", "creater": "", "publish_date": Date.parse(new Date()), "upgrade_date": "2910-11-11" });
+                            this.edit_button = false;
+                            this.isActive = true;
+                            this.add = '保存'
+                        }
+                        else if (this.isActive) {
+                            this.task_progress[0].content = document.getElementById("target_task_progress").value
+                            this.edit_button = true;
+                            this.isActive = false;
+                            this.add = '添加';
+                        }
+                    },
+                    edit_task_comment: function() {
+                        this.isActive = !this.isActive;
+                        if (this.isActive) {
+                            this.add_button = false;
+                            this.edit = '保存'
+                        }
+                        else if (!this.isActive) {
+                            this.edit = '编辑'
+                            this.add_button = true
+                            this.task_comment[0].content = document.getElementById("target_task_comment").value
+                        }
+                    },
+                    add_task_comment: function () {
+                        if (!this.isActive) {
+                            this.task_comment.unshift({ "content": "", "creater": "", "publish_date": Date.parse(new Date()), "upgrade_date": "2910-11-11" });
+                            this.edit_button = false;
+                            this.isActive = true;
+                            this.add = '保存'
+                        }
+                        else if (this.isActive) {
+                            this.task_comment[0].content = document.getElementById("target_task_comment").value
+                            this.edit_button = true;
+                            this.isActive = false;
+                            this.add = '添加';
+                        }
+                    },
                     edit_progress: function() {
                         this.isActive = !this.isActive;
                         if (this.isActive) {
@@ -795,30 +903,6 @@
                             this.edit = '编辑'
                             this.add_button = true
                             this.personalProcess[0].content = document.getElementById("target_progress").value
-                        }
-                    },
-                    edit_comments: function() {
-                        this.isActive = !this.isActive;
-                        if (this.isActive) {
-                            this.add_button = false;
-                            this.edit = '保存'
-                        }
-                        else if (!this.isActive) {
-                            this.edit = '编辑'
-                            this.add_button = true
-                            this.personalComments[0].content = document.getElementById("target_comments").value
-                        }
-                    },
-                    edit_schedule: function() {
-                        this.isActive = !this.isActive;
-                        if (this.isActive) {
-                            this.add_button = false;
-                            this.edit = '保存'
-                        }
-                        else if (!this.isActive) {
-                            this.edit = '编辑'
-                            this.add_button = true
-                            this.personalSchedule[0].content = document.getElementById("target_schedule").value
                         }
                     },
                     add_progress: function () {
@@ -835,6 +919,18 @@
                             this.add = '添加';
                         }
                     },
+                    edit_comments: function() {
+                        this.isActive = !this.isActive;
+                        if (this.isActive) {
+                            this.add_button = false;
+                            this.edit = '保存'
+                        }
+                        else if (!this.isActive) {
+                            this.edit = '编辑'
+                            this.add_button = true
+                            this.personalComments[0].content = document.getElementById("target_comments").value
+                        }
+                    },
                     add_comments: function() {
                         if (!this.isActive) {
                             this.personalComments.unshift({ "content": "", "creater": "", "publish_date": Date.parse(new Date()), "upgrade_date": "2910-11-11" });
@@ -847,6 +943,18 @@
                             this.edit_button = true;
                             this.isActive = false;
                             this.add = '添加';
+                        }
+                    },
+                    edit_schedule: function() {
+                        this.isActive = !this.isActive;
+                        if (this.isActive) {
+                            this.add_button = false;
+                            this.edit = '保存'
+                        }
+                        else if (!this.isActive) {
+                            this.edit = '编辑'
+                            this.add_button = true
+                            this.personalSchedule[0].content = document.getElementById("target_schedule").value
                         }
                     },
                     add_schedule: function() {

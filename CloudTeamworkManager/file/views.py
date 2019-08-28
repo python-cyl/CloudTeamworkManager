@@ -137,3 +137,12 @@ def overlay(request, task_id, file_id):
         target_appendix.save()
         return JsonResponse({"tip": "操作成功", "status": 200}, safe=False)
     return HttpResponse(status=403)
+
+def table(request,task_id):
+    filesname=[]
+    files_id = task.objects.get(id=task_id)
+    files_id = json.loads(files_id)
+    for file_id in files_id:
+        file_name = appendix.objects.get(id = file_id).values("id", "filename", "filesize")
+        filesname.append(file_name)
+    return jsonResponse(filesname, safe=false)

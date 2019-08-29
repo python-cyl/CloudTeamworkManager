@@ -468,7 +468,7 @@
                     show_avatar: function (event) {
                         this.avatar = event.target.files[0];
                         this.src = window.URL.createObjectURL(this.avatar);
-                        event.target = null;
+                        event.target.files[0].name = "null";
                         this.avatar_height = document.getElementById("avatar").scrollWidth + 'px';
                     },
                     submit: function () {
@@ -561,7 +561,7 @@
 
                     // 表单验证部分
                     check_basic_info_part_one: function () {
-                        if (this.name.length < 3 || this.name.length > 5) {
+                        if (this.name.length < 2 || this.name.length > 5) {
                             this.tip = "姓名不正确"
                             return false;
                         }

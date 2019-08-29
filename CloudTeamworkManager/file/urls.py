@@ -11,4 +11,5 @@ urlpatterns = [
     path('rename_appendix/<int:task_id>/<int:appendix_id>/', views.rename),
     path('delete_appendix/<int:task_id>/<int:appendix_id>/', views.delete),
     path('overlay_appendix/<int:task_id>/<int:appendix_id>/', views.overlay),
+    path('appendix_list/<int:task_id>/', views.table),
 ]

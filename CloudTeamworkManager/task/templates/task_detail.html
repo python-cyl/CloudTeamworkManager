@@ -18,6 +18,10 @@
             border-top: 0px;
         }
 
+        .table th {
+            width: 20%;
+        }
+
         .card {
             margin: 1.2rem 0rem;
             border-radius: 0px;
@@ -71,7 +75,7 @@
 </head>
 
 <body style="background-color: #F7F8FA;">
-    {%csrf_token%}
+    {% csrf_token %}
     <div id="mainFunc">
         <div class="container">
             <div class="row no-gutters">
@@ -98,30 +102,28 @@
                             <table class="table col-10 offset-1 " style="margin-bottom: 3rem;">
                                 <tbody>
                                     <tr>
-                                        <th scope="row" style="width: 20%">创建时间</th>
+                                        <th>创建时间</th>
                                         <td>
-                                            <div style="max-height: 200px; overflow-y: auto">
-                                                [[publish_date]]
-                                            </div>
+                                            [[publish_date]]
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th scope="row" style="width: 20%">任务详情</th>
+                                        <th>任务详情</th>
                                         <td>
                                             <div style="max-height: 200px; overflow-y: auto">
                                                 [[task_description]]
                                             </div>
-                                            <small id="emailHelp" class="form-text text-muted"
+                                            <small class="form-text text-muted"
                                                 style="margin-top: 10px;height: 40px;text-align: center;float: left;letter-spacing: 5px">
-                                                <a href="javascript:;" class="md-trigger" data-modal="modal-3"
-                                                    style="text-decoration: none">
-                                                    <img src="/static/pic/href_active.png">&nbsp;添加附件
-                                                </a>
+                                                <span class="md-trigger" data-modal="modal-8" @click="getAppendixes()"
+                                                    style="cursor: pointer;">
+                                                    <img src="/static/pic/href_active.png">&nbsp;查看附件
+                                                </span>
                                             </small>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th scope="row" style="width: 20%">任务评价</th>
+                                        <th>任务评价</th>
                                         <td>
                                             <div style="max-height: 200px; overflow-y: auto">
                                                 <div v-for="(item,i) in task_comment" :key="item.id">
@@ -134,9 +136,9 @@
                                                 </div>
                                             </div>
                                             <input v-if="add_button" type="button" :value="add"
-                                                class="btn btn-outline-primary" style="margin-top: 5pxs"
+                                                class="btn btn-outline-primary" style="float:right; margin-left: 1.5rem"
                                                 @click="add_task_comment()">
-                                            <input v-if="edit_button" type="button" :value="edit"
+                                            <input v-if="edit_button && task_comment.length" type="button" :value="edit"
                                                 class="btn btn-outline-primary" style="float:right"
                                                 v-if="i == personalProcess.length-1" @click="edit_task_comment()">
                                         </td>
@@ -145,7 +147,6 @@
                             </table>
                         </div>
                     </div>
-
                     <div class="card" style="border-top: 0.25rem solid #448AFF">
                         <div class="clearfix" style="width: 100%">
                             <div style="float: right; height: 6rem; width: 22rem">
@@ -159,18 +160,17 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="row no-gutters">
                             <table class="table col-10 offset-1 " style="margin-bottom: 3rem;">
                                 <tbody>
                                     <tr>
-                                        <th scope="row" style=" width:20%;white-space:nowrap;overflow: hidden">截止时间</th>
+                                        <th>截止时间</th>
                                         <td>
                                             [[deadline]]
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th style="white-space:nowrap;overflow: hidden;width:1rem">目前耗时</th>
+                                        <th>目前耗时</th>
                                         <td>
                                             <div class="progress">
                                                 <div class="progress-bar" style="width:60%;">60%</div>
@@ -178,7 +178,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th style="white-space:nowrap;overflow: hidden; width:1rem">任务规划</th>
+                                        <th>任务规划</th>
                                         <td>
                                             <div style="max-height: 200px; overflow-y: auto">
                                                 <div v-for="(item,i) in task_schedule" :key="item.id">
@@ -191,15 +191,15 @@
                                                 </div>
                                             </div>
                                             <input v-if="add_button" type="button" :value="add"
-                                                class="btn btn-outline-primary" style="margin-top: 5pxs"
+                                                class="btn btn-outline-primary" style="float:right; margin-left: 1.5rem"
                                                 @click="add_task_schedule()">
-                                            <input v-if="edit_button" type="button" :value="edit"
-                                                class="btn btn-outline-primary" style="float:right"
+                                            <input v-if="edit_button && task_progress.length" type="button"
+                                                :value="edit" class="btn btn-outline-primary" style="float:right"
                                                 v-if="i == personalProcess.length-1" @click="edit_task_schedule()">
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th style="white-space:nowrap;overflow: hidden;width:1rem">项目进度</th>
+                                        <th>项目进度</th>
                                         <td>
                                             <div style="max-height: 200px; overflow-y: auto">
                                                 <div v-for="(item,i) in task_progress" :key="item.id">
@@ -212,10 +212,10 @@
                                                 </div>
                                             </div>
                                             <input v-if="add_button" type="button" :value="add"
-                                                class="btn btn-outline-primary" style="margin-top: 5pxs"
+                                                class="btn btn-outline-primary" style="float:right; margin-left: 1.5rem"
                                                 @click="add_task_progress()">
-                                            <input v-if="edit_button" type="button" :value="edit"
-                                                class="btn btn-outline-primary" style="float:right"
+                                            <input v-if="edit_button && task_progress.length" type="button"
+                                                :value="edit" class="btn btn-outline-primary" style="float:right"
                                                 v-if="i == personalProcess.length-1" @click="edit_task_progress()">
                                         </td>
                                     </tr>
@@ -223,7 +223,6 @@
                             </table>
                         </div>
                     </div>
-
                     <div class="card" style="border-top: 0.25rem solid #448AFF">
                         <div class="clearfix" style="width: 100%">
                             <div style="float: right; height: 6rem; width: 22rem">
@@ -237,7 +236,6 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- ！！！ 根据组长id查出其所在的方向 -->
                         <div class="row no-gutters" style="margin: 0rem 0px .75rem 0px">
                             <div class="col-10 offset-1">
                                 <div style="font-weight: bold; margin: .75rem 0px .75rem 0px">
@@ -249,90 +247,73 @@
                                     <div style="font-size: 20px; margin-bottom: .75rem">
                                         Python:
                                     </div>
-                                    <div>
-                                        <div class="row justify-content-start col-12">
-                                            <button v-for='person in pythonLeasers'
-                                                class="btn btn-outline-primary md-trigger" data-modal="modal-5"
-                                                @click="show_deatils(person.id)"
-                                                style="margin-right: 1.5rem; width: 5rem">
-                                                [[person.name]]
-                                            </button>
-                                        </div>
+                                    <div class="row justify-content-start col-12">
+                                        <button v-for='person in pythonLeasers'
+                                            class="btn btn-outline-primary md-trigger" data-modal="modal-5"
+                                            @click="show_deatils(person.id)" style="margin-right: 1.5rem; width: 5rem">
+                                            [[person.name]]
+                                        </button>
                                     </div>
                                 </div>
                                 <div v-if='javaLeaders.length !== 0'>
                                     <div style="font-size: 20px; margin-bottom: .75rem">
                                         Java:
                                     </div>
-                                    <div>
-                                        <div class="row justify-content-start col-12">
-                                            <button v-for='person in javaLeaders'
-                                                class="btn btn-outline-primary md-trigger" data-modal="modal-5"
-                                                onclick="javascript:;" style="margin-right: 1.5rem; width: 5rem">
-                                                [[person.name]]
-                                            </button>
-                                        </div>
+                                    <div class="row justify-content-start col-12">
+                                        <button v-for='person in javaLeaders' class="btn btn-outline-primary md-trigger"
+                                            data-modal="modal-5" style="margin-right: 1.5rem; width: 5rem">
+                                            [[person.name]]
+                                        </button>
                                     </div>
                                 </div>
                                 <div v-if='jsLeaders.length !== 0'>
                                     <div style="font-size: 20px; margin-bottom: .75rem">
                                         JS:
                                     </div>
-                                    <div>
-                                        <div class="row justify-content-start col-12">
-                                            <button v-for='person in jsLeaders'
-                                                class="btn btn-outline-primary md-trigger" data-modal="modal-5"
-                                                onclick="javascript:;" style="margin-right: 1.5rem; width: 5rem">
-                                                [[person.name]]
-                                            </button>
-                                        </div>
+                                    <div class="row justify-content-start col-12">
+                                        <button v-for='person in jsLeaders' class="btn btn-outline-primary md-trigger"
+                                            data-modal="modal-5" style="margin-right: 1.5rem; width: 5rem">
+                                            [[person.name]]
+                                        </button>
                                     </div>
                                 </div>
                                 <div v-if='designLeaders.length !== 0'>
                                     <div style="font-size: 20px; margin-bottom: .75rem">
                                         设计:
                                     </div>
-                                    <div>
-                                        <div class="row justify-content-start col-12">
-                                            <button v-for='person in designLeaders'
-                                                class="btn btn-outline-primary md-trigger" data-modal="modal-5"
-                                                onclick="javascript:;" style="margin-right: 1.5rem; width: 5rem">
-                                                [[person.name]]
-                                            </button>
-                                        </div>
+                                    <div class="row justify-content-start col-12">
+                                        <button v-for='person in designLeaders'
+                                            class="btn btn-outline-primary md-trigger" data-modal="modal-5"
+                                            style="margin-right: 1.5rem; width: 5rem">
+                                            [[person.name]]
+                                        </button>
                                     </div>
                                 </div>
                                 <div v-if='frontLeaders.length !== 0'>
                                     <div style="font-size: 20px; margin-bottom: .75rem">
                                         前端:
                                     </div>
-                                    <div>
-                                        <div class="row justify-content-start col-12">
-                                            <button v-for='person in frontLeaders'
-                                                class="btn btn-outline-primary md-trigger" data-modal="modal-5"
-                                                onclick="javascript:;" style="margin-right: 1.5rem; width: 5rem">
-                                                [[person.name]]
-                                            </button>
-                                        </div>
+                                    <div class="row justify-content-start col-12">
+                                        <button v-for='person in frontLeaders'
+                                            class="btn btn-outline-primary md-trigger" data-modal="modal-5"
+                                            style="margin-right: 1.5rem; width: 5rem">
+                                            [[person.name]]
+                                        </button>
                                     </div>
                                 </div>
                                 <div v-if='mtLeaders.length !== 0'>
                                     <div style="font-size: 20px; margin-bottom: .75rem">
                                         机电:
                                     </div>
-                                    <div>
-                                        <div class="row justify-content-start col-12">
-                                            <button v-for='person in mtLeaders'
-                                                class="btn btn-outline-primary md-trigger" data-modal="modal-5"
-                                                onclick="javascript:;" style="margin-right: 1.5rem; width: 5rem">
-                                                [[person.name]]
-                                            </button>
-                                        </div>
+                                    <div class="row justify-content-start col-12">
+                                        <button v-for='person in mtLeaders' class="btn btn-outline-primary md-trigger"
+                                            data-modal="modal-5" style="margin-right: 1.5rem; width: 5rem">
+                                            [[person.name]]
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <!-- ！！！ 根据 组员的id 和 当前任务id 得到其所在方向，并将组员分在各自的方向下， -->
                         <div class="row no-gutters" style="margin: 0rem 0px .75rem 0px">
                             <div class="col-10 offset-1">
                                 <div style="font-weight: bold; margin: .75rem 0px .75rem 0px">
@@ -344,85 +325,67 @@
                                     <div style="font-size: 20px; margin-bottom: .75rem">
                                         Python:
                                     </div>
-                                    <div>
-                                        <div class="row justify-content-start col-12">
-                                            <button v-for='person in pythonList'
-                                                class="btn btn-outline-primary md-trigger" data-modal="modal-5"
-                                                @click="show_deatils(person.id)"
-                                                style="margin-right: 1.5rem; width: 5rem">
-                                                [[person.name]]
-                                            </button>
-                                        </div>
+                                    <div class="row justify-content-start col-12">
+                                        <button v-for='person in pythonList' class="btn btn-outline-primary md-trigger"
+                                            data-modal="modal-5" @click="show_deatils(person.id)"
+                                            style="margin-right: 1.5rem; width: 5rem">
+                                            [[person.name]]
+                                        </button>
                                     </div>
                                 </div>
                                 <div v-if='javaList.length !== 0'>
                                     <div style="font-size: 20px; margin-bottom: .75rem">
                                         Java:
                                     </div>
-                                    <div>
-                                        <div class="row justify-content-start col-12">
-                                            <button v-for='person in javaList'
-                                                class="btn btn-outline-primary md-trigger" data-modal="modal-5"
-                                                onclick="javascript:;" style="margin-right: 1.5rem; width: 5rem">
-                                                [[person.name]]
-                                            </button>
-                                        </div>
+                                    <div class="row justify-content-start col-12">
+                                        <button v-for='person in javaList' class="btn btn-outline-primary md-trigger"
+                                            data-modal="modal-5" style="margin-right: 1.5rem; width: 5rem">
+                                            [[person.name]]
+                                        </button>
                                     </div>
                                 </div>
                                 <div v-if='jsList.length !== 0'>
                                     <div style="font-size: 20px; margin-bottom: .75rem">
                                         JS:
                                     </div>
-                                    <div>
-                                        <div class="row justify-content-start col-12">
-                                            <button v-for='person in jsList' class="btn btn-outline-primary md-trigger"
-                                                data-modal="modal-5" onclick="javascript:;"
-                                                style="margin-right: 1.5rem; width: 5rem">
-                                                [[person.name]]
-                                            </button>
-                                        </div>
+                                    <div class="row justify-content-start col-12">
+                                        <button v-for='person in jsList' class="btn btn-outline-primary md-trigger"
+                                            data-modal="modal-5" style="margin-right: 1.5rem; width: 5rem">
+                                            [[person.name]]
+                                        </button>
                                     </div>
                                 </div>
                                 <div v-if='designList.length !== 0'>
                                     <div style="font-size: 20px; margin-bottom: .75rem">
                                         设计:
                                     </div>
-                                    <div>
-                                        <div class="row justify-content-start col-12">
-                                            <button v-for='person in designList'
-                                                class="btn btn-outline-primary md-trigger" data-modal="modal-5"
-                                                onclick="javascript:;" style="margin-right: 1.5rem; width: 5rem">
-                                                [[person.name]]
-                                            </button>
-                                        </div>
+                                    <div class="row justify-content-start col-12">
+                                        <button v-for='person in designList' class="btn btn-outline-primary md-trigger"
+                                            data-modal="modal-5" style="margin-right: 1.5rem; width: 5rem">
+                                            [[person.name]]
+                                        </button>
                                     </div>
                                 </div>
                                 <div v-if='frontList.length !== 0'>
                                     <div style="font-size: 20px; margin-bottom: .75rem">
                                         前端:
                                     </div>
-                                    <div>
-                                        <div class="row justify-content-start col-12">
-                                            <button v-for='person in frontList'
-                                                class="btn btn-outline-primary md-trigger" data-modal="modal-5"
-                                                onclick="javascript:;" style="margin-right: 1.5rem; width: 5rem">
-                                                [[person.name]]
-                                            </button>
-                                        </div>
+                                    <div class="row justify-content-start col-12">
+                                        <button v-for='person in frontList' class="btn btn-outline-primary md-trigger"
+                                            data-modal="modal-5" style="margin-right: 1.5rem; width: 5rem">
+                                            [[person.name]]
+                                        </button>
                                     </div>
                                 </div>
                                 <div v-if='mtList.length !== 0'>
                                     <div style="font-size: 20px; margin-bottom: .75rem">
                                         机电:
                                     </div>
-                                    <div>
-                                        <div class="row justify-content-start col-12">
-                                            <button v-for='person in mtList' class="btn btn-outline-primary md-trigger"
-                                                data-modal="modal-5" onclick="javascript:;"
-                                                style="margin-right: 1.5rem; width: 5rem">
-                                                [[person.name]]
-                                            </button>
-                                        </div>
+                                    <div class="row justify-content-start col-12">
+                                        <button v-for='person in mtList' class="btn btn-outline-primary md-trigger"
+                                            data-modal="modal-5" style="margin-right: 1.5rem; width: 5rem">
+                                            [[person.name]]
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -431,257 +394,174 @@
                 </div>
             </div>
         </div>
-        <!-- ！！！model-5为每个组员的进度 规划 及 评价
-                进度可修改其最后一次的进度
-                规划可随时修改
-                评价自己不可修改，只有组长能评价 -->
-        <div class="md-modal md-effect-5" id="modal-5">
-            <div class="md-content">
-                <div class="container">
-                    <div class="row justify-content-between">
-                        <div class="col-4" style="margin-top: 10px; font-size: 24px">
-                            个人资讯
-                        </div>
-                        <div class="col-2" style="margin-top: 10px;">
-                            <button class="md-close btn-sm btn-primary"
-                                style="background-color: transparent; border: none; height: 100%">
-                                <img src="/static/pic/close.png">
-                            </button>
-                        </div>
-                    </div>
-                    <div class="row" style="margin-top: 5px">
-                        <div class="col-3">
-                            <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist"
-                                aria-orientation="vertical">
-                                <a class="nav-link show active" id="v-pills-process-tab" data-toggle="pill"
-                                    href="#v-pills-process" role="tab" aria-controls="v-pills-process"
-                                    aria-selected="true" @click='getProcess(person_id)'>进度</a>
-                                <a class="nav-link show" id="v-pills-schedule-tab" data-toggle="pill"
-                                    href="#v-pills-schedule" role="tab" aria-controls="v-pills-schedule"
-                                    aria-selected="false" @click='getSchedule(person_id)'>规划</a>
-                                <a class="nav-link show" id="v-pills-comment-tab" data-toggle="pill"
-                                    href="#v-pills-comment" role="tab" aria-controls="v-pills-comment"
-                                    aria-selected="false" @click='getComments(person_id)'>评价</a>
-                            </div>
-                        </div>
-                        <div class="col-9">
-                            <div class="tab-content" id="v-pills-tabContent">
-                                <div class="tab-pane fade active show" id="v-pills-process" role="tabpanel"
-                                    aria-labelledby="v-pills-home-tab">
-                                    <div style="height: 300px; overflow-y: auto">
-                                        <div v-for="(item,i) in personalProcess" :key="item.id">
-                                            <div style="margin-bottom: 0.5rem">[[item.publish_date]]</div>
-                                            <textarea rows="1" placeholder="请输入内容" :key="item.publish_date"
-                                                :readonly="i == 0? (isActive? false : 'readonly' ) : true"
-                                                style="padding: 10px 0px 8px 0px; color: #747474; resize: none"
-                                                :id="i == 0? (isActive? 'target_progress' : 'abandon' ) : 'abandon'">[[item.content]]</textarea>
-                                            <hr>
-                                        </div>
-                                    </div>
-                                    <input v-if="add_button" type="button" :value="add"
-                                        class="btn btn-outline-primary" style="margin-top: 5pxs"
-                                        @click="add_progress()">
-                                    <input v-if="edit_button" type="button" :value="edit"
-                                        class="btn btn-outline-primary" style="float:right"
-                                        v-if="i == personalProcess.length-1" @click="edit_progress()">
-                                </div>
-                                <div class="tab-pane fade" id="v-pills-schedule" role="tabpanel"
-                                    aria-labelledby="v-pills-messages-tab">
-                                    <div style="height: 300px; overflow-y: auto">
-                                        <div v-for="(item,i) in personalSchedule" :key="item.id">
-                                            <div style="margin-bottom: 0.5rem">[[item.publish_date]]</div>
-                                            <textarea rows="1" placeholder="请输入内容" :key="item.publish_date"
-                                                :readonly="i == 0? (isActive? false : 'readonly' ) : true"
-                                                style="padding: 10px 0px 8px 0px; color: #747474; resize: none"
-                                                :id="i == 0? (isActive? 'target_schedule' : 'abandon' ) : 'abandon'">[[item.content]]</textarea>
-                                            <hr>
-                                        </div>
-                                    </div>
-                                    <input v-if="add_button" type="button" :value="add"
-                                        class="btn btn-outline-primary" style="margin-top: 5pxs"
-                                        @click="add_schedule()">
-                                    <input v-if="edit_button" type="button" :value="edit"
-                                        class="btn btn-outline-primary" style="float:right"
-                                        v-if="i == personalProcess.length-1" @click="edit_schedule()">
-                                </div>
-                                <div class="tab-pane fade" id="v-pills-comment" role="tabpanel"
-                                    aria-labelledby="v-pills-settings-tab">
-                                    <div style="height: 300px; overflow-y: auto">
-                                        <div v-for="(item,i) in personalComments" :key="item.id">
-                                            <div style="margin-bottom: 0.5rem">[[item.publish_date]]</div>
-                                            <textarea rows="1" placeholder="请输入内容" :key="item.publish_date"
-                                                :readonly="i == 0? (isActive? false : 'readonly' ) : true"
-                                                style="padding: 10px 0px 8px 0px; color: #747474; resize: none"
-                                                :id="i == 0? (isActive? 'target_comments' : 'abandon' ) : 'abandon'">[[item.content]]</textarea>
-                                            <hr>
-                                        </div>
-                                    </div>
-                                    <input v-if="add_button" type="button" :value="add"
-                                        class="btn btn-outline-primary" style="margin-top: 5pxs"
-                                        @click="add_comments()">
-                                    <input v-if="edit_button" type="button" :value="edit"
-                                        class="btn btn-outline-primary" style="float:right"
-                                        v-if="i == personalProcess.length-1" @click="edit_comments()">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- ！！！ model-3为添加附件 -->
-        <div class="md-modal md-effect-5" id="modal-3">
-            <div class="md-content">
-                <div class="container">
-                    <div class="row justify-content-between">
-                        <div class="col-4" style="margin-top: 10px; font-size: 24px">
-                            添加附件
-                        </div>
-                        <div class="col-2" style="margin-top: 10px;">
-                            <button class="md-close btn-sm btn-primary"
-                                style="background-color: transparent; border: none; height: 100%">
-                                <img src="/static/pic/close.png">
-                            </button>
-                        </div>
-                    </div>
-                    <div class="col-12" style="max-height: 300px; overflow-y: auto; margin: 10px 0px">
-                        <table class="table" style="height: 200px; overflow-y: auto; word-break: keep-all">
-                            <tbody>
-                                <tr>
-                                    <th style="width: 70px;">
-                                        <img src="/static/pic/组%20451.png" alt="">
-                                    </th>
-                                    <td>
-                                        <div>
-                                            项目需求.xmlx
-                                        </div>
-                                        <div style="margin-top: 1.2rem">
-                                            3.1mb
-                                        </div>
-                                    </td>
-                                    <td style="height:70px; line-height:70px; text-align:right">
-                                        <button
-                                            style="background: url(/static/pic/829.png); width:24px; height:24px; border:none;border-radius:28px 28px">
-                                        </button>
-                                        <button
-                                            style="margin-left:20px; background: url(/static/pic/826.png); width:24px; height:24px; border:none">
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th style="width: 70px;">
-                                        <img src="/static/pic/组%20451.png" alt="">
-                                    </th>
-                                    <td>
-                                        <div>
-                                            项目需求.xmlx
-                                        </div>
-                                        <div style="margin-top: 1.2rem">
-                                            3.1mb
-                                        </div>
-                                    </td>
-                                    <td style="height:70px; line-height:70px; text-align:right">
-                                        <button
-                                            style="background: url(/static/pic/829.png); width:24px; height:24px; border:none;border-radius:28px 28px">
-                                        </button>
-                                        <button
-                                            style="margin-left:20px; background: url(/static/pic/826.png); width:24px; height:24px; border:none">
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th style="width: 70px;">
-                                        <img src="/static/pic/组%20451.png" alt="">
-                                    </th>
-                                    <td>
-                                        <div>
-                                            项目需求.xmlx
-                                        </div>
-                                        <div style="margin-top: 1.2rem">
-                                            3.1mb
-                                        </div>
-                                    </td>
-                                    <td style="height:70px; line-height:70px; text-align:right">
-                                        <button
-                                            style="background: url(/static/pic/829.png); width:24px; height:24px; border:none;border-radius:28px 28px">
-                                        </button>
-                                        <button
-                                            style="margin-left:20px; background: url(/static/pic/826.png); width:24px; height:24px; border:none">
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th style="width: 70px;">
-                                        <img src="/static/pic/451.png" alt="">
-                                    </th>
-                                    <td>
-                                        <div>
-                                            项目需求.xmlx
-                                        </div>
-                                        <div style="margin-top: 1.2rem">
-                                            3.1mb
-                                        </div>
-                                    </td>
-                                    <td style="height:70px; line-height:70px; text-align:right">
-                                        <button
-                                            style="background: url(/static/pic/829.png); width:24px; height:24px; border:none;border-radius:28px 28px">
-                                        </button>
-                                        <button
-                                            style="margin-left:20px; background: url(/static/pic/826.png); width:24px; height:24px; border:none">
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th style="width: 70px;">
-                                        <img src="/static/pic/组%20451.png" alt="">
-                                    </th>
-                                    <td>
-                                        <div>
-                                            项目需求.xmlx
-                                        </div>
-                                        <div style="margin-top: 1.2rem">
-                                            3.1mb
-                                        </div>
-                                    </td>
-                                    <td style="height:70px; line-height:70px; text-align:right">
-                                        <button
-                                            style="background: url(/static/pic/829.png); width:24px; height:24px; border:none;border-radius:28px 28px">
-                                        </button>
-                                        <button
-                                            style="margin-left:20px; background: url(/static/pic/826.png); width:24px; height:24px; border:none">
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+        <div>
+            <div class="md-modal md-effect-5" id="modal-5">
+                <div class="md-content">
                     <div>
-                        <button type='button' class="btn btn-outline-primary" onmouseover="add_file_3(this)"
-                            onmouseout="add_file_4(this)" style="width: 120px; height: 40px; letter-spacing: 4px;"><a
-                                href="javascript:" style="text-decoration: none">
-                                <div id="add_file_inner">继续上传</div>
-                            </a>
-                            <script> function add_file_3() {
-                                    document.getElementById('add_file_inner').style.color = '#ffffff'
-                                }
-
-                                function add_file_4() {
-                                    document.getElementById('add_file_inner').style.color = '#007bff'
-                                }
-                            </script>
-                        </button>
-                        <small style="color: red; vertical-align: bottom">文件不要超过10M！</small>
+                        <div class="row justify-content-between">
+                            <div class="col-4" style="margin-top: 10px; font-size: 24px">
+                                个人资讯
+                            </div>
+                            <div class="col-2" style="margin-top: 10px;">
+                                <button class="md-close btn-sm btn-primary"
+                                    style="background-color: transparent; border: none; height: 100%">
+                                    <img src="/static/pic/close.png">
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top: 5px">
+                            <div class="col-3">
+                                <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist"
+                                    aria-orientation="vertical">
+                                    <a class="nav-link show active" id="v-pills-process-tab" data-toggle="pill"
+                                        href="#v-pills-process" role="tab" aria-controls="v-pills-process"
+                                        aria-selected="true" @click='getProcess(person_id)'>进度</a>
+                                    <a class="nav-link show" id="v-pills-schedule-tab" data-toggle="pill"
+                                        href="#v-pills-schedule" role="tab" aria-controls="v-pills-schedule"
+                                        aria-selected="false" @click='getSchedule(person_id)'>规划</a>
+                                    <a class="nav-link show" id="v-pills-comment-tab" data-toggle="pill"
+                                        href="#v-pills-comment" role="tab" aria-controls="v-pills-comment"
+                                        aria-selected="false" @click='getComments(person_id)'>评价</a>
+                                </div>
+                            </div>
+                            <div class="col-9">
+                                <div class="tab-content" id="v-pills-tabContent">
+                                    <div class="tab-pane fade active show" id="v-pills-process" role="tabpanel"
+                                        aria-labelledby="v-pills-home-tab">
+                                        <div style="height: 300px; overflow-y: auto">
+                                            <div v-for="(item,i) in personalProcess" :key="item.id">
+                                                <div style="margin-bottom: 0.5rem">[[item.publish_date]]</div>
+                                                <textarea rows="1" placeholder="请输入内容" :key="item.publish_date"
+                                                    :readonly="i == 0? (isActive? false : 'readonly' ) : true"
+                                                    style="padding: 10px 0px 8px 0px; color: #747474; resize: none"
+                                                    :id="i == 0? (isActive? 'target_progress' : 'abandon' ) : 'abandon'">[[item.content]]</textarea>
+                                                <hr>
+                                            </div>
+                                        </div>
+                                        <input v-if="add_button" type="button" :value="add"
+                                            class="btn btn-outline-primary" style="float:right; margin-left: 1.5rem"
+                                            @click="add_progress()">
+                                        <input v-if="edit_button" type="button" :value="edit"
+                                            class="btn btn-outline-primary" style="float:right"
+                                            v-if="i == personalProcess.length-1" @click="edit_progress()">
+                                    </div>
+                                    <div class="tab-pane fade" id="v-pills-schedule" role="tabpanel"
+                                        aria-labelledby="v-pills-messages-tab">
+                                        <div style="height: 300px; overflow-y: auto">
+                                            <div v-for="(item,i) in personalSchedule" :key="item.id">
+                                                <div style="margin-bottom: 0.5rem">[[item.publish_date]]</div>
+                                                <textarea rows="1" placeholder="请输入内容" :key="item.publish_date"
+                                                    :readonly="i == 0? (isActive? false : 'readonly' ) : true"
+                                                    style="padding: 10px 0px 8px 0px; color: #747474; resize: none"
+                                                    :id="i == 0? (isActive? 'target_schedule' : 'abandon' ) : 'abandon'">[[item.content]]</textarea>
+                                                <hr>
+                                            </div>
+                                        </div>
+                                        <input v-if="add_button" type="button" :value="add"
+                                            class="btn btn-outline-primary" style="float:right; margin-left: 1.5rem"
+                                            @click="add_schedule()">
+                                        <input v-if="edit_button" type="button" :value="edit"
+                                            class="btn btn-outline-primary" style="float:right"
+                                            v-if="i == personalProcess.length-1" @click="edit_schedule()">
+                                    </div>
+                                    <div class="tab-pane fade" id="v-pills-comment" role="tabpanel"
+                                        aria-labelledby="v-pills-settings-tab">
+                                        <div style="height: 300px; overflow-y: auto">
+                                            <div v-for="(item,i) in personalComments" :key="item.id">
+                                                <div style="margin-bottom: 0.5rem">[[item.publish_date]]</div>
+                                                <textarea rows="1" placeholder="请输入内容" :key="item.publish_date"
+                                                    :readonly="i == 0? (isActive? false : 'readonly' ) : true"
+                                                    style="padding: 10px 0px 8px 0px; color: #747474; resize: none"
+                                                    :id="i == 0? (isActive? 'target_comments' : 'abandon' ) : 'abandon'">[[item.content]]</textarea>
+                                                <hr>
+                                            </div>
+                                        </div>
+                                        <input v-if="add_button" type="button" :value="add"
+                                            class="btn btn-outline-primary" style="float:right; margin-left: 1.5rem"
+                                            @click="add_comments()">
+                                        <input v-if="edit_button" type="button" :value="edit"
+                                            class="btn btn-outline-primary" style="float:right"
+                                            v-if="i == personalProcess.length-1" @click="edit_comments()">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+            <div class="md-modal md-effect-8" id="modal-8">
+                <div class="md-content">
+                    <div style="min-height: 400px">
+                        <div class="container-fluid">
+                            <div class="row justify-content-between">
+                                <div class="col-4" style="margin-top: 10px; font-size: 24px">
+                                    添加附件
+                                </div>
+                                <div class="col-2" style="margin-top: 10px;">
+                                    <button class="md-close btn-sm btn-primary"
+                                        style="background-color: transparent; border: none; height: 100%">
+                                        <img src="/static/pic/close.png">
+                                    </button>
+                                </div>
+                            </div>
+                            <div v-if="is_empty" class="row no-gutters"
+                                style="position: absolute;left: 50%;top: 50%;transform: translate(-50%, -50%);text-align: center">
+                                <div class="row col-10 offset-1">
+                                    <label for="file" class="btn btn-primary col-6 offset-3"
+                                        style="cursor: pointer">点击选择</label>
+                                    <input type="file" name="appendix" id="file" style="height: 0px; opacity: 0"
+                                        v-on:change="append_appendix($event)">
+                                    <small class="col-6 offset-3"
+                                        style="color: red;float:left; padding: 0px; text-align: left">文件不要超过10M！</small>
+                                </div>
+                            </div>
+                            <div v-if="!is_empty" class="col-12"
+                                style="height: 300px; overflow-y: auto; margin: 10px 0px">
+                                <table class="table" style="height: 200px; overflow-y: auto; word-break: keep-all">
+                                    <tbody>
+                                        <tr v-for="(each, index) in appendixes">
+                                            <th style="width: 70px;">
+                                                <img src="/static/pic/组%20451.png" alt="">
+                                            </th>
+                                            <td>
+                                                <div>
+                                                    [[each.name]]
+                                                </div>
+                                                <div style="margin-top: 1.2rem">
+                                                    [[each.size]]字节
+                                                </div>
+                                            </td>
+                                            <td style="height:70px; line-height:70px; text-align:right">
+                                                <button
+                                                    style="margin-left:20px; background: url(/static/pic/826.png); width:24px; height:24px; border:none"
+                                                    @click="del_appendix(index)">
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div v-if="!is_empty">
+                                <label for="file" class="btn btn-primary col-3" style="cursor: pointer">点击选择</label>
+                                <input type="file" name="appendix" id="file" style="height: 0px; opacity: 0"
+                                    v-on:change="append_appendix($event)">
+                                <div style="color: red; vertical-align: bottom; font-size: 80%; font-weight: 400">
+                                    文件不要超过10M！
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="md-overlay"></div>
         </div>
-        <div class="md-overlay"></div>
     </div>
     <script src="/static/js/bootstrap/jquery.min.js"></script>
     <script src="/static/js/bootstrap/bootstrap.min.js"></script>
     <script src="/static/js/vue/vue.js"></script>
     <script src="/static/js/vue/vue-resource.min.js"></script>
     <script>
+        Vue.http.headers.common['X-CSRFToken'] = $("input[name='csrfmiddlewaretoken']").val();
         var app = new Vue(
             {
                 delimiters: ['[[', ']]'],
@@ -698,12 +578,15 @@
                     task_progress: {{ task_progress|safe}},
                     task_comment: {{ task_comment|safe }},
                     task_schedule: {{ task_schedule|safe }},
-                    appendixes: {{ appendixes|safe }},
                     task_id: '{{ id|safe }}',
                     personalProcess: [],
                     personalSchedule: [],
                     personalComments: [],
                     person_id: '',
+
+                    // 附件表
+                    appendixes: [],
+                    is_empty: true,
 
                     // 成员表
                     pythonList: [],
@@ -726,6 +609,8 @@
                     isActive: false,
                     edit: "编辑",
                     add: "添加",
+
+                    // 添加删除按钮
                     edit_button: true,
                     add_button: true,
                 },
@@ -738,6 +623,24 @@
                             return true;
                         }
                         return false;
+                    },
+                    getAppendixes: function () {
+                        this.$http.get('/file/appendix_list/' + this.task_id + '/').then(res => {
+                            this.appendixes = res.body;
+                            if (this.appendixes.length > 0) {
+                                this.is_empty = false;
+                            }
+                            else {
+                                this.is_empty = true;
+                            }
+                        })
+                    },
+                    append_appendix: function () {
+                        this.appendixes.push(event.target.files[0]);
+                        event.target = null;
+                        if (this.appendixes.length > 0) {
+                            this.is_empty = false;
+                        }
                     },
                     getProcess: function (person_id) {
                         // 获取个人任务进度
@@ -815,7 +718,7 @@
                             this.personalProcess = result.body;
                         })
                     },
-                    edit_task_schedule: function() {
+                    edit_task_schedule: function () {
                         this.isActive = !this.isActive;
                         if (this.isActive) {
                             this.add_button = false;
@@ -825,11 +728,19 @@
                             this.edit = '编辑'
                             this.add_button = true
                             this.task_schedule[0].content = document.getElementById("target_task_schedule").value
+                            this.$http.post("/publisher/task_schedule/" + this.task_id + "/", { "content": this.task_schedule[0].content, "action": "upgrade" }, { emulateJSON: true }).then(result => {
+                                if (result.status == 500) {
+                                    this.tip = "服务器出错"
+                                }
+                                else {
+                                    this.tip = "操作成功"
+                                }
+                            })
                         }
                     },
                     add_task_schedule: function () {
                         if (!this.isActive) {
-                            this.task_progress.unshift({ "content": "", "creater": "", "publish_date": Date.parse(new Date()), "upgrade_date": "2910-11-11" });
+                            this.task_schedule.unshift({ "content": "", "creater": "", "publish_date": Date.parse(new Date()), "upgrade_date": "2910-11-11" });
                             this.edit_button = false;
                             this.isActive = true;
                             this.add = '保存'
@@ -839,9 +750,17 @@
                             this.edit_button = true;
                             this.isActive = false;
                             this.add = '添加';
+                            this.$http.post("/publisher/task_schedule/" + this.task_id + "/", { "content": this.task_schedule[0].content, "action": "create" }, { emulateJSON: true }).then(result => {
+                                if (result.status == 500) {
+                                    this.tip = "服务器出错"
+                                }
+                                else {
+                                    this.tip = "操作成功"
+                                }
+                            })
                         }
                     },
-                    edit_task_progress: function() {
+                    edit_task_progress: function () {
                         this.isActive = !this.isActive;
                         if (this.isActive) {
                             this.add_button = false;
@@ -851,6 +770,14 @@
                             this.edit = '编辑'
                             this.add_button = true
                             this.task_progress[0].content = document.getElementById("target_task_progress").value
+                            this.$http.post("/publisher/task_progress/" + this.task_id + "/", { "content": this.task_progress[0].content, "action": "upgrade" }, { emulateJSON: true }).then(result => {
+                                if (result.status == 500) {
+                                    this.tip = "服务器出错"
+                                }
+                                else {
+                                    this.tip = "操作成功"
+                                }
+                            })
                         }
                     },
                     add_task_progress: function () {
@@ -865,9 +792,17 @@
                             this.edit_button = true;
                             this.isActive = false;
                             this.add = '添加';
+                            this.$http.post("/publisher/task_progress/" + this.task_id + "/", { "content": this.task_progress[0].content, "action": "create" }, { emulateJSON: true }).then(result => {
+                                if (result.status == 500) {
+                                    this.tip = "服务器出错"
+                                }
+                                else {
+                                    this.tip = "操作成功"
+                                }
+                            })
                         }
                     },
-                    edit_task_comment: function() {
+                    edit_task_comment: function () {
                         this.isActive = !this.isActive;
                         if (this.isActive) {
                             this.add_button = false;
@@ -877,6 +812,14 @@
                             this.edit = '编辑'
                             this.add_button = true
                             this.task_comment[0].content = document.getElementById("target_task_comment").value
+                            this.$http.post("/publisher/task_comment/" + this.task_id + "/", { "content": this.task_comment[0].content, "action": "upgrade" }, { emulateJSON: true }).then(result => {
+                                if (result.status == 500) {
+                                    this.tip = "服务器出错"
+                                }
+                                else {
+                                    this.tip = "操作成功"
+                                }
+                            })
                         }
                     },
                     add_task_comment: function () {
@@ -891,9 +834,17 @@
                             this.edit_button = true;
                             this.isActive = false;
                             this.add = '添加';
+                            this.$http.post("/publisher/task_comment/" + this.task_id + "/", { "content": this.task_comment[0].content, "action": "create" }, { emulateJSON: true }).then(result => {
+                                if (result.status == 500) {
+                                    this.tip = "服务器出错"
+                                }
+                                else {
+                                    this.tip = "操作成功"
+                                }
+                            })
                         }
                     },
-                    edit_progress: function() {
+                    edit_progress: function () {
                         this.isActive = !this.isActive;
                         if (this.isActive) {
                             this.add_button = false;
@@ -903,6 +854,14 @@
                             this.edit = '编辑'
                             this.add_button = true
                             this.personalProcess[0].content = document.getElementById("target_progress").value
+                            this.$http.post("/publisher/personal_process/" + this.task_id + "/" + this.person_id + "/", { "content": this.personalProcess[0].content, "action": "upgrade" }, { emulateJSON: true }).then(result => {
+                                if (result.status == 500) {
+                                    this.tip = "服务器出错"
+                                }
+                                else {
+                                    this.tip = "操作成功"
+                                }
+                            })
                         }
                     },
                     add_progress: function () {
@@ -917,9 +876,17 @@
                             this.edit_button = true;
                             this.isActive = false;
                             this.add = '添加';
+                            this.$http.post("/publisher/personal_process/" + this.task_id + "/" + this.person_id + "/", { "content": this.personalProcess[0].content, "action": "create" }, { emulateJSON: true }).then(result => {
+                                if (result.status == 500) {
+                                    this.tip = "服务器出错"
+                                }
+                                else {
+                                    this.tip = "操作成功"
+                                }
+                            })
                         }
                     },
-                    edit_comments: function() {
+                    edit_comments: function () {
                         this.isActive = !this.isActive;
                         if (this.isActive) {
                             this.add_button = false;
@@ -929,9 +896,17 @@
                             this.edit = '编辑'
                             this.add_button = true
                             this.personalComments[0].content = document.getElementById("target_comments").value
+                            this.$http.post("/publisher/personal_comments/" + this.task_id + "/" + this.person_id + "/", { "content": this.personalComments[0].content, "action": "upgrade" }, { emulateJSON: true }).then(result => {
+                                if (result.status == 500) {
+                                    this.tip = "服务器出错"
+                                }
+                                else {
+                                    this.tip = "操作成功"
+                                }
+                            })
                         }
                     },
-                    add_comments: function() {
+                    add_comments: function () {
                         if (!this.isActive) {
                             this.personalComments.unshift({ "content": "", "creater": "", "publish_date": Date.parse(new Date()), "upgrade_date": "2910-11-11" });
                             this.edit_button = false;
@@ -943,9 +918,17 @@
                             this.edit_button = true;
                             this.isActive = false;
                             this.add = '添加';
+                            this.$http.post("/publisher/personal_comments/" + this.task_id + "/" + this.person_id + "/", { "content": this.personalComments[0].content, "action": "create" }, { emulateJSON: true }).then(result => {
+                                if (result.status == 500) {
+                                    this.tip = "服务器出错"
+                                }
+                                else {
+                                    this.tip = "操作成功"
+                                }
+                            })
                         }
                     },
-                    edit_schedule: function() {
+                    edit_schedule: function () {
                         this.isActive = !this.isActive;
                         if (this.isActive) {
                             this.add_button = false;
@@ -955,9 +938,17 @@
                             this.edit = '编辑'
                             this.add_button = true
                             this.personalSchedule[0].content = document.getElementById("target_schedule").value
+                            this.$http.post("/publisher/personal_schedule/" + this.task_id + "/" + this.person_id + "/", { "content": this.personalSchedule[0].content, "action": "upgrade" }, { emulateJSON: true }).then(result => {
+                                if (result.status == 500) {
+                                    this.tip = "服务器出错"
+                                }
+                                else {
+                                    this.tip = "操作成功"
+                                }
+                            })
                         }
                     },
-                    add_schedule: function() {
+                    add_schedule: function () {
                         if (!this.isActive) {
                             this.personalSchedule.unshift({ "content": "", "creater": "", "publish_date": Date.parse(new Date()), "upgrade_date": "2910-11-11" });
                             this.edit_button = false;
@@ -969,6 +960,14 @@
                             this.edit_button = true;
                             this.isActive = false;
                             this.add = '添加';
+                            this.$http.post("/publisher/personal_schedule/" + this.task_id + "/" + this.person_id + "/", { "content": this.personalSchedule[0].content, "action": "create" }, { emulateJSON: true }).then(result => {
+                                if (result.status == 500) {
+                                    this.tip = "服务器出错"
+                                }
+                                else {
+                                    this.tip = "操作成功"
+                                }
+                            })
                         }
                     },
                 }

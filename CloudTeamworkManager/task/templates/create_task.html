@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
-{% load staticfiles %}
+<html lang="zh-CN">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" type="text/css" href="/static/css/bootstrap/bootstrap.min.css">
-    <link href="/static/css/animation/component.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/static/css/animation/component.css">
     <title>新建项目</title>
     <style>
         input.form-control:focus {
@@ -35,6 +34,10 @@
             border-top: 0px;
         }
 
+        .table th {
+            width: 20%;
+        }
+
         .card {
             margin: 1.2rem 0rem;
             border-radius: 0px;
@@ -47,8 +50,20 @@
 
 <body style="background-color: #F7F8FA;">
     {% csrf_token %}
-    <div id="render_members">
-        <div class="container" style="height: 100%;">
+    <div id="mainFunc">
+        <div v-if="is_show" style="z-index: 999; position: fixed; width: 100%;" class="alert alert-dismissible show fade" :class="[is_success? 'alert-success' : 'alert-warning']" role="alert">
+            <strong>[[ strongTip ]]</strong>[[ tip ]]
+            <button type="button" class="close" @click="is_show = !is_show" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div style="z-index: 998; position: fixed; background-color: rgba(255, 255, 255, 0.7); width: 100%; height: 100%; text-align: center" :style="{display: loading_display_mode}">
+            <h1 style="position: relative; top: 20%">
+                正在提交，请稍后...
+            </h1>
+            <img src="/static/pic/betta_fish.png" style="height: 100%;">
+        </div>
+        <div class="container">
             <div class="row no-gutters">
                 <div class="col-10 offset-1">
                     <div class="card" style="border-top: 0.25rem solid #448AFF;">
@@ -64,7 +79,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="row no-gutters">
                             <table class="table col-10 offset-1" style="margin-bottom: 3rem">
                                 <tbody>
@@ -97,13 +111,14 @@
                                         <th>任务详情</th>
                                         <td>
                                             <div>
-                                                <textarea class="form-control" id="exampleFormControlTextarea1" rows="6"
-                                                    placeholder="请输入项目详情......" style="color: #666666;padding: 0;"
-                                                    name="task_description" v-model="task_description"></textarea>
-                                                <small id="emailHelp" class="form-text text-muted"
+                                                <textarea class="form-control" rows="6" placeholder="请输入项目详情......"
+                                                    style="color: #666666;padding: 0;" name="task_description"
+                                                    v-model="task_description"></textarea>
+                                                <small class="form-text text-muted"
                                                     style="margin-top: 10px;height: 40px;text-align: center;float: left;letter-spacing: 5px">
-                                                    需要更详细的介绍?点击<span onclick="javascript:;" class="md-trigger"
-                                                        data-modal="modal-8" style="cursor: pointer;">
+                                                    需要更详细的介绍?点击
+                                                    <span class="md-trigger" data-modal="modal-8"
+                                                        style="cursor: pointer;">
                                                         <img src="/static/pic/href_active.png">&nbsp;添加附件
                                                     </span>
                                                 </small>
@@ -114,7 +129,6 @@
                             </table>
                         </div>
                     </div>
-
                     <div class="card" style="border-top: 0.25rem solid #448AFF;">
                         <div class="clearfix" style="width: 100%">
                             <div style="float: right; height: 6rem; width: 22rem">
@@ -128,34 +142,31 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="row no-gutters" style="margin: 0px 0px .75rem 0px">
                             <div class="col-10 offset-1"
                                 style="font-weight: bold; margin-top: .75rem; margin-bottom: .75rem">
                                 添加成员
                             </div>
                             <div class="col-10" style="left: 10%">
-                                <button type="button" class="btn btn btn-outline-primary md-trigger"
+                                <button type="button" class="btn btn-outline-primary md-trigger"
                                     style="width: 140px; height: 50px;" data-modal="modal-5" @click="showall">
                                     点击选择
                                 </button>
                             </div>
                         </div>
-
                         <div class="row no-gutters" style="margin: 0rem 0px 1.2rem 0px">
                             <div class="col-10 offset-1">
                                 <div style="font-weight: bold; margin: .75rem 0px .75rem 0px" v-show="act_all">
                                     已选择的成员(点击选择组长)
                                 </div>
                             </div>
-
                             <div class="col-10" style="left: 10%">
                                 <div>
                                     <div style="font-size: 20px; margin-bottom: .75rem" v-show="act_p">
                                         Python:
                                     </div>
-                                    <div class="row justify-content-start col-12" id="all_members_p">
-                                        <input class="btn btn btn-outline-primary" type="button"
+                                    <div class="row justify-content-start col-12">
+                                        <input class="btn btn-outline-primary" type="button"
                                             style="margin-right: 1.5rem; width: 5rem"
                                             v-for="(item,i) in selected_list_py" :key="item.user_id" :value="item.name"
                                             @click="set_leader($event,item)">
@@ -166,7 +177,7 @@
                                         Java:
                                     </div>
                                     <div class="row justify-content-start col-12">
-                                        <input class="btn btn btn-outline-primary" type="button"
+                                        <input class="btn btn-outline-primary" type="button"
                                             style="margin-right: 1.5rem; width: 5rem"
                                             v-for="(item,i) in selected_list_ja" :key="item.user_id" :value="item.name"
                                             @click="set_leader($event,item)">
@@ -177,7 +188,7 @@
                                         Node.js:
                                     </div>
                                     <div class="row justify-content-start col-12">
-                                        <input class="btn btn btn-outline-primary" type="button"
+                                        <input class="btn btn-outline-primary" type="button"
                                             style="margin-right: 1.5rem; width: 5rem"
                                             v-for="(item,i) in selected_list_no" :key="item.user_id" :value="item.name"
                                             @click="set_leader($event,item)">
@@ -188,7 +199,7 @@
                                         前端:
                                     </div>
                                     <div class="row justify-content-start col-12">
-                                        <input class="btn btn btn-outline-primary" type="button"
+                                        <input class="btn btn-outline-primary" type="button"
                                             style="margin-right: 1.5rem; width: 5rem"
                                             v-for="(item,i) in selected_list_fr" :key="item.user_id" :value="item.name"
                                             @click="set_leader($event,item)">
@@ -199,7 +210,7 @@
                                         设计
                                     </div>
                                     <div class="row justify-content-start col-12">
-                                        <input class="btn btn btn-outline-primary" type="button"
+                                        <input class="btn btn-outline-primary" type="button"
                                             style="margin-right: 1.5rem; width: 5rem"
                                             v-for="(item,i) in selected_list_de" :key="item.user_id" :value="item.name"
                                             @click="set_leader($event,item)">
@@ -208,9 +219,8 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="row justify-content-md-center" style="margin-bottom: 20px">
-                        <input type="button" class="btn btn-primary" value="确认提交"
+                        <input type="button" class="btn btn-primary" value="确认提交" :disabled="subm"
                             style="width: 200px;height: 40px;text-align: center;color:#ffffff " @click="submit">
                     </div>
                 </div>
@@ -219,7 +229,7 @@
         <div>
             <div class="md-modal md-effect-5" id="modal-5">
                 <div class="md-content">
-                    <div class="container">
+                    <div>
                         <div class="row justify-content-between">
                             <div class="col-4" style="margin-top: 10px; font-size: 24px">
                                 添加成员
@@ -235,25 +245,26 @@
                             <div class="col-6" style="padding-right: 0;">
                                 <input type="search" id="search" class="form-control">
                             </div>
-                            <div style="float: left;margin-top: 2px"><a href="#"><img src="/static/pic/serch.png"></a>
+                            <div style="float: left;margin-top: 2px">
+                                <a href="#">
+                                    <img src="/static/pic/serch.png">
+                                </a>
                             </div>
                         </div>
                         <div class="row" style="margin-top: 5px">
                             <div class="col-3">
                                 <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist"
                                     aria-orientation="vertical">
-                                    <a class="nav-link show active" id="v-pills-home-tab" data-toggle="pill"
-                                        href="#v-pills-home" role="tab" aria-controls="v-pills-home"
+                                    <a class="nav-link show active" id="v-pills-python-tab" data-toggle="pill"
+                                        href="#v-pills-python" role="tab" aria-controls="v-pills-python"
                                         aria-selected="true">Python</a>
-                                    <a class="nav-link show" id="v-pills-profile-tab" data-toggle="pill"
-                                        href="#v-pills-profile" role="tab" aria-controls="v-pills-profile"
+                                    <a class="nav-link show" id="v-pills-java-tab" data-toggle="pill"
+                                        href="#v-pills-java" role="tab" aria-controls="v-pills-java"
                                         aria-selected="false">Java</a>
-                                    <a class="nav-link show" id="v-pills-messages-tab" data-toggle="pill"
-                                        href="#v-pills-messages" role="tab" aria-controls="v-pills-messages"
-                                        aria-selected="false">Js</a>
-                                    <a class="nav-link" id="v-pills-settings-tab" data-toggle="pill"
-                                        href="#v-pills-settings" role="tab" aria-controls="v-pills-settings"
-                                        aria-selected="false">前端</a>
+                                    <a class="nav-link show" id="v-pills-js-tab" data-toggle="pill" href="#v-pills-js"
+                                        role="tab" aria-controls="v-pills-js" aria-selected="false">Js</a>
+                                    <a class="nav-link" id="v-pills-front-tab" data-toggle="pill" href="#v-pills-front"
+                                        role="tab" aria-controls="v-pills-front" aria-selected="false">前端</a>
                                     <a class="nav-link" id="v-pills-design-tab" data-toggle="pill"
                                         href="#v-pills-design" role="tab" aria-controls="v-pills-tabContent"
                                         aria-selected="false">设计</a>
@@ -261,7 +272,7 @@
                             </div>
                             <div class="col-9">
                                 <div class="tab-content" id="v-pills-tabContent">
-                                    <div class="tab-pane fade active show" id="v-pills-home" role="tabpanel"
+                                    <div class="tab-pane fade active show" id="v-pills-python" role="tabpanel"
                                         aria-labelledby="v-pills-home-tab">
                                         <div class="row">
                                             <div class="col-12" style="margin-bottom: 5px; height: 100px">
@@ -272,7 +283,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="tab-pane fade" id="v-pills-profile" role="tabpanel"
+                                    <div class="tab-pane fade" id="v-pills-java" role="tabpanel"
                                         aria-labelledby="v-pills-profile-tab">
                                         <div class="row">
                                             <div class="col-12" style="margin-bottom: 5px">
@@ -283,7 +294,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="tab-pane fade" id="v-pills-messages" role="tabpanel"
+                                    <div class="tab-pane fade" id="v-pills-js" role="tabpanel"
                                         aria-labelledby="v-pills-messages-tab">
                                         <div class="row">
                                             <input type="button" class="btn btn-outline-danger x"
@@ -292,7 +303,7 @@
                                                 @click="del_no(item_no.user_id)">
                                         </div>
                                     </div>
-                                    <div class="tab-pane fade" id="v-pills-settings" role="tabpanel"
+                                    <div class="tab-pane fade" id="v-pills-front" role="tabpanel"
                                         aria-labelledby="v-pills-settings-tab">
                                         <div class="row">
                                             <input type="button" class="btn btn-outline-success x"
@@ -313,26 +324,26 @@
                                 </div>
                             </div>
                         </div>
-                        <hr style=" text-align:center; width: 100%; color:deepskyblue;">
+                        <hr style="text-align:center; width: 100%; color:deepskyblue;">
                         <div class="row">
                             <div class="col-12">
-                                <input type="button" class="btn btn btn-outline-primary"
+                                <input type="button" class="btn btn-outline-primary"
                                     style="width: 95px;height: 37px;text-align: center; margin-right: 1.2rem"
                                     v-for="item_s in selected_list_py" :key="item_s.user_id" :value="item_s.name"
                                     @click="add(item_s.user_id)">
-                                <input type="button" class="btn btn btn-outline-warning"
+                                <input type="button" class="btn btn-outline-warning"
                                     style="width: 95px;height: 37px;text-align: center; margin-right: 1.2rem"
                                     v-for="item_ja in selected_list_ja" :key="item_ja.user_id" :value="item_ja.name"
                                     @click="add_ja(item_ja.user_id)">
-                                <input type="button" class="btn btn btn-outline-danger"
+                                <input type="button" class="btn btn-outline-danger"
                                     style="width: 95px;height: 37px;text-align: center; margin-right: 1.2rem"
                                     v-for="item_no in selected_list_no" :key="item_no.user_id" :value="item_no.name"
                                     @click="add_no(item_no.user_id)">
-                                <input type="button" class="btn btn btn-outline-success"
+                                <input type="button" class="btn btn-outline-success"
                                     style="width: 95px;height: 37px;text-align: center; margin-right: 1.2rem"
                                     v-for="item_fr in selected_list_fr" :key="item_fr.user_id" :value="item_fr.name"
                                     @click="add_fr(item_fr.user_id)">
-                                <input type="button" class="btn btn btn-outline-secondary"
+                                <input type="button" class="btn btn-outline-secondary"
                                     style="width: 95px;height: 37px;text-align: center; margin-right: 1.2rem"
                                     v-for="item_de in selected_list_de" :key="item_de.user_id" :value="item_de.name"
                                     @click="add_de(item_de.user_id)">
@@ -341,7 +352,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="md-modal md-effect-8" id="modal-8">
                 <div class="md-content">
                     <div style="min-height: 400px">
@@ -362,7 +372,7 @@
                                 <div class="row col-10 offset-1">
                                     <label for="file" class="btn btn-primary col-6 offset-3"
                                         style="cursor: pointer">点击选择</label>
-                                    <input type="file"  name="appendix" accept=".jpg" id="file" style="height: 0px; opacity: 0"
+                                    <input type="file" name="appendix" id="file" style="height: 0px; opacity: 0"
                                         v-on:change="append_appendix($event)">
                                     <small class="col-6 offset-3"
                                         style="color: red;float:left; padding: 0px; text-align: left">文件不要超过10M！</small>
@@ -386,7 +396,8 @@
                                             </td>
                                             <td style="height:70px; line-height:70px; text-align:right">
                                                 <button
-                                                    style="margin-left:20px; background: url(/static/pic/826.png); width:24px; height:24px; border:none" @click="del_appendix(index)">
+                                                    style="margin-left:20px; background: url(/static/pic/826.png); width:24px; height:24px; border:none"
+                                                    @click="del_appendix(index)">
                                                 </button>
                                             </td>
                                         </tr>
@@ -394,11 +405,11 @@
                                 </table>
                             </div>
                             <div v-if="load">
-                                <label for="file" class="btn btn-primary col-3"
-                                    style="cursor: pointer">点击选择</label>
-                                <input type="file" name="appendix" accept=".jpg" id="file" style="height: 0px; opacity: 0"
+                                <label for="file" class="btn btn-primary col-3" style="cursor: pointer">点击选择</label>
+                                <input type="file" name="appendix" id="file" style="height: 0px; opacity: 0"
                                     v-on:change="append_appendix($event)">
-                                <div style="color: red; vertical-align: bottom; font-size: 80%; font-weight: 400">文件不要超过10M！</div>
+                                <div style="color: red; vertical-align: bottom; font-size: 80%; font-weight: 400">
+                                    文件不要超过10M！</div>
                             </div>
                         </div>
                     </div>
@@ -409,14 +420,14 @@
     </div>
     <script src="/static/js/bootstrap/jquery.min.js"></script>
     <script src="/static/js/bootstrap/bootstrap.min.js"></script>
-    <script src="{% static 'js/vue/vue.js' %}"></script>
-    <script src="{% static 'js/vue/vue-resource.min.js' %}"></script>
+    <script src="/static/js/vue/vue.js"></script>
+    <script src="/static/js/vue/vue-resource.min.js"></script>
     <script>
         Vue.http.headers.common['X-CSRFToken'] = $("input[name='csrfmiddlewaretoken']").val();
         var vm2 = new Vue(
             {
                 delimiters: ['[[', ']]'],
-                el: '#render_members',
+                el: '#mainFunc',
                 data: {
                     task_id: 0,
 
@@ -427,6 +438,8 @@
                     task_description: '',
 
                     //接口数据
+                    members_on: [],
+                    leaders_on: [],
                     members: [],
                     leaders: [],
 
@@ -472,6 +485,16 @@
                     //附件
                     appendix: [],
                     load: false,
+
+                    //submit 按钮
+                    subm: false,
+
+                    // 浮动提示框
+                    is_success: false,
+                    is_show: false,
+                    strongTip: "",
+                    tip: "",
+                    loading_display_mode: "none",
                 },
                 methods: {
                     showall() {
@@ -560,7 +583,7 @@
                             {
                                 ;
                             }
-                            else{
+                            else {
                                 this.leader_list.push(item);
                             }
                         }
@@ -668,40 +691,55 @@
                         this.design_list.splice(index, 1);
                     },
                     submit() {
+                        this.loading_display_mode = 'block'
                         //先将选好的人的列表循环加入接口所需要的列表
-                        for (let i = 0; i < this.selected_list_py.length; i++) {
-                            this.members.push(this.selected_list_py[i].user_id)
+                        if (this.members.length == 0 && this.leaders.length == 0) {
+                            for (let i = 0; i < this.selected_list_py.length; i++) {
+                                this.members.push(this.selected_list_py[i].user_id)
+                            }
+                            for (let i = 0; i < this.selected_list_ja.length; i++) {
+                                this.members.push(this.selected_list_ja[i].user_id)
+                            }
+                            for (let i = 0; i < this.selected_list_no.length; i++) {
+                                this.members.push(this.selected_list_no[i].user_id)
+                            }
+                            for (let i = 0; i < this.selected_list_fr.length; i++) {
+                                this.members.push(this.selected_list_fr[i].user_id)
+                            }
+                            for (let i = 0; i < this.selected_list_de.length; i++) {
+                                this.members.push(this.selected_list_de[i].user_id)
+                            }
+                            for (let i = 0; i < this.leader_list.length; i++) {
+                                this.leaders.push(this.leader_list[i].user_id)
+                            }
                         }
-                        for (let i = 0; i < this.selected_list_ja.length; i++) {
-                            this.members.push(this.selected_list_ja[i].user_id)
-                        }
-                        for (let i = 0; i < this.selected_list_no.length; i++) {
-                            this.members.push(this.selected_list_no[i].user_id)
-                        }
-                        for (let i = 0; i < this.selected_list_fr.length; i++) {
-                            this.members.push(this.selected_list_fr[i].user_id)
-                        }
-                        for (let i = 0; i < this.selected_list_de.length; i++) {
-                            this.members.push(this.selected_list_de[i].user_id)
-                        }
-                        for (let i = 0; i < this.leader_list.length; i++) {
-                            this.leaders.push(this.leader_list[i].user_id)
-                        }
-                        this.members = JSON.stringify(this.members);
-                        this.leaders = JSON.stringify(this.leaders);
+                        this.subm = true;
+                        this.members_on = this.members;
+                        this.leaders_on = this.leaders;
+                        this.members_on = JSON.stringify(this.members_on);
+                        this.leaders_on = JSON.stringify(this.leaders_on);
                         this.$http.post('/task/create_task/',
                             {
-                                'members': this.members,
-                                'leaders': this.leaders,
+                                'members': this.members_on,
+                                'leaders': this.leaders_on,
                                 'task_name': this.task_name,
                                 'task_status': Number(this.task_status),
                                 'deadline': this.deadline,
                                 'task_description': this.task_description,
                             }, { emulateJSON: true }).then(res => {
-                                if (res.body.status == 200){
+                                if (res.body.status == 200) {
                                     this.task_id = res.body.task_id;
-                                    this.upload_appendix()
-                                    window.location.href = '/task/task_page/'+this.task_id+'/';
+                                    this.upload_appendix();
+                                    new Promise(resolve => setTimeout(resolve, 3000))
+                                    window.location.href = '/task/task_page/' + this.task_id + '/';
+                                }
+                                else if (res.body.status == 400) {
+                                    this.members = [];
+                                    this.leaders = [];
+                                    this.is_success = false;
+                                    this.strongTip = "任务创建失败！"
+                                    this.tip = res.body.tip;
+                                    this.is_show = true;
                                 }
                             })
                     },
@@ -712,25 +750,43 @@
                             this.load = true;
                         }
                     },
-                    del_appendix: function(index){
-                        this.appendix.splice(index,1);
+                    del_appendix: function (index) {
+                        this.appendix.splice(index, 1);
                         if (this.appendix.length == 0) {
                             this.load = false;
                         }
                     },
-                    upload_appendix: function(){
-                        for (each of this.appendix){
+                    upload_appendix: function () {
+                        if (this.appendix.length == 0){
+                            this.is_success = true;
+                            this.strongTip = "任务创建成功！"
+                            this.tip = "即将返回任务详情页"
+                            this.is_show = true;
+                            return;
+                        }
+
+                        this.is_success = true;
+                        this.strongTip = "任务创建成功！"
+                        this.tip = "正在上传附件，请稍后..."
+                        this.is_show = true;
+
+                        for (each of this.appendix) {
                             var formData = new FormData()
                             formData.append('appendix', each)
                             this.$http.post('/file/appendix/' + this.task_id + '/xxx/', formData, { headers: { 'Content-Type': 'multipart/form-data' } }).then(result => {
-                                if (result.status == 200){
+                                if (result.status == 200) {
                                     ;
                                 }
-                                else if(result.status == 400){
-                                    console.log(result.tip)
+                                else if (result.status == 400) {
+                                    ;
                                 }
                             })
                         }
+
+                        this.is_success = true;
+                        this.strongTip = "附件上传成功！"
+                        this.tip = "即将返回任务详情页"
+                        this.is_show = true;
                     }
                 }
             }
@@ -740,4 +796,4 @@
     <script src="/static/js/animation/classie.js"></script>
 </body>
 
-</html> 
+</html>

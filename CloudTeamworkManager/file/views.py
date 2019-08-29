@@ -3,6 +3,7 @@ import re
 import json
 from django.shortcuts import HttpResponse, render_to_response, render
 from django.http import JsonResponse
+from django.forms.models import model_to_dict
 from .verification_code import Code
 from django.contrib.auth import logout
 from PIL import Image, ImageFilter
@@ -13,6 +14,7 @@ from django.shortcuts import render
 from django.http import FileResponse
 from task.models import task
 from file.models import appendix as _appendix
+from django.db import transaction
 
 
 def verify_code(request):
@@ -56,6 +58,7 @@ def avatar(request):
 
 
 @permission_required_or_403('task.glance_over_task_details', (task, 'id', 'task_id'))
+@transaction.atomic
 def appendix(request, task_id, file_name):
     if request.method == 'POST':
         _file = request.FILES.get("appendix")
@@ -68,8 +71,8 @@ def appendix(request, task_id, file_name):
             file.write(chunk)
         file.close()
         file_size = os.path.getsize(".\\file\\appendixes\\%s\\%s" %(task_id, _file.name))
-        file = _appendix.objects.create(filename=_file.name, task_id=task_id, publisher=request.user.id,filesize=file_size)
-        target_task = task.objects.get(id = task_id)
+        file = _appendix.objects.create(name=_file.name, task_id=task_id, publisher=request.user.id,size=file_size)
+        target_task = task.objects.select_for_update().get(id = task_id)
         task_files = target_task.appendixes
         task_files = json.loads(task_files)
         task_files.append(file.id)
@@ -95,9 +98,9 @@ def rename(request, task_id, appendix_id):
     target_appendix = _appendix.objects.get(id = appendix_id)
 
     if request.user.has_perm("task.edit_appendix", target_task) or request.user.has_perm("file.edit_appendix", target_appendix):
-        target_appendix_name = target_appendix.filename
+        target_appendix_name = target_appendix.name
 
-        target_appendix.filename = request.POST.get("filename")
+        target_appendix.name = request.POST.get("filename")
         target_appendix.save()
 
         os.rename('./file/appendixes/%s/%s' % (task_id, target_appendix_name), './file/appendixes/%s/%s' % (task_id, target_appendix.filename))
@@ -111,7 +114,7 @@ def delete(request, task_id, appendix_id):
     target_appendix = _appendix.objects.get(id=appendix_id)
 
     if request.user.has_perm("task.delete_appendix", target_task) or request.user.has_perm("file.delete_appendix",target_appendix):
-        target_appendix_name = target_appendix.filename
+        target_appendix_name = target_appendix.name
         _appendix.objects.filter(id=appendix_id).delete()
         path = './file/appendixes/%s/%s/'% (task_id,target_appendix_name)
         if os.path.exists(path):
@@ -126,23 +129,23 @@ def overlay(request, task_id, file_id):
     target_appendix = _appendix.objects.get(id=file_id)
     target_task = task.objects.get(id=task_id)
     if request.user.has_perm("task.edit_appendix", target_task) or request.user.has_perm("file.edit_appendix", target_appendix):
-        HDD_file = open("./file/appendixes/%s/%s" % (task_id, target_appendix.filename), 'wb')
+        HDD_file = open("./file/appendixes/%s/%s" % (task_id, target_appendix.name), 'wb')
         _file = request.FILES.get("appendix")
         for chunk in _file.chunks():
             HDD_file.write(chunk)
         HDD_file.close()
 
         file_size = os.path.getsize("./file/appendixes/%s/%s" % (task_id, target_appendix.name))
-        target_appendix.filesize = file_size
+        target_appendix.size = file_size
         target_appendix.save()
         return JsonResponse({"tip": "操作成功", "status": 200}, safe=False)
     return HttpResponse(status=403)
 
-def table(request,task_id):
+def table(request, task_id):
     filesname=[]
-    files_id = task.objects.get(id=task_id)
+    files_id = task.objects.get(id=task_id).appendixes
     files_id = json.loads(files_id)
     for file_id in files_id:
-        file_name = appendix.objects.get(id = file_id).values("id", "filename", "filesize")
+        file_name = _appendix.objects.filter(id = file_id).values("id", "name", "size")[0]
         filesname.append(file_name)
-    return jsonResponse(filesname, safe=false)
+    return JsonResponse(filesname, safe=False)

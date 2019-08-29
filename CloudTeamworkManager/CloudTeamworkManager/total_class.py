@@ -5,7 +5,7 @@ from django.contrib.auth.models import User, Group, Permission
 from guardian.shortcuts import assign_perm, remove_perm
 from task.models import task as models_task
 from task.forms import task as forms_task
-from publisher.models import personal_comment, personal_progress, personal_shedule
+from publisher.models import personal_comment, personal_progress, personal_schedule
 from account.models import UserProfile
 import re
 import json
@@ -83,17 +83,17 @@ class member(object):
         temp = personal_progress.objects.create(id = "%s&%s"%(self.target_task.id, self.user_buildin.id), detail = "[]")
         assign_perm('publisher.edit_personal_progress', self.user_buildin, temp)
         assign_perm('publisher.view_personal_progress', self.user_buildin, temp)
-        temp = personal_shedule.objects.create(id = "%s&%s"%(self.target_task.id, self.user_buildin.id), detail = "[]")
-        assign_perm('publisher.edit_personal_shedule', self.user_buildin, temp)
-        assign_perm('publisher.view_personal_shedule', self.user_buildin, temp)
+        temp = personal_schedule.objects.create(id = "%s&%s"%(self.target_task.id, self.user_buildin.id), detail = "[]")
+        assign_perm('publisher.edit_personal_schedule', self.user_buildin, temp)
+        assign_perm('publisher.view_personal_schedule', self.user_buildin, temp)
 
     def recover_archive_edit_perm(self):
         assign_perm('publisher.edit_personal_progress', self.user_buildin, personal_progress.objects.get(id = "%s&%s"%(self.target_task.id, self.user_buildin.id)))
-        assign_perm('publisher.edit_personal_shedule', self.user_buildin, personal_shedule.objects.get(id = "%s&%s"%(self.target_task.id, self.user_buildin.id)))
+        assign_perm('publisher.edit_personal_schedule', self.user_buildin, personal_schedule.objects.get(id = "%s&%s"%(self.target_task.id, self.user_buildin.id)))
 
     def remove_archive_edit_perm(self):
         remove_perm('publisher.edit_personal_progress', self.user_buildin, personal_progress.objects.get(id = "%s&%s"%(self.target_task.id, self.user_buildin.id)))
-        remove_perm('publisher.edit_personal_shedule', self.user_buildin, personal_shedule.objects.get(id = "%s&%s"%(self.target_task.id, self.user_buildin.id)))
+        remove_perm('publisher.edit_personal_schedule', self.user_buildin, personal_schedule.objects.get(id = "%s&%s"%(self.target_task.id, self.user_buildin.id)))
 
     def set_leader_in_profile(self):
         temp = json.loads(self.user_profile.managed_projects)
@@ -132,7 +132,7 @@ class member(object):
         assign_perm('task.edit_task_comments', self.user_buildin, self.target_task)
         assign_perm('task.view_personal_comments', self.user_buildin, self.target_task)
         assign_perm('task.view_personal_progress', self.user_buildin, self.target_task)
-        assign_perm('task.view_personal_shedule', self.user_buildin, self.target_task)
+        assign_perm('task.view_personal_schedule', self.user_buildin, self.target_task)
         assign_perm('task.edit_appendix', self.user_buildin, self.target_task)
         assign_perm('task.delete_appendix', self.user_buildin, self.target_task)
 
@@ -141,7 +141,7 @@ class member(object):
         remove_perm('task.edit_task_comments', self.user_buildin, self.target_task)
         remove_perm('task.view_personal_comments', self.user_buildin, self.target_task)
         remove_perm('task.view_personal_progress', self.user_buildin, self.target_task)
-        remove_perm('task.view_personal_shedule', self.user_buildin, self.target_task)
+        remove_perm('task.view_personal_schedule', self.user_buildin, self.target_task)
         remove_perm('task.edit_appendix', self.user_buildin, self.target_task)
         remove_perm('task.delete_appendix', self.user_buildin, self.target_task)
 
@@ -166,21 +166,21 @@ class member(object):
         return HttpResponse(status=403)
 
     def view_personal_schedule(self, request):
-        shedule = personal_shedule.objects.get(id = "%s&%s"%(self.target_task.id, self.user_buildin.id))
+        schedule = personal_schedule.objects.get(id = "%s&%s"%(self.target_task.id, self.user_buildin.id))
 
-        if request.user.has_perm("publisher.view_personal_shedule", shedule) or request.user.has_perm("task.view_personal_shedule", self.target_task):
-            return HttpResponse(shedule.detail)
+        if request.user.has_perm("publisher.view_personal_schedule", schedule) or request.user.has_perm("task.view_personal_schedule", self.target_task):
+            return HttpResponse(schedule.detail)
         return HttpResponse(status=403)
 
     def edit_personal_schedule(self, request):
-        shedule = personal_shedule.objects.get(id = "%s&%s"%(self.target_task.id, self.user_buildin.id))
+        schedule = personal_schedule.objects.get(id = "%s&%s"%(self.target_task.id, self.user_buildin.id))
 
-        if request.user.has_perm("publisher.edit_personal_shedule", shedule):
+        if request.user.has_perm("publisher.edit_personal_schedule", schedule):
             if request.POST.get("action") == "upgrade":
-                shedule.detail = _publisher(shedule.detail).upgrade(request.POST.get("content"))
+                schedule.detail = _publisher(schedule.detail).upgrade(request.POST.get("content"))
             elif request.POST.get("action") == "create":
-                shedule.detail = _publisher(shedule.detail).create(request.POST.get("content"))
-            shedule.save()
+                schedule.detail = _publisher(schedule.detail).create(request.POST.get("content"))
+            schedule.save()
                 
             return JsonResponse({"tip": "操作成功", "status": 200}, safe=False)
         return HttpResponse(status=403)
@@ -249,7 +249,7 @@ class task(object):
         return HttpResponse(status = 403)
 
     def edit_task_schedule(self, request):
-        if request.user.has_perm("task.edit_task_shedule", self.task):
+        if request.user.has_perm("task.edit_task_schedule", self.task):
             if request.POST.get("action") == "upgrade":
                 self.task.task_schedule = _publisher(self.task.task_schedule).upgrade(request.POST.get("content"), editor_id = request.user.id)
             elif request.POST.get("action") == "create":
@@ -281,9 +281,9 @@ class task(object):
             assign_perm('task.view_personal_comments', target_group_leader, target_task)
             assign_perm('task.edit_personal_comments', target_group_leader, target_task)
             assign_perm('task.edit_task_progress', target_group_leader, target_task)
-            assign_perm('task.edit_task_shedule', target_group_leader, target_task)
+            assign_perm('task.edit_task_schedule', target_group_leader, target_task)
             assign_perm('task.view_personal_progress', target_group_leader, target_task)
-            assign_perm('task.view_personal_shedule', target_group_leader, target_task)
+            assign_perm('task.view_personal_schedule', target_group_leader, target_task)
             assign_perm('task.edit_appendix', target_group_leader, target_task)
             assign_perm('task.delete_appendix', target_group_leader, target_task)
 
@@ -427,7 +427,7 @@ class task(object):
 
                 # 通知
 
-            return JsonResponse({"url": "/task/%d"%self.task.id, "status": 302}, safe=False)
+            return JsonResponse({"url": "/task/task_page/%d"%self.task.id, "status": 302}, safe=False)
         return JsonResponse({"tip": "表单验证失败", "status": 400}, safe=False)
 
     def delete_task(self, request):

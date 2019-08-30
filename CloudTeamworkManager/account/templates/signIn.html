@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/bootstrap/bootstrap.min.css">
     <title>登录</title>
     <style>
         html,
@@ -59,11 +59,9 @@
                     <div class="col-10" style="margin-top: 10%; margin-bottom: 10%">
                         <form action="" method="POST" class="clearfix">
                             <label style="font-size: 14px; margin: 0.5rem 0rem 0.5rem 0rem">请输入您的手机号</label>
-                            <input v-model="phone_number" type="text" class="form-control" placeholder="请输入您的手机号"
-                                name="phone_number">
+                            <input v-model="phone_number" type="text" class="form-control" placeholder="请输入您的手机号">
                             <label style="font-size: 14px; margin: 0.5rem 0rem 0.5rem 0rem">请输入您的密码</label>
-                            <input v-model="password" type="password" class="form-control" placeholder="请输入您的密码"
-                                name="password">
+                            <input v-model="password" type="password" class="form-control" placeholder="请输入您的密码">
                             {% csrf_token %}
                         </form>
                         <a href="/account/reset_password"
@@ -82,11 +80,11 @@
             </div>
         </div>
 
-        <script src="/static/bootstrap/js/jquery.min.js"></script>
-        <script src="/static/bootstrap/js/popper.min.js"></script>
-        <script src="/static/bootstrap/js/bootstrap.bundle.min.js"></script>
-        <script src="/static/js/vue.js"></script>
-        <script src="/static/js/vue-resource.min.js"></script>
+        <script src="/static/js/bootstrap/jquery.min.js"></script>
+        <script src="/static/js/bootstrap/popper.min.js"></script>
+        <script src="/static/js/bootstrap/bootstrap.bundle.min.js"></script>
+        <script src="/static/js/vue/vue.js"></script>
+        <script src="/static/js/vue/vue-resource.min.js"></script>
 
         <script>
             $('.toast').toast('show')
@@ -97,7 +95,7 @@
         <script>
             Vue.http.headers.common['X-CSRFToken'] = $("input[name='csrfmiddlewaretoken']").val()
             var app = new Vue({
-                delimiters:['[[', ']]'],
+                delimiters: ['[[', ']]'],
                 el: '#mainFunc',
                 data: {
                     tip: "",
@@ -107,11 +105,11 @@
                 methods: {
                     submit: function () {
                         this.$http.post('/account/login/', { 'phone_number': this.phone_number, 'password': this.password }, { emulateJSON: true }).then(result => {
-                            if (result.body.status == 302){
-                                window.location.href=result.body.url;
+                            if (result.body.status == 302) {
+                                window.location.href = result.body.url;
                             }
-                            else{
-                                this.tip = result.body.tip
+                            else {
+                                this.tip = result.body.tip;
                             }
                         })
                     },

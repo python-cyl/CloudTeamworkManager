@@ -89,7 +89,7 @@ def appendix(request, task_id, file_name):
         file = open("./file/appendixes/%s/%s" % (task_id, file_name), 'rb')
         response = FileResponse(file)
         response['Content-Type'] = 'application/octet-stream'
-        response['Content-Disposition'] = 'attachment;filename="%s"'%file_name
+        response['Content-Disposition'] = ('attachment; filename="%s"'%file_name).encode('utf-8').decode('ISO-8859-1')
         return response
 
 
@@ -116,7 +116,14 @@ def delete(request, task_id, appendix_id):
     if request.user.has_perm("task.delete_appendix", target_task) or request.user.has_perm("file.delete_appendix",target_appendix):
         target_appendix_name = target_appendix.name
         _appendix.objects.filter(id=appendix_id).delete()
-        path = './file/appendixes/%s/%s/'% (task_id,target_appendix_name)
+        task_files = target_task.appendixes
+        task_files = json.loads(task_files)
+        task_files.remove(appendix_id)
+        task_files = json.dumps(task_files)
+        target_task.appendixes = task_files
+        target_task.save()
+
+        path = './file/appendixes/%s/%s'% (task_id, target_appendix_name)
         if os.path.exists(path):
             os.remove(path)
 

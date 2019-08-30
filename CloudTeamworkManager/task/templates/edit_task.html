@@ -931,18 +931,35 @@
                     append_appendix: function () {
                         this.appendix.push(event.target.files[0]);
                         event.target = null;
-                        if (this.appendix.length > 0) {
-                            this.load = true;
-                        }
-                        else {
-                            ;
-                        }
+                        this.load = true;
+
+                        var formData = new FormData()
+                        formData.append('appendix', this.appendix[this.appendix.length-1])
+                        this.$http.post('/file/appendix/' + this.task_id + '/xxx/', formData, { headers: { 'Content-Type': 'multipart/form-data' } }).then(result => {
+                            if (result.status == 200) {
+                                ;
+                            }
+                            else if (result.status == 400) {
+                                ;
+                            }
+                        })
                     },
                     del_appendix: function (index) {
+                        var appendix_id = this.appendix[index].id
+
                         this.appendix.splice(index, 1);
                         if (this.appendix.length == 0) {
                             this.load = false;
                         }
+
+                        this.$http.get('/file/delete_appendix/' + this.task_id + '/' + appendix_id + '/').then(result => {
+                            if (result.status == 200) {
+                                ;
+                            }
+                            else if (result.status == 400) {
+                                ;
+                            }
+                        })
                     },
                     upload_appendix: function () {
                         if (this.appendix.length == 0){

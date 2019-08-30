@@ -1,4 +1,5 @@
 from CloudTeamworkManager.total_class import member, _publisher, task
+from django.contrib.auth.models import User
 from django.shortcuts import render
 
 
@@ -31,7 +32,7 @@ def task_schedule(request, task_id):
 
 def personal_comments(request, task_id, member_id):
     target_task = task(task_id = task_id)
-    target_member = member(user_id = member_id, target_task = target_task.task)
+    target_member = member(user_buildin = User.objects.get(id = member_id), target_task = target_task.task)
 
     if request.method == "GET":
         return target_member.view_personal_comments(request)
@@ -41,7 +42,7 @@ def personal_comments(request, task_id, member_id):
 
 def personal_schedule(request, task_id, member_id):
     target_task = task(task_id = task_id)
-    target_member = member(user_id = member_id, target_task = target_task.task)
+    target_member = member(user_buildin = User.objects.get(id = member_id), target_task = target_task.task)
 
     if request.method == "GET":
         return target_member.view_personal_schedule(request)
@@ -51,7 +52,7 @@ def personal_schedule(request, task_id, member_id):
 
 def personal_progress(request, task_id, member_id):
     target_task = task(task_id = task_id)
-    target_member = member(user_id = member_id, target_task = target_task.task)
+    target_member = member(user_buildin = User.objects.get(id = member_id), target_task = target_task.task)
 
     if request.method == "GET":
         return target_member.view_personal_progress(request)

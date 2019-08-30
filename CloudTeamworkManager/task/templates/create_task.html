@@ -746,9 +746,7 @@
                     append_appendix: function () {
                         this.appendix.push(event.target.files[0]);
                         event.target = null;
-                        if (this.appendix.length > 0) {
-                            this.load = true;
-                        }
+                        this.load = true;
                     },
                     del_appendix: function (index) {
                         this.appendix.splice(index, 1);

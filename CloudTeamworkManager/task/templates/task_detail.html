@@ -127,7 +127,7 @@
                                         <td>
                                             <div style="max-height: 200px; overflow-y: auto">
                                                 <div v-for="(item,i) in task_comment" :key="item.id">
-                                                    <div style="margin-bottom: 0.5rem">[[item.publish_date]]</div>
+                                                    <div style="margin-bottom: 0.5rem">[[item.publish_date | formatDate]]</div>
                                                     <textarea rows="1" placeholder="请输入内容" :key="item.publish_date"
                                                         :readonly="i == 0? (isActive? false : 'readonly' ) : true"
                                                         style="padding: 10px 0px 8px 0px; color: #747474; resize: none"
@@ -140,7 +140,7 @@
                                                 @click="add_task_comment()">
                                             <input v-if="edit_button && task_comment.length" type="button" :value="edit"
                                                 class="btn btn-outline-primary" style="float:right"
-                                                v-if="i == personalProcess.length-1" @click="edit_task_comment()">
+                                                @click="edit_task_comment()">
                                         </td>
                                     </tr>
                                 </tbody>
@@ -173,7 +173,7 @@
                                         <th>目前耗时</th>
                                         <td>
                                             <div class="progress">
-                                                <div class="progress-bar" style="width:60%;">60%</div>
+                                                <div class="progress-bar" :style="{width: progress}">[[ progress ]]</div>
                                             </div>
                                         </td>
                                     </tr>
@@ -182,7 +182,7 @@
                                         <td>
                                             <div style="max-height: 200px; overflow-y: auto">
                                                 <div v-for="(item,i) in task_schedule" :key="item.id">
-                                                    <div style="margin-bottom: 0.5rem">[[item.publish_date]]</div>
+                                                    <div style="margin-bottom: 0.5rem">[[item.publish_date | formatDate]]</div>
                                                     <textarea rows="1" placeholder="请输入内容" :key="item.publish_date"
                                                         :readonly="i == 0? (isActive? false : 'readonly' ) : true"
                                                         style="padding: 10px 0px 8px 0px; color: #747474; resize: none"
@@ -195,7 +195,7 @@
                                                 @click="add_task_schedule()">
                                             <input v-if="edit_button && task_progress.length" type="button"
                                                 :value="edit" class="btn btn-outline-primary" style="float:right"
-                                                v-if="i == personalProcess.length-1" @click="edit_task_schedule()">
+                                                @click="edit_task_schedule()">
                                         </td>
                                     </tr>
                                     <tr>
@@ -203,7 +203,7 @@
                                         <td>
                                             <div style="max-height: 200px; overflow-y: auto">
                                                 <div v-for="(item,i) in task_progress" :key="item.id">
-                                                    <div style="margin-bottom: 0.5rem">[[item.publish_date]]</div>
+                                                    <div style="margin-bottom: 0.5rem">[[item.publish_date | formatDate]]</div>
                                                     <textarea rows="1" placeholder="请输入内容" :key="item.publish_date"
                                                         :readonly="i == 0? (isActive? false : 'readonly' ) : true"
                                                         style="padding: 10px 0px 8px 0px; color: #747474; resize: none"
@@ -216,7 +216,7 @@
                                                 @click="add_task_progress()">
                                             <input v-if="edit_button && task_progress.length" type="button"
                                                 :value="edit" class="btn btn-outline-primary" style="float:right"
-                                                v-if="i == personalProcess.length-1" @click="edit_task_progress()">
+                                                @click="edit_task_progress()">
                                         </td>
                                     </tr>
                                 </tbody>
@@ -261,7 +261,7 @@
                                     </div>
                                     <div class="row justify-content-start col-12">
                                         <button v-for='person in javaLeaders' class="btn btn-outline-primary md-trigger"
-                                            data-modal="modal-5" style="margin-right: 1.5rem; width: 5rem">
+                                            data-modal="modal-5" @click="show_deatils(person.id)" style="margin-right: 1.5rem; width: 5rem">
                                             [[person.name]]
                                         </button>
                                     </div>
@@ -272,7 +272,7 @@
                                     </div>
                                     <div class="row justify-content-start col-12">
                                         <button v-for='person in jsLeaders' class="btn btn-outline-primary md-trigger"
-                                            data-modal="modal-5" style="margin-right: 1.5rem; width: 5rem">
+                                            data-modal="modal-5" @click="show_deatils(person.id)" style="margin-right: 1.5rem; width: 5rem">
                                             [[person.name]]
                                         </button>
                                     </div>
@@ -284,7 +284,7 @@
                                     <div class="row justify-content-start col-12">
                                         <button v-for='person in designLeaders'
                                             class="btn btn-outline-primary md-trigger" data-modal="modal-5"
-                                            style="margin-right: 1.5rem; width: 5rem">
+                                            @click="show_deatils(person.id)" style="margin-right: 1.5rem; width: 5rem">
                                             [[person.name]]
                                         </button>
                                     </div>
@@ -296,7 +296,7 @@
                                     <div class="row justify-content-start col-12">
                                         <button v-for='person in frontLeaders'
                                             class="btn btn-outline-primary md-trigger" data-modal="modal-5"
-                                            style="margin-right: 1.5rem; width: 5rem">
+                                            @click="show_deatils(person.id)" style="margin-right: 1.5rem; width: 5rem">
                                             [[person.name]]
                                         </button>
                                     </div>
@@ -307,7 +307,7 @@
                                     </div>
                                     <div class="row justify-content-start col-12">
                                         <button v-for='person in mtLeaders' class="btn btn-outline-primary md-trigger"
-                                            data-modal="modal-5" style="margin-right: 1.5rem; width: 5rem">
+                                            data-modal="modal-5" @click="show_deatils(person.id)" style="margin-right: 1.5rem; width: 5rem">
                                             [[person.name]]
                                         </button>
                                     </div>
@@ -339,7 +339,7 @@
                                     </div>
                                     <div class="row justify-content-start col-12">
                                         <button v-for='person in javaList' class="btn btn-outline-primary md-trigger"
-                                            data-modal="modal-5" style="margin-right: 1.5rem; width: 5rem">
+                                            data-modal="modal-5" @click="show_deatils(person.id)" style="margin-right: 1.5rem; width: 5rem">
                                             [[person.name]]
                                         </button>
                                     </div>
@@ -350,7 +350,7 @@
                                     </div>
                                     <div class="row justify-content-start col-12">
                                         <button v-for='person in jsList' class="btn btn-outline-primary md-trigger"
-                                            data-modal="modal-5" style="margin-right: 1.5rem; width: 5rem">
+                                            data-modal="modal-5" @click="show_deatils(person.id)" style="margin-right: 1.5rem; width: 5rem">
                                             [[person.name]]
                                         </button>
                                     </div>
@@ -361,7 +361,7 @@
                                     </div>
                                     <div class="row justify-content-start col-12">
                                         <button v-for='person in designList' class="btn btn-outline-primary md-trigger"
-                                            data-modal="modal-5" style="margin-right: 1.5rem; width: 5rem">
+                                            data-modal="modal-5" @click="show_deatils(person.id)" style="margin-right: 1.5rem; width: 5rem">
                                             [[person.name]]
                                         </button>
                                     </div>
@@ -372,7 +372,7 @@
                                     </div>
                                     <div class="row justify-content-start col-12">
                                         <button v-for='person in frontList' class="btn btn-outline-primary md-trigger"
-                                            data-modal="modal-5" style="margin-right: 1.5rem; width: 5rem">
+                                            data-modal="modal-5" @click="show_deatils(person.id)" style="margin-right: 1.5rem; width: 5rem">
                                             [[person.name]]
                                         </button>
                                     </div>
@@ -383,7 +383,7 @@
                                     </div>
                                     <div class="row justify-content-start col-12">
                                         <button v-for='person in mtList' class="btn btn-outline-primary md-trigger"
-                                            data-modal="modal-5" style="margin-right: 1.5rem; width: 5rem">
+                                            data-modal="modal-5" @click="show_deatils(person.id)" style="margin-right: 1.5rem; width: 5rem">
                                             [[person.name]]
                                         </button>
                                     </div>
@@ -415,13 +415,13 @@
                                     aria-orientation="vertical">
                                     <a class="nav-link show active" id="v-pills-process-tab" data-toggle="pill"
                                         href="#v-pills-process" role="tab" aria-controls="v-pills-process"
-                                        aria-selected="true" @click='getProcess(person_id)'>进度</a>
+                                        aria-selected="true" @click='getProcess()'>进度</a>
                                     <a class="nav-link show" id="v-pills-schedule-tab" data-toggle="pill"
                                         href="#v-pills-schedule" role="tab" aria-controls="v-pills-schedule"
-                                        aria-selected="false" @click='getSchedule(person_id)'>规划</a>
+                                        aria-selected="false" @click='getSchedule()'>规划</a>
                                     <a class="nav-link show" id="v-pills-comment-tab" data-toggle="pill"
                                         href="#v-pills-comment" role="tab" aria-controls="v-pills-comment"
-                                        aria-selected="false" @click='getComments(person_id)'>评价</a>
+                                        aria-selected="false" @click='getComments()'>评价</a>
                                 </div>
                             </div>
                             <div class="col-9">
@@ -430,7 +430,7 @@
                                         aria-labelledby="v-pills-home-tab">
                                         <div style="height: 300px; overflow-y: auto">
                                             <div v-for="(item,i) in personalProcess" :key="item.id">
-                                                <div style="margin-bottom: 0.5rem">[[item.publish_date]]</div>
+                                                <div style="margin-bottom: 0.5rem">[[item.publish_date | formatDate]]</div>
                                                 <textarea rows="1" placeholder="请输入内容" :key="item.publish_date"
                                                     :readonly="i == 0? (isActive? false : 'readonly' ) : true"
                                                     style="padding: 10px 0px 8px 0px; color: #747474; resize: none"
@@ -441,15 +441,15 @@
                                         <input v-if="add_button" type="button" :value="add"
                                             class="btn btn-outline-primary" style="float:right; margin-left: 1.5rem"
                                             @click="add_progress()">
-                                        <input v-if="edit_button" type="button" :value="edit"
+                                        <input v-if="edit_button && personalProcess.length" type="button" :value="edit"
                                             class="btn btn-outline-primary" style="float:right"
-                                            v-if="i == personalProcess.length-1" @click="edit_progress()">
+                                            @click="edit_progress()">
                                     </div>
                                     <div class="tab-pane fade" id="v-pills-schedule" role="tabpanel"
                                         aria-labelledby="v-pills-messages-tab">
                                         <div style="height: 300px; overflow-y: auto">
                                             <div v-for="(item,i) in personalSchedule" :key="item.id">
-                                                <div style="margin-bottom: 0.5rem">[[item.publish_date]]</div>
+                                                <div style="margin-bottom: 0.5rem">[[item.publish_date | formatDate]]</div>
                                                 <textarea rows="1" placeholder="请输入内容" :key="item.publish_date"
                                                     :readonly="i == 0? (isActive? false : 'readonly' ) : true"
                                                     style="padding: 10px 0px 8px 0px; color: #747474; resize: none"
@@ -460,15 +460,15 @@
                                         <input v-if="add_button" type="button" :value="add"
                                             class="btn btn-outline-primary" style="float:right; margin-left: 1.5rem"
                                             @click="add_schedule()">
-                                        <input v-if="edit_button" type="button" :value="edit"
+                                        <input v-if="edit_button && personalSchedule.length" type="button" :value="edit"
                                             class="btn btn-outline-primary" style="float:right"
-                                            v-if="i == personalProcess.length-1" @click="edit_schedule()">
+                                            @click="edit_schedule()">
                                     </div>
                                     <div class="tab-pane fade" id="v-pills-comment" role="tabpanel"
                                         aria-labelledby="v-pills-settings-tab">
                                         <div style="height: 300px; overflow-y: auto">
                                             <div v-for="(item,i) in personalComments" :key="item.id">
-                                                <div style="margin-bottom: 0.5rem">[[item.publish_date]]</div>
+                                                <div style="margin-bottom: 0.5rem">[[item.publish_date | formatDate]]</div>
                                                 <textarea rows="1" placeholder="请输入内容" :key="item.publish_date"
                                                     :readonly="i == 0? (isActive? false : 'readonly' ) : true"
                                                     style="padding: 10px 0px 8px 0px; color: #747474; resize: none"
@@ -479,9 +479,9 @@
                                         <input v-if="add_button" type="button" :value="add"
                                             class="btn btn-outline-primary" style="float:right; margin-left: 1.5rem"
                                             @click="add_comments()">
-                                        <input v-if="edit_button" type="button" :value="edit"
+                                        <input v-if="edit_button && personalComments.length" type="button" :value="edit"
                                             class="btn btn-outline-primary" style="float:right"
-                                            v-if="i == personalProcess.length-1" @click="edit_comments()">
+                                            @click="edit_comments()">
                                     </div>
                                 </div>
                             </div>
@@ -533,6 +533,10 @@
                                             </td>
                                             <td style="height:70px; line-height:70px; text-align:right">
                                                 <button
+                                                    style="margin-left:20px; background: url(/static/pic/829.png); width:24px; height:24px; border:none"
+                                                    @click="location.href = '/file/appendix/' + task_id + '/' + each.name + '/'">
+                                                </button>
+                                                <button
                                                     style="margin-left:20px; background: url(/static/pic/826.png); width:24px; height:24px; border:none"
                                                     @click="del_appendix(index)">
                                                 </button>
@@ -561,6 +565,9 @@
     <script src="/static/js/vue/vue.js"></script>
     <script src="/static/js/vue/vue-resource.min.js"></script>
     <script>
+        Vue.filter('formatDate', time=>{
+            return new Date(parseInt(time * 1000)).toLocaleString().replace(/:\d{1,2}$/,' ');
+        })
         Vue.http.headers.common['X-CSRFToken'] = $("input[name='csrfmiddlewaretoken']").val();
         var app = new Vue(
             {
@@ -579,10 +586,7 @@
                     task_comment: {{ task_comment|safe }},
                     task_schedule: {{ task_schedule|safe }},
                     task_id: '{{ id|safe }}',
-                    personalProcess: [],
-                    personalSchedule: [],
-                    personalComments: [],
-                    person_id: '',
+                    progress: 0,
 
                     // 附件表
                     appendixes: [],
@@ -605,6 +609,10 @@
                     mtLeaders: [],
 
                     // 个人资讯
+                    personalProcess: [],
+                    personalSchedule: [],
+                    personalComments: [],
+                    person_id: '',
                     counter: [],
                     isActive: false,
                     edit: "编辑",
@@ -613,11 +621,22 @@
                     // 添加删除按钮
                     edit_button: true,
                     add_button: true,
+
+                    // 时间
+                    date: new Date()
                 },
                 mounted() {
                     this.classify()
+                    this.progress = parseInt((new Date(this.deadline).getTime() - this.date.getTime()) / (new Date(this.deadline).getTime() - new Date(this.publish_date).getTime()) * 100) + '%';
                 },
                 methods: {
+                    clean_personal_achieve: function(){
+                        this.personalProcess = [];
+                        this.personalSchedule = [];
+                        this.personalComments = [];
+                        this.edit_button = true;
+                        this.add_button = true;
+                    },
                     checkIndex(index, goal) {
                         if (index === goal.length) {
                             return true;
@@ -638,32 +657,57 @@
                     append_appendix: function () {
                         this.appendixes.push(event.target.files[0]);
                         event.target = null;
-                        if (this.appendixes.length > 0) {
-                            this.is_empty = false;
-                        }
+                        this.is_empty = false;
+
+                        var formData = new FormData()
+                        formData.append('appendix', this.appendixes[this.appendixes.length-1])
+                        this.$http.post('/file/appendix/' + this.task_id + '/xxx/', formData, { headers: { 'Content-Type': 'multipart/form-data' } }).then(result => {
+                            if (result.status == 200) {
+                                ;
+                            }
+                            else if (result.status == 400) {
+                                ;
+                            }
+                        })
                     },
-                    getProcess: function (person_id) {
+                    del_appendix: function (index) {
+                        var appendix_id = this.appendixes[index].id
+                        this.appendixes.splice(index, 1);
+                        if (this.appendixes.length == 0) {
+                            this.is_empty = true;
+                        }
+
+                        this.$http.get('/file/delete_appendix/' + this.task_id + '/' + appendix_id + '/').then(result => {
+                            if (result.status == 200) {
+                                ;
+                            }
+                            else if (result.status == 400) {
+                                ;
+                            }
+                        })
+                    },
+                    getProcess: function () {
                         // 获取个人任务进度
                         if (!this.personalProcess.length) {
-                            this.$http.get('/publisher/personal_process/' + this.task_id + '/' + person_id + '/').then(result => {
+                            this.$http.get('/publisher/personal_process/' + this.task_id + '/' + this.person_id + '/').then(result => {
                                 this.personalProcess = result.body;
                                 return true;
                             })
                         }
                     },
-                    getSchedule: function (person_id) {
+                    getSchedule: function () {
                         // 获取个人时间规划
                         if (!this.personalSchedule.length) {
-                            this.$http.get('/publisher/personal_schedule/' + this.task_id + '/' + person_id + '/').then(result => {
+                            this.$http.get('/publisher/personal_schedule/' + this.task_id + '/' + this.person_id + '/').then(result => {
                                 this.personalSchedule = result.body;
                                 return true;
                             })
                         }
                     },
-                    getComments: function (person_id) {
+                    getComments: function () {
                         // 获取个人评价
                         if (!this.personalComments.length) {
-                            this.$http.get('/publisher/personal_comments/' + this.task_id + '/' + person_id + '/').then(result => {
+                            this.$http.get('/publisher/personal_comments/' + this.task_id + '/' + this.person_id + '/').then(result => {
                                 this.personalComments = result.body;
                                 return true;
                             })
@@ -713,6 +757,7 @@
                         }
                     },
                     show_deatils: function (personId) {
+                        this.clean_personal_achieve()
                         this.person_id = personId
                         this.$http.get('/publisher/personal_process/' + this.task_id + '/' + this.person_id + '/').then(result => {
                             this.personalProcess = result.body;
@@ -740,7 +785,7 @@
                     },
                     add_task_schedule: function () {
                         if (!this.isActive) {
-                            this.task_schedule.unshift({ "content": "", "creater": "", "publish_date": Date.parse(new Date()), "upgrade_date": "2910-11-11" });
+                            this.task_schedule.unshift({ "content": "", "creater": "", "publish_date": this.date.getTime()/1000, "upgrade_date": "2910-11-11" });
                             this.edit_button = false;
                             this.isActive = true;
                             this.add = '保存'
@@ -782,7 +827,7 @@
                     },
                     add_task_progress: function () {
                         if (!this.isActive) {
-                            this.task_progress.unshift({ "content": "", "creater": "", "publish_date": Date.parse(new Date()), "upgrade_date": "2910-11-11" });
+                            this.task_progress.unshift({ "content": "", "creater": "", "publish_date": this.date.getTime()/1000, "upgrade_date": "2910-11-11" });
                             this.edit_button = false;
                             this.isActive = true;
                             this.add = '保存'
@@ -824,7 +869,7 @@
                     },
                     add_task_comment: function () {
                         if (!this.isActive) {
-                            this.task_comment.unshift({ "content": "", "creater": "", "publish_date": Date.parse(new Date()), "upgrade_date": "2910-11-11" });
+                            this.task_comment.unshift({ "content": "", "creater": "", "publish_date": this.date.getTime()/1000, "upgrade_date": "2910-11-11" });
                             this.edit_button = false;
                             this.isActive = true;
                             this.add = '保存'
@@ -866,7 +911,7 @@
                     },
                     add_progress: function () {
                         if (!this.isActive) {
-                            this.personalProcess.unshift({ "content": "", "creater": "", "publish_date": Date.parse(new Date()), "upgrade_date": "2910-11-11" });
+                            this.personalProcess.unshift({ "content": "", "creater": "", "publish_date": this.date.getTime()/1000, "upgrade_date": "2910-11-11" });
                             this.edit_button = false;
                             this.isActive = true;
                             this.add = '保存'
@@ -908,7 +953,7 @@
                     },
                     add_comments: function () {
                         if (!this.isActive) {
-                            this.personalComments.unshift({ "content": "", "creater": "", "publish_date": Date.parse(new Date()), "upgrade_date": "2910-11-11" });
+                            this.personalComments.unshift({ "content": "", "creater": "", "publish_date": this.date.getTime()/1000, "upgrade_date": "2910-11-11" });
                             this.edit_button = false;
                             this.isActive = true;
                             this.add = '保存'
@@ -950,7 +995,7 @@
                     },
                     add_schedule: function () {
                         if (!this.isActive) {
-                            this.personalSchedule.unshift({ "content": "", "creater": "", "publish_date": Date.parse(new Date()), "upgrade_date": "2910-11-11" });
+                            this.personalSchedule.unshift({ "content": "", "creater": "", "publish_date": this.date.getTime()/1000, "upgrade_date": "2910-11-11" });
                             this.edit_button = false;
                             this.isActive = true;
                             this.add = '保存'
